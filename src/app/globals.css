@@ -336,3 +336,118 @@ body {
     display: none !important;
   }
 }
+/* ═══════════════════════════════════════════════════════════
+   TOUCH OPTIMIZATIONS — mobile-first polish
+   ═══════════════════════════════════════════════════════════ */
+
+/* Disabilita highlight grigio/blu del tap su tutti i browser mobile.
+   È brutto e rovina l'estetica custom. */
+* {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+/* Ripristina la selezione testo su contenuti leggibili (input, paragrafi, numeri).
+   Vogliamo disabilitare selezione solo su elementi "UI" (pulsanti, card, nav). */
+input,
+textarea,
+[contenteditable],
+p,
+span,
+h1, h2, h3, h4, h5, h6 {
+  -webkit-user-select: text;
+  user-select: text;
+  -webkit-touch-callout: default;
+}
+
+/* Elementi UI non selezionabili */
+button,
+a,
+nav,
+[role="button"] {
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+/* Scroll momentum nativo iOS — flick con inerzia come app native */
+html,
+body,
+main,
+[data-scroll-container] {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+}
+
+/* Feedback universale al tocco: quando premi, l'elemento si "affonda" brevemente.
+   Solo su device touch — su desktop manteniamo il :hover normale. */
+@media (hover: none) and (pointer: coarse) {
+  button:active,
+  a:active,
+  [role="button"]:active {
+    transform: scale(0.97);
+    transition: transform 0.08s ease-out;
+  }
+
+  /* Rimuovi gli effetti hover persistenti su touch */
+  button:hover,
+  a:hover,
+  [role="button"]:hover {
+    transform: none !important;
+  }
+}
+
+/* Touch targets minimi 44×44px per pulsanti inline piccoli.
+   La regola si applica solo se il pulsante sta dentro un container mobile. */
+@media (max-width: 767px) {
+  button[aria-label]:not(.no-min-touch),
+  a[role="button"]:not(.no-min-touch) {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+/* Safe area iOS rafforzata — applica padding aggiuntivo per notch/home bar.
+   .safe-x per padding laterali, .safe-t per top, .safe-b per bottom. */
+.safe-x {
+  padding-left: env(safe-area-inset-left, 0);
+  padding-right: env(safe-area-inset-right, 0);
+}
+.safe-t {
+  padding-top: env(safe-area-inset-top, 0);
+}
+.safe-b {
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+/* Disabilita la pull-to-refresh del browser nei contesti dove rompe l'UX.
+   (Es. quando trascini su una chart, non vuoi che parta il refresh.) */
+body {
+  overscroll-behavior-y: none;
+}
+
+/* Ingrandisci i tap su link inline senza farli sembrare pulsanti */
+a:not([class*="rounded"]):not([role="button"]) {
+  padding: 2px 0;
+  margin: -2px 0;
+}
+
+/* Cursor pointer su tutti gli elementi interattivi per coerenza desktop */
+button,
+[role="button"],
+a {
+  cursor: pointer;
+}
+
+/* Focus visibile per tastiera (accessibilità) ma invisibile per mouse/touch */
+button:focus-visible,
+a:focus-visible,
+[role="button"]:focus-visible {
+  outline: 2px solid var(--color-iri-violet);
+  outline-offset: 2px;
+}
+
+button:focus:not(:focus-visible),
+a:focus:not(:focus-visible) {
+  outline: none;
+}
