@@ -1,0 +1,46 @@
+{
+  "name": "Valorem",
+  "short_name": "Valorem",
+  "description": "Il tuo coach comportamentale per finanze personali.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#060508",
+  "theme_color": "#060508",
+  "lang": "it",
+  "dir": "ltr",
+  "categories": ["finance", "lifestyle", "productivity"],
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Nuova transazione",
+      "url": "/?action=new",
+      "description": "Aggiungi velocemente una spesa o entrata"
+    },
+    {
+      "name": "Simulatore acquisti",
+      "url": "/?action=simulate",
+      "description": "Posso permettermelo?"
+    }
+  ]
+}
