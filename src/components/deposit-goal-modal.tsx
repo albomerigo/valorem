@@ -33,6 +33,7 @@ export function DepositGoalModal({
   const remainingSplit = splitCurrency(newRemaining);
 
   function handleSubmit() {
+    if (!goal) return;
     setError(null);
     if (deposit <= 0) {
       setError("Inserisci un importo maggiore di zero");

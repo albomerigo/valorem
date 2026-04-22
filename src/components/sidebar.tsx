@@ -79,7 +79,7 @@ function NavLink({
   href,
   active,
 }: {
-  icon: React.ComponentType<{ className?: string }>;
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
   label: string;
   route: Route;
   href: string;
