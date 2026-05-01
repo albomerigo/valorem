@@ -14,6 +14,17 @@
  */
 
 import type { SupabaseClient } from "@supabase/supabase-js";
+/**
+ * Categorie escluse dai calcoli di "spesa" perché rappresentano
+ * capitale che resta dell'utente (non consumato).
+ * Vengono mostrate separatamente come "Capitale investito".
+ */
+export const INVESTMENT_CATEGORIES = ["Investimenti"] as const;
+
+export function isInvestment(category: string | null | undefined): boolean {
+  if (!category) return false;
+  return INVESTMENT_CATEGORIES.includes(category as typeof INVESTMENT_CATEGORIES[number]);
+}
 
 // ═══════════════════════════════════════════════════════════
 //  TIPI TYPESCRIPT
@@ -108,6 +119,8 @@ export type DashboardStats = {
   dailyWorkRate: number;
   safeMode: SafeMode;
   safeModeMultiplier: number;
+  capitalInvested: number;
+  capitalInvestedCount: number;
 };
 
 // ═══════════════════════════════════════════════════════════
@@ -224,9 +237,10 @@ export function aggregateDailySpending(
     buckets[key] = 0;
   }
 
-  // Aggrega solo le spese (non le entrate)
+  // Aggrega solo le spese (non le entrate, non gli investimenti)
   for (const tx of transactions) {
     if (tx.type !== "expense") continue;
+    if (isInvestment(tx.category)) continue;
     if (buckets[tx.transaction_date] !== undefined) {
       buckets[tx.transaction_date] += Number(tx.amount);
     }
@@ -356,14 +370,25 @@ export function getMonthlyFreeBudget(
 
 export function getSpentThisMonth(transactions: Transaction[]): number {
   return transactions
-    .filter((tx) => tx.type === "expense")
+    .filter((tx) => tx.type === "expense" && !isInvestment(tx.category))
+    .reduce((sum, tx) => sum + Number(tx.amount), 0);
+}
+
+export function getInvestedThisMonth(transactions: Transaction[]): number {
+  return transactions
+    .filter((tx) => tx.type === "expense" && isInvestment(tx.category))
     .reduce((sum, tx) => sum + Number(tx.amount), 0);
 }
 
 export function getSpentToday(transactions: Transaction[]): number {
   const today = new Date().toISOString().split("T")[0];
   return transactions
-    .filter((tx) => tx.type === "expense" && tx.transaction_date === today)
+    .filter(
+      (tx) =>
+        tx.type === "expense" &&
+        tx.transaction_date === today &&
+        !isInvestment(tx.category)
+    )
     .reduce((sum, tx) => sum + Number(tx.amount), 0);
 }
 
@@ -555,6 +580,10 @@ export async function loadDashboardData(
     dailyWorkRate,
     safeMode: profile.safe_mode,
     safeModeMultiplier: getSafeModeMultiplier(profile.safe_mode),
+    capitalInvested: getInvestedThisMonth(transactions),
+    capitalInvestedCount: transactions.filter(
+      (tx) => tx.type === "expense" && isInvestment(tx.category)
+    ).length,
   };
 
   return { profile, fixedCosts, transactions, stats };
@@ -582,6 +611,8 @@ function emptyStats(profile: UserProfile | null): DashboardStats {
     dailyWorkRate: 0,
     safeMode: profile?.safe_mode || "aggressive",
     safeModeMultiplier: 1,
+    capitalInvested: 0,
+    capitalInvestedCount: 0,
   };
 }
 

@@ -28,7 +28,7 @@ import type {
   Transaction,
   DashboardStats,
 } from "@/lib/finance";
-import { amountToTimeLabel, getTimeMetricSuffix } from "@/lib/finance";
+import { amountToTimeLabel, getTimeMetricSuffix, isInvestment } from "@/lib/finance";
 import { Sidebar } from "@/components/sidebar";
 import { BottomBar } from "@/components/bottom-bar";
 import { FabButton } from "@/components/fab-button";
@@ -47,6 +47,7 @@ const CATEGORIES = [
   "Salute",
   "Casa",
   "Shopping",
+  "Investimenti",
   "Altro",
 ];
 
@@ -115,13 +116,17 @@ export function AttivitaView({
 
   // Calcola KPI riassuntivi
   const kpis = useMemo(() => {
-    const expenses = filtered.filter((t) => t.type === "expense");
+    const allExpenses = filtered.filter((t) => t.type === "expense");
+    const spendingExpenses = allExpenses.filter((t) => !isInvestment(t.category));
+    const investmentExpenses = allExpenses.filter((t) => isInvestment(t.category));
     const incomes = filtered.filter((t) => t.type === "income");
-    const totalExpense = expenses.reduce((s, t) => s + Number(t.amount), 0);
+    const totalExpense = spendingExpenses.reduce((s, t) => s + Number(t.amount), 0);
     const totalIncome = incomes.reduce((s, t) => s + Number(t.amount), 0);
+    const capitalInvested = investmentExpenses.reduce((s, t) => s + Number(t.amount), 0);
+    const capitalInvestedCount = investmentExpenses.length;
 
     const categoryCount: Record<string, number> = {};
-    for (const t of expenses) {
+    for (const t of spendingExpenses) {
       const c = t.category || "Altro";
       categoryCount[c] = (categoryCount[c] || 0) + Number(t.amount);
     }
@@ -133,11 +138,9 @@ export function AttivitaView({
       count: filtered.length,
       totalExpense,
       totalIncome,
+      capitalInvested,
+      capitalInvestedCount,
       netValue: totalIncome - totalExpense,
-      avgPerTx:
-        filtered.length > 0
-          ? (totalExpense + totalIncome) / filtered.length
-          : 0,
       topCategory: topCat ? topCat[0] : null,
       topCategoryAmount: topCat ? topCat[1] : 0,
     };
@@ -316,23 +319,18 @@ export function AttivitaView({
               tone="income"
             />
             <KpiBox
-              label={kpis.topCategory ? "Top categoria" : "Media"}
-              value={
-                kpis.topCategory
-                  ? kpis.topCategory
-                  : splitCurrency(kpis.avgPerTx).int
+              label="Capitale investito"
+              value={splitCurrency(kpis.capitalInvested).int}
+              decimal={splitCurrency(kpis.capitalInvested).dec}
+              suffix="€"
+              tone="invested"
+              subLabel={
+                kpis.capitalInvestedCount === 0
+                  ? "nessuna operazione"
+                  : kpis.capitalInvestedCount === 1
+                  ? "1 operazione"
+                  : `${kpis.capitalInvestedCount} operazioni`
               }
-              decimal={
-                kpis.topCategory
-                  ? undefined
-                  : splitCurrency(kpis.avgPerTx).dec
-              }
-              suffix={
-                kpis.topCategory
-                  ? `· ${kpis.topCategoryAmount.toFixed(0)}€`
-                  : "€"
-              }
-              isText={!!kpis.topCategory}
             />
           </div>
 
@@ -405,19 +403,23 @@ function KpiBox({
   suffix,
   tone,
   isText,
+  subLabel,
 }: {
   label: string;
   value: string;
   decimal?: string;
   suffix: string;
-  tone?: "expense" | "income";
+  tone?: "expense" | "income" | "invested";
   isText?: boolean;
+  subLabel?: string;
 }) {
   const color =
     tone === "expense"
       ? "text-red-200"
       : tone === "income"
       ? "text-emerald-200"
+      : tone === "invested"
+      ? "text-emerald-300"
       : "text-ink-primary";
 
   return (
@@ -441,6 +443,9 @@ function KpiBox({
           </>
         )}
       </p>
+      {subLabel && (
+        <p className="m-0 mt-1 text-[10px] text-ink-secondary">{subLabel}</p>
+      )}
     </div>
   );
 }

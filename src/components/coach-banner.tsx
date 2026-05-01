@@ -9,6 +9,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import type { DashboardStats, Transaction } from "@/lib/finance";
+import { isInvestment } from "@/lib/finance";
 import { splitCurrency } from "@/lib/utils";
 
 type BannerContext = {
@@ -32,7 +33,10 @@ export function CoachBanner({
   const context = useMemo<BannerContext | null>(() => {
     const today = new Date().toISOString().split("T")[0];
     const todayTxs = transactions.filter(
-      (t) => t.transaction_date === today && t.type === "expense"
+      (t) =>
+        t.transaction_date === today &&
+        t.type === "expense" &&
+        !isInvestment(t.category)
     );
     const todaySpent = todayTxs.reduce((s, t) => s + Number(t.amount), 0);
 

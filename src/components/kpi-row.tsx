@@ -6,10 +6,11 @@ import type { DashboardStats } from "@/lib/finance";
 import { splitCurrency } from "@/lib/utils";
 
 export function KPIRow({ stats }: { stats: DashboardStats }) {
-  const { monthlyFree, spentToday, aiBlocks, trendVsLastMonth } = stats;
+  const { monthlyFree, spentToday, capitalInvested, capitalInvestedCount, trendVsLastMonth } = stats;
 
   const monthlyFreeSplit = splitCurrency(monthlyFree);
   const spentTodaySplit = splitCurrency(spentToday);
+  const investedSplit = splitCurrency(capitalInvested);
 
   return (
     <div
@@ -38,12 +39,18 @@ export function KPIRow({ stats }: { stats: DashboardStats }) {
         trend={<Equalizer />}
       />
       <KPITile
-        label="Guardiano AI"
-        valueInt={aiBlocks.toString()}
-        valueSuffix=" /mese"
-        valueGradThick
+        label="Capitale investito"
+        valueInt={investedSplit.int}
+        valueDec={investedSplit.dec}
         trend={
-          <span className="eyebrow text-[9px]">acquisti evitati</span>
+          <span className="flex items-center gap-1 text-[10px] font-medium tracking-[0.08em] text-emerald-300 font-mono-tabular">
+            <TrendingUp className="h-2.5 w-2.5" />
+            {capitalInvestedCount === 0
+              ? "nessuna operazione"
+              : capitalInvestedCount === 1
+              ? "1 operazione"
+              : `${capitalInvestedCount} operazioni`}
+          </span>
         }
       />
     </div>

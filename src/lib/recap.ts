@@ -4,6 +4,7 @@ import type {
   Goal,
   DashboardStats,
 } from "./finance";
+import { isInvestment } from "./finance";
 
 export type RecapData = {
   monthLabel: string;
@@ -18,6 +19,8 @@ export type RecapData = {
   savedImpulsesCount: number;
   topCategory: { name: string; amount: number; percent: number } | null;
   categoryBreakdown: { name: string; amount: number; percent: number }[];
+  capitalInvested: number;
+  capitalInvestedCount: number;
   mostExpensiveDay: { date: string; amount: number } | null;
   leastExpensiveDay: { date: string; amount: number } | null;
   daysActive: number;
@@ -87,9 +90,13 @@ export function buildRecapData(
   const txs = filterByMonth(allTransactions, year, month);
   const declinedOfMonth = filterDeclinedByMonth(declined, year, month);
 
-  const expenses = txs.filter((t) => t.type === "expense");
+  const allExpenses = txs.filter((t) => t.type === "expense");
+  const expenses = allExpenses.filter((t) => !isInvestment(t.category));
+  const investmentExpenses = allExpenses.filter((t) => isInvestment(t.category));
   const incomes = txs.filter((t) => t.type === "income");
   const totalSpent = expenses.reduce((s, t) => s + Number(t.amount), 0);
+  const capitalInvested = investmentExpenses.reduce((s, t) => s + Number(t.amount), 0);
+  const capitalInvestedCount = investmentExpenses.length;
   const totalIncome = incomes.reduce((s, t) => s + Number(t.amount), 0);
   const netValue = totalIncome - totalSpent;
 
@@ -148,7 +155,7 @@ export function buildRecapData(
   const prevYear = month === 1 ? year - 1 : year;
   const prevTxs = filterByMonth(allTransactions, prevYear, prevMonth);
   const prevSpent = prevTxs
-    .filter((t) => t.type === "expense")
+    .filter((t) => t.type === "expense" && !isInvestment(t.category))
     .reduce((s, t) => s + Number(t.amount), 0);
   const trendVsPrevMonth =
     prevSpent > 0 ? Math.round(((totalSpent - prevSpent) / prevSpent) * 100) : null;
@@ -168,6 +175,8 @@ export function buildRecapData(
   const { narrativeTitle, coachQuote } = buildNarrative({
     monthLabel: label,
     totalSpent,
+    capitalInvested,
+    capitalInvestedCount,
     savedFromImpulses,
     savedImpulsesCount: declinedOfMonth.length,
     topCategory,
@@ -182,6 +191,8 @@ export function buildRecapData(
     year,
     month,
     totalSpent,
+    capitalInvested,
+    capitalInvestedCount,
     totalIncome,
     netValue,
     transactionCount: txs.length,
@@ -207,6 +218,8 @@ export function buildRecapData(
 function buildNarrative(ctx: {
   monthLabel: string;
   totalSpent: number;
+  capitalInvested: number;
+  capitalInvestedCount: number;
   savedFromImpulses: number;
   savedImpulsesCount: number;
   topCategory: { name: string; amount: number; percent: number } | null;
@@ -214,10 +227,18 @@ function buildNarrative(ctx: {
   netValue: number;
   daysActive: number;
 }): { narrativeTitle: string; coachQuote: string } {
-  const { monthLabel, savedFromImpulses, savedImpulsesCount, topCategory, trendVsPrevMonth, netValue } = ctx;
+  const { monthLabel, capitalInvested, capitalInvestedCount, savedFromImpulses, savedImpulsesCount, topCategory, trendVsPrevMonth, netValue } = ctx;
   const capitalMonth = monthLabel.charAt(0).toUpperCase() + monthLabel.slice(1);
 
-  // PRIORITÀ 1 — salvataggio significativo dal cimitero
+  // PRIORITÀ 1 — investimenti significativi
+  if (capitalInvested > 0 && capitalInvestedCount >= 1) {
+    return {
+      narrativeTitle: `${capitalMonth} — il mese del costruttore`,
+      coachQuote: `Hai investito ${capitalInvested.toFixed(0)}€ ${capitalInvestedCount === 1 ? "in un versamento" : `in ${capitalInvestedCount} operazioni`}. Non è una spesa — è capitale che smette di dormire e inizia a lavorare. Ogni euro investito oggi è un'ora che domani non dovrai vendere.`,
+    };
+  }
+
+  // PRIORITÀ 2 — salvataggio significativo dal cimitero
   if (savedFromImpulses >= 200 && savedImpulsesCount >= 3) {
     return {
       narrativeTitle: `${capitalMonth} — il mese del Guardiano`,

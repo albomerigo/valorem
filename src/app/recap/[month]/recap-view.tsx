@@ -19,6 +19,7 @@ import {
   Home as HomeIcon,
   ShoppingBag,
   MoreHorizontal,
+  BarChart2,
 } from "lucide-react";
 import type { UserProfile, DashboardStats } from "@/lib/finance";
 import type { RecapData } from "@/lib/recap";
@@ -55,6 +56,9 @@ export function RecapView({
 
           {/* TOTALE SPESA + NETTO */}
           <Overview recap={recap} />
+
+          {/* CAPITALE INVESTITO */}
+          <InvestedSection recap={recap} />
 
           {/* BILANCIO GUARDIANO */}
           {recap.savedImpulsesCount > 0 && (
@@ -198,6 +202,53 @@ function StatCard({
         <span className="text-[13px] text-ink-primary/60">,{decPart}</span>
         <span className="ml-0.5 text-[11px] text-ink-muted">{suffix}</span>
       </p>
+    </div>
+  );
+}
+
+function InvestedSection({ recap }: { recap: RecapData }) {
+  const investedSplit = splitCurrency(recap.capitalInvested);
+  const count = recap.capitalInvestedCount;
+  const hasInvestments = recap.capitalInvested > 0;
+
+  return (
+    <div
+      className="glass-panel mb-8 overflow-hidden rounded-[20px] p-8 animate-slide-up [animation-delay:0.15s]"
+      style={{ animationFillMode: "both" }}
+    >
+      <div className="mb-4 flex items-center gap-3">
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-emerald-300/25 bg-emerald-300/[0.08] text-emerald-300">
+          <BarChart2 className="h-5 w-5" strokeWidth={1.6} />
+        </div>
+        <div>
+          <p className="eyebrow-accent text-[10px]">Capitale investito</p>
+          <p className="m-0 mt-0.5 text-[13px] text-ink-secondary">
+            Soldi che restano tuoi, in forma diversa
+          </p>
+        </div>
+      </div>
+
+      {hasInvestments ? (
+        <>
+          <div className="flex items-baseline gap-2 font-mono-tabular">
+            <span className="text-[72px] font-normal leading-[0.9] [letter-spacing:-0.04em] text-emerald-300">
+              {investedSplit.int}
+            </span>
+            <span className="text-[28px] text-ink-primary/60">,{investedSplit.dec}</span>
+            <span className="text-[20px] text-ink-muted">€</span>
+          </div>
+          <p className="mt-2 text-[12px] text-ink-secondary font-mono-tabular">
+            {count === 1 ? "1 operazione" : `${count} operazioni`} nel mese
+          </p>
+          <p className="mt-4 font-serif text-[15px] italic leading-[1.6] text-ink-primary/90">
+            Non è una spesa — è capitale che continua a lavorare per te. Escluso dai calcoli di budget perché non è consumo.
+          </p>
+        </>
+      ) : (
+        <p className="mt-2 font-serif text-[15px] italic leading-[1.6] text-ink-primary/50">
+          Nessun investimento registrato questo mese. Aggiungi una transazione con categoria "Investimenti" per tracciare il tuo capitale.
+        </p>
+      )}
     </div>
   );
 }
