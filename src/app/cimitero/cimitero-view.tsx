@@ -10,9 +10,11 @@ import {
   UtensilsCrossed,
   Car,
   Gamepad2,
+  Repeat2,
   HeartPulse,
   Home as HomeIcon,
   ShoppingCart,
+  TrendingUp,
   MoreHorizontal,
 } from "lucide-react";
 import { EmptyCimitero, EmptyCimiteroMonth } from "@/components/empty-states";
@@ -345,6 +347,7 @@ function categoryMeta(category: string | null): {
     Salute: { Icon: HeartPulse, color: "#7DD3FC" },
     Casa: { Icon: HomeIcon, color: "#C4B5FD" },
     Shopping: { Icon: ShoppingBag, color: "#E879F9" },
+    Investimenti: { Icon: TrendingUp, color: "#10B981" },
   };
   return (
     (category && map[category]) || { Icon: MoreHorizontal, color: "#9CA3AF" }

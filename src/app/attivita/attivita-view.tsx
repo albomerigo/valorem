@@ -21,6 +21,7 @@ import {
   TrendingUp,
   Inbox,
 } from "lucide-react";
+
 import { EmptyActivity, EmptyActivityFiltered } from "@/components/empty-states";
 import type {
   UserProfile,
@@ -34,7 +35,6 @@ import { FabButton } from "@/components/fab-button";
 import { Topbar } from "@/components/topbar";
 import { deleteTransaction } from "@/app/actions/transactions";
 import { splitCurrency } from "@/lib/utils";
-
 type Period = "month" | "30days" | "3months" | "all";
 type TypeFilter = "all" | "expense" | "income";
 
@@ -589,6 +589,7 @@ function categoryMeta(
     Salute: { Icon: HeartPulse, color: "#7DD3FC" },
     Casa: { Icon: HomeIcon, color: "#C4B5FD" },
     Shopping: { Icon: ShoppingBag, color: "#E879F9" },
+    Investimenti: { Icon: TrendingUp, color: "#10B981" },
   };
   return (
     (category && map[category]) || { Icon: MoreHorizontal, color: "#9CA3AF" }

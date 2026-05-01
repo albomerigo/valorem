@@ -476,6 +476,7 @@ function categoryMeta(category: string): {
     Salute: { Icon: HeartPulse, color: "#7DD3FC" },
     Casa: { Icon: HomeIcon, color: "#C4B5FD" },
     Shopping: { Icon: ShoppingBag, color: "#E879F9" },
+    Investimenti: { Icon: TrendingUp, color: "#10B981" },
   };
   return map[category] || { Icon: MoreHorizontal, color: "#9CA3AF" };
 }

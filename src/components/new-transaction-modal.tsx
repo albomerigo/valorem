@@ -2,19 +2,31 @@
 
 import { useState, useTransition } from "react";
 import { TrendingDown, TrendingUp, Repeat } from "lucide-react";
+import {
+  ShoppingCart,
+  UtensilsCrossed,
+  Car,
+  Repeat2,
+  Gamepad2,
+  HeartPulse,
+  Home as HomeIcon,
+  ShoppingBag,    
+  MoreHorizontal,
+} from "lucide-react";
 import { Modal } from "./modal";
 import { createTransaction } from "@/app/actions/transactions";
 
 const CATEGORIES = [
-  "Alimentari",
-  "Ristorazione",
-  "Trasporti",
-  "Abbonamento",
-  "Svago",
-  "Salute",
-  "Casa",
-  "Shopping",
-  "Altro",
+  { value: "Alimentari", icon: ShoppingCart },
+  { value: "Ristorazione", icon: UtensilsCrossed },
+  { value: "Trasporti", icon: Car },
+  { value: "Abbonamento", icon: Repeat2 },
+  { value: "Svago", icon: Gamepad2 },
+  { value: "Salute", icon: HeartPulse },
+  { value: "Casa", icon: HomeIcon },
+  { value: "Shopping", icon: ShoppingBag },
+  { value: "Investimenti", icon: TrendingUp },
+  { value: "Altro", icon: MoreHorizontal },
 ];
 
 export function NewTransactionModal({
@@ -131,20 +143,24 @@ export function NewTransactionModal({
           <div>
             <FieldLabel>Categoria</FieldLabel>
             <div className="flex flex-wrap gap-1.5">
-              {CATEGORIES.map((cat) => (
-                <button
-                  key={cat}
-                  type="button"
-                  onClick={() => setCategory(cat)}
-                  className={`rounded-lg border px-2.5 py-1.5 text-[11px] transition-all duration-[250ms] ${
-                    category === cat
-                      ? "border-iri-violet/50 bg-gradient-to-br from-iri-violet/[0.18] to-iri-magenta/[0.08] text-ink-primary"
-                      : "border-white/[0.06] bg-white/[0.02] text-ink-secondary hover:border-iri-violet/25 hover:text-iri-pale"
-                  }`}
-                >
-                  {cat}
-                </button>
-              ))}
+              {CATEGORIES.map((cat) => {
+                const Icon = cat.icon;
+                return (
+                  <button
+                    key={cat.value}
+                    type="button"
+                    onClick={() => setCategory(cat.value)}
+                    className={`flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-[11px] transition-all ${
+                      category === cat.value
+                        ? "border-iri-violet bg-iri-violet/10 text-iri-pale"
+                        : "border-white/[0.08] text-ink-secondary hover:border-iri-violet/30"
+                    }`}
+                  >
+                    <Icon className="h-3 w-3" strokeWidth={1.7} />
+                    {cat.value}
+                  </button>
+                );
+              })}
             </div>
           </div>
         )}
