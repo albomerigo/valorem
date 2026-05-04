@@ -1,14 +1,14 @@
 "use client";
 
-import { useState, useMemo, useTransition } from "react";
+import { useState, useMemo } from "react";
 import {
   Search,
-  Calendar,
   ListOrdered,
   X,
   ArrowUpRight,
   ArrowDownRight,
   Trash2,
+  Pencil,
   ShoppingCart,
   UtensilsCrossed,
   Car,
@@ -19,7 +19,6 @@ import {
   ShoppingBag,
   MoreHorizontal,
   TrendingUp,
-  Inbox,
 } from "lucide-react";
 
 import { EmptyActivity, EmptyActivityFiltered } from "@/components/empty-states";
@@ -35,6 +34,8 @@ import { FabButton } from "@/components/fab-button";
 import { Topbar } from "@/components/topbar";
 import { deleteTransaction } from "@/app/actions/transactions";
 import { splitCurrency } from "@/lib/utils";
+import { NewTransactionModal } from "@/components/new-transaction-modal";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 type Period = "month" | "30days" | "3months" | "all";
 type TypeFilter = "all" | "expense" | "income";
 
@@ -73,6 +74,16 @@ export function AttivitaView({
   const [selectedCategories, setSelectedCategories] = useState<Set<string>>(
     new Set()
   );
+  const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
+  const [deletingTransactionId, setDeletingTransactionId] = useState<string | null>(null);
+
+  const handleDelete = async (id: string) => {
+    const result = await deleteTransaction(id);
+    if ("error" in result) {
+      alert(result.error || "Errore durante l'eliminazione");
+    }
+    setDeletingTransactionId(null);
+  };
 
   // Applica i filtri
   const filtered = useMemo(() => {
@@ -349,12 +360,28 @@ export function AttivitaView({
                   date={date}
                   transactions={txs}
                   stats={stats}
+                  onEdit={setEditingTransaction}
+                  onDelete={(id) => setDeletingTransactionId(id)}
                 />
               ))}
             </div>
           )}
        </div>
       </div>
+
+      <NewTransactionModal
+        isOpen={!!editingTransaction}
+        onClose={() => setEditingTransaction(null)}
+        editingTransaction={editingTransaction}
+      />
+
+      <ConfirmDialog
+        isOpen={!!deletingTransactionId}
+        onClose={() => setDeletingTransactionId(null)}
+        onConfirm={() => deletingTransactionId && handleDelete(deletingTransactionId)}
+        title="Elimina transazione?"
+        description="Questa azione non può essere annullata. La transazione verrà rimossa definitivamente."
+      />
 
       <FabButton />
       <BottomBar activeRoute="activity" />
@@ -454,10 +481,14 @@ function DayGroup({
   date,
   transactions,
   stats,
+  onEdit,
+  onDelete,
 }: {
   date: string;
   transactions: Transaction[];
   stats: DashboardStats;
+  onEdit: (tx: Transaction) => void;
+  onDelete: (id: string) => void;
 }) {
   const dayTotal = transactions.reduce(
     (s, t) => s + (t.type === "expense" ? -Number(t.amount) : Number(t.amount)),
@@ -487,6 +518,8 @@ function DayGroup({
             tx={tx}
             stats={stats}
             isLast={i === transactions.length - 1}
+            onEdit={() => onEdit(tx)}
+            onDelete={() => onDelete(tx.id)}
           />
         ))}
       </div>
@@ -498,30 +531,26 @@ function ActivityRow({
   tx,
   stats,
   isLast,
+  onEdit,
+  onDelete,
 }: {
   tx: Transaction;
   stats: DashboardStats;
   isLast: boolean;
+  onEdit: () => void;
+  onDelete: () => void;
 }) {
-  const [isPending, startTransition] = useTransition();
   const amount = Number(tx.amount);
   const timeLabel = amountToTimeLabel(amount, stats);
   const suffix = getTimeMetricSuffix(stats.timeMetric);
   const { int, dec } = splitCurrency(amount);
   const { Icon, color } = categoryMeta(tx.category, tx.type);
 
-  function handleDelete() {
-    if (!confirm(`Eliminare "${tx.merchant}"?`)) return;
-    startTransition(async () => {
-      await deleteTransaction(tx.id);
-    });
-  }
-
   return (
     <div
       className={`group relative flex items-center gap-4 px-5 py-3.5 transition-colors hover:bg-white/[0.02] ${
         !isLast ? "border-b border-white/[0.04]" : ""
-      } ${isPending ? "opacity-50" : ""}`}
+      }`}
     >
       <div
         className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-[11px] border border-white/[0.06] bg-white/[0.03]"
@@ -563,15 +592,24 @@ function ActivityRow({
         </div>
       </div>
 
-      <button
-        type="button"
-        onClick={handleDelete}
-        disabled={isPending}
-        title="Elimina"
-        className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg border border-transparent text-ink-faint opacity-0 transition-all duration-[200ms] hover:border-red-500/30 hover:bg-red-500/[0.08] hover:text-red-300 group-hover:opacity-100"
-      >
-        <Trash2 className="h-3 w-3" strokeWidth={1.8} />
-      </button>
+      <div className="flex flex-shrink-0 items-center gap-1 opacity-0 transition-all duration-[200ms] group-hover:opacity-100">
+        <button
+          type="button"
+          onClick={(e) => { e.stopPropagation(); onEdit(); }}
+          title="Modifica"
+          className="flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-ink-faint transition-all duration-[200ms] hover:border-iri-violet/30 hover:bg-iri-violet/[0.08] hover:text-iri-pale"
+        >
+          <Pencil className="h-3 w-3" strokeWidth={1.8} />
+        </button>
+        <button
+          type="button"
+          onClick={(e) => { e.stopPropagation(); onDelete(); }}
+          title="Elimina"
+          className="flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-ink-faint transition-all duration-[200ms] hover:border-red-500/30 hover:bg-red-500/[0.08] hover:text-red-300"
+        >
+          <Trash2 className="h-3 w-3" strokeWidth={1.8} />
+        </button>
+      </div>
     </div>
   );
 }
