@@ -7,7 +7,7 @@ type DailyPoint = { date: string; amount: number; label: string };
 
 const W = 600;
 const H = 160;
-const PAD = { top: 16, right: 8, bottom: 8, left: 8 };
+const PAD = { top: 24, right: 8, bottom: 8, left: 8 };
 
 function toX(i: number, total: number) {
   return PAD.left + (i / Math.max(total - 1, 1)) * (W - PAD.left - PAD.right);
@@ -133,10 +133,10 @@ export function SpendingChart({
             </linearGradient>
           </defs>
 
-          {/* Area fill */}
+          {/* 1. Area fill — disegnata per prima (sotto tutto) */}
           <path d={areaPath} fill="url(#areaGrad)" />
 
-          {/* Linea media */}
+          {/* 2. Linea media */}
           <line
             x1={PAD.left} y1={avgY}
             x2={W - PAD.right} y2={avgY}
@@ -146,32 +146,19 @@ export function SpendingChart({
             strokeOpacity="0.35"
           />
 
-          {/* Linea budget */}
+          {/* 3. Linea budget */}
           {budgetY !== null && (
-            <>
-              <line
-                x1={PAD.left} y1={budgetY}
-                x2={W - PAD.right} y2={budgetY}
-                stroke="#E879F9"
-                strokeWidth="0.8"
-                strokeDasharray="4 5"
-                strokeOpacity="0.4"
-              />
-              <text
-                x={W - PAD.right - 2}
-                y={budgetY - 4}
-                fontSize="9"
-                fill="#E879F9"
-                fillOpacity="0.7"
-                textAnchor="end"
-                fontFamily="monospace"
-              >
-                soglia {dailyBudgetBase.toFixed(0)}€
-              </text>
-            </>
+            <line
+              x1={PAD.left} y1={budgetY}
+              x2={W - PAD.right} y2={budgetY}
+              stroke="#E879F9"
+              strokeWidth="0.8"
+              strokeDasharray="4 5"
+              strokeOpacity="0.4"
+            />
           )}
 
-          {/* Linea principale — sottile, senza glow */}
+          {/* 4. Linea principale — sopra le linee di riferimento */}
           <path
             d={linePath}
             fill="none"
@@ -181,7 +168,32 @@ export function SpendingChart({
             strokeLinejoin="round"
           />
 
-          {/* Dot e linea verticale al hover */}
+          {/* 5. Etichetta soglia — sopra tutto, inclusa la linea principale */}
+          {budgetY !== null && (
+            <g>
+              <rect
+                x={W - PAD.right - 52}
+                y={budgetY - 14}
+                width={50}
+                height={13}
+                rx="3"
+                fill="#1a1030"
+              />
+              <text
+                x={W - PAD.right - 4}
+                y={budgetY - 4}
+                fontSize="9"
+                fill="#E879F9"
+                fillOpacity="0.9"
+                textAnchor="end"
+                fontFamily="monospace"
+              >
+                soglia {dailyBudgetBase.toFixed(0)}€
+              </text>
+            </g>
+          )}
+
+          {/* 6. Dot e linea verticale al hover — sempre sopra */}
           {hoveredPt && hoveredPoint && (
             <>
               <line
@@ -206,7 +218,7 @@ export function SpendingChart({
             </>
           )}
 
-          {/* Aree invisibili per hover */}
+          {/* 7. Aree invisibili per hover — sempre last */}
           {data.map((_, i) => {
             const x = toX(i, data.length);
             const slotW = W / data.length;
@@ -234,45 +246,52 @@ export function SpendingChart({
         ))}
       </div>
 
-      {/* Legenda */}
-      <div className="mt-3 flex items-center gap-4">
-        <div className="flex items-center gap-1.5">
-          <div className="h-[2px] w-4 rounded-full bg-iri-violet opacity-80" />
-          <span className="text-[9px] text-ink-muted">spesa giornaliera</span>
+      {/* Legenda — testo più grande */}
+      <div className="mt-3 flex items-center gap-5">
+        <div className="flex items-center gap-2">
+          <div className="h-[2px] w-5 rounded-full bg-iri-violet opacity-80" />
+          <span className="text-[11px] text-ink-secondary">spesa giornaliera</span>
         </div>
         {budgetY !== null && (
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-2">
             <div
-              className="h-[1px] w-4"
+              className="h-[1px] w-5"
               style={{
                 background: "repeating-linear-gradient(90deg, #E879F9 0px, #E879F9 4px, transparent 4px, transparent 8px)",
               }}
             />
-            <span className="text-[9px] text-ink-muted">soglia budget</span>
+            <span className="text-[11px] text-ink-secondary">soglia budget</span>
           </div>
         )}
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-2">
           <div
-            className="h-[1px] w-4"
+            className="h-[1px] w-5"
             style={{
               background: "repeating-linear-gradient(90deg, #A88BFA 0px, #A88BFA 3px, transparent 3px, transparent 6px)",
               opacity: 0.4,
             }}
           />
-          <span className="text-[9px] text-ink-muted">media periodo</span>
+          <span className="text-[11px] text-ink-secondary">media periodo</span>
         </div>
       </div>
 
-      {/* Tooltip */}
+      {/* Tooltip — sfondo opaco */}
       {hoveredPoint && (
-        <div className="glass-panel-strong pointer-events-none absolute bottom-14 left-1/2 z-10 -translate-x-1/2 rounded-xl px-3 py-2 shadow-lg">
-          <p className="m-0 text-[10px] text-ink-secondary">{hoveredPoint.label}</p>
-          <p className="m-0 font-mono-tabular text-[14px] font-semibold text-ink-primary">
+        <div
+          className="pointer-events-none absolute bottom-14 left-1/2 z-10 -translate-x-1/2 rounded-xl px-3 py-2"
+          style={{
+            background: "#1a1030",
+            border: "1px solid rgba(168,139,250,0.25)",
+            boxShadow: "0 4px 20px rgba(0,0,0,0.6)",
+          }}
+        >
+          <p className="m-0 text-[11px] text-ink-secondary">{hoveredPoint.label}</p>
+          <p className="m-0 font-mono-tabular text-[15px] font-semibold text-ink-primary">
             {hoveredPoint.amount.toFixed(2).replace(".", ",")}
-            <span className="ml-0.5 text-[10px] font-normal text-ink-muted">€</span>
+            <span className="ml-0.5 text-[11px] font-normal text-ink-muted">€</span>
           </p>
           {dailyBudgetBase > 0 && (
-            <p className={`m-0 text-[9px] ${hoveredPoint.amount > dailyBudgetBase ? "text-red-400" : "text-emerald-400"}`}>
+            <p className={`m-0 text-[10px] ${hoveredPoint.amount > dailyBudgetBase ? "text-red-400" : "text-emerald-400"}`}>
               {hoveredPoint.amount > dailyBudgetBase
                 ? `+${(hoveredPoint.amount - dailyBudgetBase).toFixed(0)}€ sulla soglia`
                 : `−${(dailyBudgetBase - hoveredPoint.amount).toFixed(0)}€ dalla soglia`}
