@@ -53,7 +53,56 @@ export async function createTransaction(payload: NewTransactionPayload) {
   revalidatePath("/", "layout");
   return { success: true };
 }
+export async function updateTransaction(
+  transactionId: string,
+  formData: FormData
+) {
+  const supabase = await createClient();
 
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { success: false, error: "Non autenticato" };
+  }
+
+  const amount = parseFloat(formData.get("amount") as string);
+  const merchant = formData.get("merchant") as string;
+  const category = formData.get("category") as string;
+  const type = formData.get("type") as "income" | "expense";
+  const transaction_date = formData.get("transaction_date") as string;
+  const recurring = formData.get("recurring") === "true";
+  const notes = formData.get("notes") as string;
+
+  if (!amount || !merchant || !category || !type || !transaction_date) {
+    return { success: false, error: "Campi obbligatori mancanti" };
+  }
+
+  const { error } = await supabase
+    .from("transactions")
+    .update({
+      amount,
+      merchant,
+      category,
+      type,
+      transaction_date,
+      recurring,
+      notes,
+    })
+    .eq("id", transactionId)
+    .eq("user_id", user.id);
+
+  if (error) {
+    console.error("Errore update transaction:", error);
+    return { success: false, error: error.message };
+  }
+
+  revalidatePath("/");
+  revalidatePath("/attivita");
+
+  return { success: true };
+}
 /**
  * Cancella una transazione (per il futuro, non usata in 4.6).
  */

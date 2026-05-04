@@ -23,7 +23,7 @@ export function FabButton() {
         <Plus className="h-6 w-6" strokeWidth={2.2} />
       </button>
 
-      <NewTransactionModal open={open} onClose={() => setOpen(false)} />
+      <NewTransactionModal isOpen={open} onClose={() => setOpen(false)} />
     </>
   );
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
   ChevronRight,
   ShoppingCart,
@@ -12,12 +13,16 @@ import {
   ShoppingBag,
   MoreHorizontal,
   TrendingUp,
+  Pencil,
+  Trash2,
 } from "lucide-react";
 import { EmptyTransactionsList } from "./empty-states";
 import type { Transaction, DashboardStats } from "@/lib/finance";
 import { amountToTimeLabel } from "@/lib/finance";
 import { splitCurrency } from "@/lib/utils";
-
+import { NewTransactionModal } from "./new-transaction-modal";
+import { ConfirmDialog } from "./confirm-dialog";
+import { deleteTransaction } from "@/app/actions";
 export function TransactionsList({
   transactions,
   stats,
@@ -25,46 +30,79 @@ export function TransactionsList({
   transactions: Transaction[];
   stats: DashboardStats;
 }) {
+  const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
+  const [deletingTransactionId, setDeletingTransactionId] = useState<string | null>(null);
+
+  const handleDelete = async (id: string) => {
+    const result = await deleteTransaction(id);
+    if (!result.success) {
+      alert(result.error || "Errore durante l'eliminazione");
+    }
+    setDeletingTransactionId(null);
+  };
+
   return (
-    <div
-      className="animate-slide-up [animation-delay:0.4s]"
-      style={{ animationFillMode: "both" }}
-    >
-      <div className="mb-3 flex items-center justify-between px-1">
-        <p className="eyebrow">Movimenti recenti</p>
-        <span className="cursor-pointer text-[11px] font-medium text-ink-secondary transition-colors hover:text-iri-pale">
-          Vedi tutti →
-        </span>
+    <>
+      <div
+        className="animate-slide-up [animation-delay:0.4s]"
+        style={{ animationFillMode: "both" }}
+      >
+        <div className="mb-3 flex items-center justify-between px-1">
+          <p className="eyebrow">Movimenti recenti</p>
+          <span className="cursor-pointer text-[11px] font-medium text-ink-secondary transition-colors hover:text-iri-pale">
+            Vedi tutti →
+          </span>
+        </div>
+
+        {transactions.length === 0 ? (
+          <EmptyTransactionsList />
+        ) : (
+          <div className="glass-panel overflow-hidden rounded-[18px]">
+            {transactions.slice(0, 6).map((tx, i) => (
+              <TransactionRow
+                key={tx.id}
+                tx={tx}
+                stats={stats}
+                isLast={i === Math.min(transactions.length, 6) - 1}
+                onEdit={() => setEditingTransaction(tx)}
+                onDelete={() => setDeletingTransactionId(tx.id)}
+              />
+            ))}
+          </div>
+        )}
       </div>
 
-      {transactions.length === 0 ? (
-        <EmptyTransactionsList />
-      ) : (
-        <div className="glass-panel overflow-hidden rounded-[18px]">
-          {transactions.slice(0, 6).map((tx, i) => (
-            <TransactionRow
-              key={tx.id}
-              tx={tx}
-              stats={stats}
-              isLast={i === Math.min(transactions.length, 6) - 1}
-            />
-          ))}
-        </div>
-      )}
-    </div>
+      {/* Modal modifica */}
+      <NewTransactionModal
+        isOpen={!!editingTransaction}
+        onClose={() => setEditingTransaction(null)}
+        editingTransaction={editingTransaction}
+      />
+
+      {/* Dialog conferma eliminazione */}
+      <ConfirmDialog
+        isOpen={!!deletingTransactionId}
+        onClose={() => setDeletingTransactionId(null)}
+        onConfirm={() => deletingTransactionId && handleDelete(deletingTransactionId)}
+        title="Elimina transazione?"
+        description="Questa azione non può essere annullata. La transazione verrà rimossa definitivamente."
+      />
+    </>
   );
 }
-
-
 
 function TransactionRow({
   tx,
   stats,
   isLast,
+  onEdit,
+  onDelete,
 }: {
   tx: Transaction;
   stats: DashboardStats;
   isLast: boolean;
+  onEdit: () => void;
+  onDelete: () => void;
 }) {
   const amount = Number(tx.amount);
   const timeLabel = amountToTimeLabel(amount, stats);
@@ -73,7 +111,7 @@ function TransactionRow({
 
   return (
     <div
-      className={`group relative flex cursor-pointer items-center gap-4 px-5 py-4 transition-all duration-[350ms] [transition-timing-function:cubic-bezier(0.2,0.8,0.2,1)] hover:bg-white/[0.025] ${
+      className={`group relative flex items-center gap-4 px-5 py-4 transition-all duration-[350ms] [transition-timing-function:cubic-bezier(0.2,0.8,0.2,1)] hover:bg-white/[0.025] ${
         !isLast ? "border-b border-white/[0.04]" : ""
       }`}
     >
@@ -115,7 +153,29 @@ function TransactionRow({
         </div>
       </div>
 
-      <ChevronRight className="h-3.5 w-3.5 flex-shrink-0 text-ink-faint opacity-0 transition-all duration-[250ms] group-hover:translate-x-0.5 group-hover:text-iri-pale group-hover:opacity-100" />
+      {/* Pulsanti modifica/elimina (visibili al hover) */}
+      <div className="flex flex-shrink-0 items-center gap-1 opacity-0 transition-all duration-[250ms] group-hover:opacity-100">
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onEdit();
+          }}
+          className="rounded-lg p-2 text-ink-muted transition-colors hover:bg-iri-violet/10 hover:text-iri-pale"
+          title="Modifica"
+        >
+          <Pencil className="h-3.5 w-3.5" strokeWidth={2} />
+        </button>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onDelete();
+          }}
+          className="rounded-lg p-2 text-ink-muted transition-colors hover:bg-red-500/10 hover:text-red-400"
+          title="Elimina"
+        >
+          <Trash2 className="h-3.5 w-3.5" strokeWidth={2} />
+        </button>
+      </div>
     </div>
   );
 }

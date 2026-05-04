@@ -68,7 +68,7 @@ export function Sidebar({ activeRoute = "dashboard" }: { activeRoute?: Route }) 
         </form>
       </aside>
 
-      <NewTransactionModal open={modalOpen} onClose={() => setModalOpen(false)} />
+      <NewTransactionModal isOpen={modalOpen} onClose={() => setModalOpen(false)} />
     </>
   );
 }

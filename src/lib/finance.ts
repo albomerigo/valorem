@@ -67,6 +67,7 @@ export type Transaction = {
   type: "expense" | "income";
   transaction_date: string;
   recurring: boolean;
+  notes?: string | null;
 };
 export type Goal = {
   id: string;
