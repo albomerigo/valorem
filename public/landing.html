@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Valorem — Finance Coach Comportamentale</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --violet: #A88BFA;
+  --magenta: #E879F9;
+  --blue: #60A5FA;
+  --cyan: #67E8F9;
+  --green: #10B981;
+  --dark: #0D0A1E;
+  --dark2: #1A1428;
+  --dark3: #241B3A;
+  --white: #F0EEFF;
+  --muted: #7C6FA0;
+  --card: #1E1535;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--dark);
+  color: var(--white);
+  overflow-x: hidden;
+}
+
+/* ── NOISE OVERLAY ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.4;
+}
+
+/* ── NAVBAR ── */
+nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: 1.25rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(168,139,250,0.08);
+  backdrop-filter: blur(20px);
+  background: rgba(13,10,30,0.7);
+}
+
+.nav-logo {
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-size: 1.5rem;
+  color: var(--white);
+  text-decoration: none;
+  letter-spacing: -0.02em;
+}
+
+.nav-logo span { color: var(--violet); }
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  list-style: none;
+}
+
+.nav-links a {
+  font-size: 0.875rem;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--white); }
+
+.nav-cta {
+  background: linear-gradient(135deg, var(--violet), var(--magenta));
+  color: white !important;
+  padding: 0.5rem 1.25rem;
+  border-radius: 999px;
+  font-weight: 500;
+  font-size: 0.875rem !important;
+  transition: opacity 0.2s !important;
+}
+.nav-cta:hover { opacity: 0.85; color: white !important; }
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 8rem 2rem 4rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+}
+.glow-1 { width: 500px; height: 500px; background: rgba(168,139,250,0.15); top: -100px; left: -150px; }
+.glow-2 { width: 400px; height: 400px; background: rgba(232,121,249,0.12); top: 50px; right: -100px; }
+.glow-3 { width: 300px; height: 300px; background: rgba(96,165,250,0.10); bottom: 100px; left: 50%; transform: translateX(-50%); }
+
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(168,139,250,0.1);
+  border: 1px solid rgba(168,139,250,0.2);
+  border-radius: 999px;
+  padding: 0.35rem 1rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--violet);
+  margin-bottom: 2rem;
+  animation: fadeUp 0.6s ease both;
+}
+
+.hero-eyebrow::before {
+  content: '';
+  width: 6px; height: 6px;
+  background: var(--violet);
+  border-radius: 50%;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)} }
+
+h1 {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(3rem, 7vw, 5.5rem);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--white);
+  max-width: 800px;
+  animation: fadeUp 0.6s 0.1s ease both;
+}
+
+h1 em {
+  font-style: italic;
+  background: linear-gradient(135deg, var(--violet), var(--magenta), var(--blue));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-sub {
+  margin-top: 1.5rem;
+  font-size: 1.125rem;
+  color: var(--muted);
+  max-width: 520px;
+  line-height: 1.6;
+  animation: fadeUp 0.6s 0.2s ease both;
+}
+
+.hero-actions {
+  margin-top: 2.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  animation: fadeUp 0.6s 0.3s ease both;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--violet), var(--magenta));
+  color: white;
+  padding: 0.875rem 2rem;
+  border-radius: 999px;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 0 30px rgba(168,139,250,0.3);
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 50px rgba(168,139,250,0.5);
+}
+
+.btn-secondary {
+  color: var(--muted);
+  font-size: 0.9375rem;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: color 0.2s;
+}
+.btn-secondary:hover { color: var(--white); }
+
+/* APP MOCKUP */
+.hero-mockup {
+  margin-top: 4rem;
+  width: 100%;
+  max-width: 900px;
+  position: relative;
+  animation: fadeUp 0.8s 0.4s ease both;
+}
+
+.mockup-frame {
+  background: var(--dark2);
+  border: 1px solid rgba(168,139,250,0.15);
+  border-radius: 20px;
+  padding: 1.5rem;
+  box-shadow: 0 40px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(168,139,250,0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.mockup-frame::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(168,139,250,0.05) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.mockup-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+.mockup-dot { width: 10px; height: 10px; border-radius: 50%; }
+.mockup-dot:nth-child(1) { background: #FF5F57; }
+.mockup-dot:nth-child(2) { background: #FFBD2E; }
+.mockup-dot:nth-child(3) { background: #28CA41; }
+
+.mockup-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.mock-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.mock-label { font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.4rem; }
+.mock-value { font-family: 'Fraunces', serif; font-size: 1.75rem; color: var(--white); line-height: 1; }
+.mock-value.violet { color: var(--violet); }
+.mock-value.green { color: var(--green); }
+.mock-value.red { color: #F87171; }
+.mock-sub { font-size: 0.7rem; color: var(--muted); margin-top: 0.3rem; }
+
+.mock-chart {
+  grid-column: 1 / -1;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 12px;
+  padding: 1rem;
+  height: 80px;
+  position: relative;
+  overflow: hidden;
+}
+
+.mock-chart-line {
+  position: absolute;
+  bottom: 20px;
+  left: 16px;
+  right: 16px;
+  height: 2px;
+}
+
+.mock-chart svg {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  width: 100%; height: 100%;
+}
+
+/* ── SECTION BASE ── */
+section { position: relative; z-index: 1; }
+
+.section-eyebrow {
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--violet);
+  margin-bottom: 0.75rem;
+}
+
+.section-title {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.section-title em { font-style: italic; color: var(--violet); }
+
+.section-sub {
+  font-size: 1rem;
+  color: var(--muted);
+  line-height: 1.7;
+  max-width: 520px;
+}
+
+/* ── PROBLEMA ── */
+.problem {
+  padding: 6rem 2rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.problem-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-top: 3rem;
+}
+
+.problem-card {
+  background: var(--card);
+  border: 1px solid rgba(168,139,250,0.1);
+  border-radius: 16px;
+  padding: 1.75rem;
+  transition: border-color 0.3s, transform 0.3s;
+}
+.problem-card:hover { border-color: rgba(168,139,250,0.3); transform: translateY(-3px); }
+
+.problem-icon {
+  font-size: 1.75rem;
+  margin-bottom: 1rem;
+}
+
+.problem-card h3 {
+  font-family: 'Fraunces', serif;
+  font-size: 1.1rem;
+  font-weight: 400;
+  margin-bottom: 0.5rem;
+  color: var(--white);
+}
+
+.problem-card p {
+  font-size: 0.875rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+/* ── COME FUNZIONA ── */
+.how {
+  padding: 6rem 2rem;
+  max-width: 1100px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.how-steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-top: 3.5rem;
+  position: relative;
+}
+
+.how-steps::before {
+  content: '';
+  position: absolute;
+  top: 2.25rem;
+  left: calc(33.33% + 1rem);
+  right: calc(33.33% + 1rem);
+  height: 1px;
+  background: linear-gradient(90deg, var(--violet), var(--magenta));
+  opacity: 0.3;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.step-num {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(168,139,250,0.2), rgba(232,121,249,0.1));
+  border: 1px solid rgba(168,139,250,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Fraunces', serif;
+  font-size: 1.25rem;
+  color: var(--violet);
+  flex-shrink: 0;
+}
+
+.step h3 {
+  font-family: 'Fraunces', serif;
+  font-size: 1.1rem;
+  font-weight: 400;
+  color: var(--white);
+}
+
+.step p {
+  font-size: 0.875rem;
+  color: var(--muted);
+  line-height: 1.6;
+  max-width: 260px;
+}
+
+/* ── FEATURES ── */
+.features {
+  padding: 6rem 2rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-top: 3rem;
+}
+
+.feature-card {
+  background: var(--card);
+  border: 1px solid rgba(168,139,250,0.08);
+  border-radius: 16px;
+  padding: 1.75rem;
+  display: flex;
+  gap: 1.25rem;
+  align-items: flex-start;
+  transition: border-color 0.3s;
+}
+.feature-card:hover { border-color: rgba(168,139,250,0.25); }
+
+.feature-icon-wrap {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.feature-card h3 {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  margin-bottom: 0.3rem;
+  color: var(--white);
+}
+
+.feature-card p {
+  font-size: 0.8125rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+/* ── PRICING ── */
+.pricing {
+  padding: 6rem 2rem;
+  max-width: 1100px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+  margin-top: 3rem;
+  align-items: stretch;
+}
+
+.pricing-card {
+  background: var(--card);
+  border: 1px solid rgba(168,139,250,0.1);
+  border-radius: 20px;
+  padding: 2rem;
+  text-align: left;
+  position: relative;
+  transition: transform 0.3s, box-shadow 0.3s;
+  display: flex;
+  flex-direction: column;
+}
+
+.pricing-card:hover { transform: translateY(-4px); }
+
+.pricing-card.featured {
+  border-color: var(--violet);
+  background: linear-gradient(135deg, rgba(168,139,250,0.08), rgba(232,121,249,0.05));
+  box-shadow: 0 0 0 1px rgba(168,139,250,0.3), 0 20px 60px rgba(168,139,250,0.15);
+}
+
+.pricing-badge {
+  position: absolute;
+  top: -1px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, var(--violet), var(--magenta));
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.3rem 0.9rem;
+  border-radius: 0 0 8px 8px;
+}
+
+.pricing-name {
+  font-family: 'Fraunces', serif;
+  font-size: 0.8rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 0.75rem;
+}
+
+.pricing-price {
+  font-family: 'Fraunces', serif;
+  font-size: 3rem;
+  font-weight: 300;
+  line-height: 1;
+  color: var(--white);
+  margin-bottom: 0.25rem;
+}
+
+.pricing-price span {
+  font-size: 1rem;
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.pricing-desc {
+  font-size: 0.8125rem;
+  color: var(--muted);
+  margin-bottom: 1.75rem;
+  line-height: 1.5;
+}
+
+.pricing-features {
+  list-style: none;
+  flex: 1;
+  margin-bottom: 2rem;
+}
+
+.pricing-features li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  font-size: 0.875rem;
+  color: var(--muted);
+  padding: 0.45rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+
+.pricing-features li:last-child { border-bottom: none; }
+
+.pricing-features li.included { color: var(--white); }
+
+.check { color: var(--green); flex-shrink: 0; font-size: 0.875rem; }
+.cross { color: rgba(255,255,255,0.2); flex-shrink: 0; font-size: 0.875rem; }
+
+.pricing-btn {
+  display: block;
+  text-align: center;
+  padding: 0.875rem;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.pricing-btn.outline {
+  border: 1px solid rgba(168,139,250,0.25);
+  color: var(--violet);
+}
+.pricing-btn.outline:hover { background: rgba(168,139,250,0.08); }
+
+.pricing-btn.filled {
+  background: linear-gradient(135deg, var(--violet), var(--magenta));
+  color: white;
+  box-shadow: 0 4px 20px rgba(168,139,250,0.3);
+}
+.pricing-btn.filled:hover { box-shadow: 0 4px 30px rgba(168,139,250,0.5); transform: translateY(-1px); }
+
+/* ── SOCIAL PROOF ── */
+.proof {
+  padding: 6rem 2rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.proof-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+  margin-top: 3rem;
+}
+
+.proof-card {
+  background: var(--card);
+  border: 1px solid rgba(168,139,250,0.08);
+  border-radius: 16px;
+  padding: 1.75rem;
+}
+
+.proof-quote {
+  font-family: 'Fraunces', serif;
+  font-size: 1rem;
+  font-style: italic;
+  color: var(--white);
+  line-height: 1.6;
+  margin-bottom: 1.25rem;
+}
+
+.proof-stars {
+  color: var(--violet);
+  font-size: 0.875rem;
+  margin-bottom: 0.75rem;
+}
+
+.proof-author {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.proof-avatar {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: white;
+}
+
+.proof-name {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--white);
+}
+
+.proof-role {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+/* ── FINAL CTA ── */
+.final-cta {
+  padding: 8rem 2rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.final-cta::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px;
+  height: 400px;
+  background: radial-gradient(ellipse, rgba(168,139,250,0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.final-cta h2 {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  margin-bottom: 1.25rem;
+}
+
+.final-cta h2 em { font-style: italic; color: var(--violet); }
+
+.final-cta p {
+  font-size: 1rem;
+  color: var(--muted);
+  margin-bottom: 2.5rem;
+}
+
+.final-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+/* ── FOOTER ── */
+footer {
+  padding: 2rem;
+  border-top: 1px solid rgba(168,139,250,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.footer-logo {
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-size: 1.125rem;
+  color: var(--white);
+}
+
+.footer-links {
+  display: flex;
+  gap: 1.5rem;
+  list-style: none;
+}
+
+.footer-links a {
+  font-size: 0.8125rem;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.footer-links a:hover { color: var(--white); }
+
+.footer-copy {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.reveal.visible { opacity: 1; transform: none; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .problem-grid, .features-grid, .pricing-grid, .proof-grid { grid-template-columns: 1fr; }
+  .how-steps { grid-template-columns: 1fr; }
+  .how-steps::before { display: none; }
+  .mockup-content { grid-template-columns: 1fr 1fr; }
+  .nav-links { display: none; }
+  footer { flex-direction: column; gap: 1rem; text-align: center; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">val<span>o</span>rem</a>
+  <ul class="nav-links">
+    <li><a href="#come-funziona">Come funziona</a></li>
+    <li><a href="#features">Funzioni</a></li>
+    <li><a href="#pricing">Piani</a></li>
+    <li><a href="https://valorem-albomerigo-2081s-projects.vercel.app" class="nav-cta">Entra nell'app →</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-glow glow-1"></div>
+  <div class="hero-glow glow-2"></div>
+  <div class="hero-glow glow-3"></div>
+
+  <div class="hero-eyebrow">Finance Coach Comportamentale · Made in Italy</div>
+
+  <h1>Non sono una banca.<br>Sono un <em>coach</em>.</h1>
+
+  <p class="hero-sub">
+    Valorem traduce ogni euro in tempo di vita, osserva le tue abitudini e ti racconta la storia del tuo mese. Non tabelle — consapevolezza.
+  </p>
+
+  <div class="hero-actions">
+    <a href="https://valorem-albomerigo-2081s-projects.vercel.app" class="btn-primary">Inizia gratis →</a>
+    <a href="#come-funziona" class="btn-secondary">Scopri come funziona ↓</a>
+  </div>
+
+  <div class="hero-mockup">
+    <div class="mockup-frame">
+      <div class="mockup-bar">
+        <div class="mockup-dot"></div>
+        <div class="mockup-dot"></div>
+        <div class="mockup-dot"></div>
+      </div>
+      <div class="mockup-content">
+        <div class="mock-card">
+          <div class="mock-label">Disponibile oggi</div>
+          <div class="mock-value violet">47<span style="font-size:1rem">,30€</span></div>
+          <div class="mock-sub">Safe-to-Spend</div>
+        </div>
+        <div class="mock-card">
+          <div class="mock-label">Spese oggi</div>
+          <div class="mock-value red">12<span style="font-size:1rem">,80€</span></div>
+          <div class="mock-sub">= 38 min di lavoro</div>
+        </div>
+        <div class="mock-card">
+          <div class="mock-label">Capitale investito</div>
+          <div class="mock-value green">240<span style="font-size:1rem">,00€</span></div>
+          <div class="mock-sub">3 operazioni</div>
+        </div>
+        <div class="mock-chart">
+          <div class="mock-label" style="position:relative;z-index:1">Il tuo ritmo di spesa · Ultime 4 settimane</div>
+          <svg viewBox="0 0 600 60" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="ledGrad" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#A88BFA"/>
+                <stop offset="33%" stop-color="#60A5FA"/>
+                <stop offset="66%" stop-color="#67E8F9"/>
+                <stop offset="100%" stop-color="#E879F9"/>
+              </linearGradient>
+              <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#A88BFA" stop-opacity="0.2"/>
+                <stop offset="100%" stop-color="#A88BFA" stop-opacity="0.01"/>
+              </linearGradient>
+            </defs>
+            <path d="M0,50 C30,45 60,20 90,25 C120,30 150,10 180,15 C210,20 240,40 270,35 C300,30 330,5 360,10 C390,15 420,30 450,28 C480,26 510,15 540,12 C560,10 580,18 600,15 L600,60 L0,60 Z" fill="url(#areaGrad)"/>
+            <path d="M0,50 C30,45 60,20 90,25 C120,30 150,10 180,15 C210,20 240,40 270,35 C300,30 330,5 360,10 C390,15 420,30 450,28 C480,26 510,15 540,12 C560,10 580,18 600,15" fill="none" stroke="url(#ledGrad)" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </div>
+      <div style="background:rgba(168,139,250,0.06);border:1px solid rgba(168,139,250,0.12);border-radius:12px;padding:1rem;margin-top:0.5rem;">
+        <div style="font-size:0.7rem;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:0.3rem;">Coach · in ascolto</div>
+        <div style="font-family:'Fraunces',serif;font-style:italic;font-size:0.9rem;color:var(--white)">"Alberto, il tuo ritmo di spesa è sotto controllo. Stai gestendo bene — continua così."</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- IL PROBLEMA -->
+<section class="problem" id="problema">
+  <div class="reveal">
+    <div class="section-eyebrow">Il Problema</div>
+    <h2 class="section-title">Le app di finanza ti mostrano <em>numeri</em>.<br>Valorem ti mostra <em>scelte</em>.</h2>
+  </div>
+  <div class="problem-grid" style="margin-top:3rem">
+    <div class="problem-card reveal">
+      <div class="problem-icon">📊</div>
+      <h3>Dati senza contesto</h3>
+      <p>Sapere che hai speso 340€ questo mese non ti dice nulla. Sapere che sono 17 ore del tuo lavoro — quello cambia tutto.</p>
+    </div>
+    <div class="problem-card reveal">
+      <div class="problem-icon">🧊</div>
+      <h3>Nessuna empatia</h3>
+      <p>Le app ti giudicano con grafici rossi. Valorem capisce che la finanza è emotiva e ti parla come un coach, non come un foglio Excel.</p>
+    </div>
+    <div class="problem-card reveal">
+      <div class="problem-icon">🔄</div>
+      <h3>Acquisti impulsivi senza memoria</h3>
+      <p>Ogni impulso rifiutato merita di essere ricordato. Il Cimitero degli Impulsi trasforma la disciplina in gratificazione visibile.</p>
+    </div>
+    <div class="problem-card reveal">
+      <div class="problem-icon">🇮🇹</div>
+      <h3>Nessuna soluzione italiana</h3>
+      <p>Mint è americana, Emma è inglese. Valorem è costruita sulla mentalità italiana: stipendi fissi, costi fissi, ritmo mensile preciso.</p>
+    </div>
+  </div>
+</section>
+
+<!-- COME FUNZIONA -->
+<section class="how" id="come-funziona">
+  <div class="reveal">
+    <div class="section-eyebrow">Come Funziona</div>
+    <h2 class="section-title">Tre passi verso la <em>chiarezza</em></h2>
+  </div>
+  <div class="how-steps">
+    <div class="step reveal">
+      <div class="step-num">01</div>
+      <h3>Inserisci le spese</h3>
+      <p>Aggiungi transazioni in 5 secondi con il FAB iridescente. Valorem categorizza, calcola e memorizza tutto.</p>
+    </div>
+    <div class="step reveal">
+      <div class="step-num">02</div>
+      <h3>Valorem elabora</h3>
+      <p>Ogni euro viene tradotto in minuti di lavoro. Il Safe-to-Spend si aggiorna in tempo reale. Il Coach osserva i pattern.</p>
+    </div>
+    <div class="step reveal">
+      <div class="step-num">03</div>
+      <h3>Il Coach ti parla</h3>
+      <p>A fine mese, non vedi tabelle — leggi una storia. "Aprile — il mese del costruttore" con analisi personalizzata delle tue abitudini.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features" id="features">
+  <div class="reveal">
+    <div class="section-eyebrow">Funzionalità</div>
+    <h2 class="section-title">Tutto quello che ti serve,<br><em>niente di più</em>.</h2>
+  </div>
+  <div class="features-grid">
+    <div class="feature-card reveal">
+      <div class="feature-icon-wrap" style="background:rgba(168,139,250,0.12)">⚡</div>
+      <div>
+        <h3>Safe-to-Spend in tempo reale</h3>
+        <p>Calcola quanto puoi spendere oggi tenendo conto di reddito, costi fissi, obiettivi e modalità di risparmio scelta. Si aggiorna ad ogni transazione.</p>
+      </div>
+    </div>
+    <div class="feature-card reveal">
+      <div class="feature-icon-wrap" style="background:rgba(96,165,250,0.12)">⏱</div>
+      <div>
+        <h3>Traduttore € → Tempo</h3>
+        <p>Un caffè non è 2€ — sono 8 minuti del tuo lavoro. Vedere le spese in ore cambia radicalmente le decisioni di acquisto quotidiane.</p>
+      </div>
+    </div>
+    <div class="feature-card reveal">
+      <div class="feature-icon-wrap" style="background:rgba(232,121,249,0.12)">📅</div>
+      <div>
+        <h3>Recap mensile stile Spotify</h3>
+        <p>Non un report — una narrazione. Ogni mese ha un titolo, un'analisi comportamentale, e una citazione del Coach calibrata sui tuoi dati reali.</p>
+      </div>
+    </div>
+    <div class="feature-card reveal">
+      <div class="feature-icon-wrap" style="background:rgba(16,185,129,0.12)">💚</div>
+      <div>
+        <h3>Investimenti separati</h3>
+        <p>Il PAC mensile non è una spesa — è capitale che resta tuo. Valorem lo traccia separatamente e non penalizza il tuo Safe-to-Spend.</p>
+      </div>
+    </div>
+    <div class="feature-card reveal">
+      <div class="feature-icon-wrap" style="background:rgba(103,232,249,0.12)">🎯</div>
+      <div>
+        <h3>Obiettivi intelligenti</h3>
+        <p>Crea obiettivi (vacanza, auto, fondo emergenza) e Valorem calcola automaticamente la data di raggiungimento in base al tuo ritmo reale di risparmio.</p>
+      </div>
+    </div>
+    <div class="feature-card reveal">
+      <div class="feature-icon-wrap" style="background:rgba(168,139,250,0.12)">💀</div>
+      <div>
+        <h3>Cimitero degli Impulsi</h3>
+        <p>Ogni acquisto impulsivo rifiutato viene sepolto e commemorato. A fine mese vedi il totale risparmiato — e ti senti orgoglioso, non privato.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing" id="pricing">
+  <div class="reveal">
+    <div class="section-eyebrow">Piani</div>
+    <h2 class="section-title">Semplice. <em>Trasparente</em>. Senza sorprese.</h2>
+    <p class="section-sub" style="margin:1rem auto 0">Inizia gratis, aggiorna quando vuoi. Nessun obbligo, nessun contratto.</p>
+  </div>
+  <div class="pricing-grid">
+
+    <!-- FREE -->
+    <div class="pricing-card reveal">
+      <div class="pricing-name">Free</div>
+      <div class="pricing-price">0€<span>/mese</span></div>
+      <p class="pricing-desc">Per iniziare a capire le tue finanze senza impegno.</p>
+      <ul class="pricing-features">
+        <li class="included"><span class="check">✓</span>50 transazioni/mese</li>
+        <li class="included"><span class="check">✓</span>1 obiettivo attivo</li>
+        <li class="included"><span class="check">✓</span>3 mesi di storico</li>
+        <li class="included"><span class="check">✓</span>Dashboard e KPI</li>
+        <li class="included"><span class="check">✓</span>Cimitero degli impulsi</li>
+        <li><span class="cross">✗</span>Export dati</li>
+        <li><span class="cross">✗</span>Categorie personalizzate</li>
+        <li><span class="cross">✗</span>AI Coach</li>
+      </ul>
+      <a href="https://valorem-albomerigo-2081s-projects.vercel.app" class="pricing-btn outline">Inizia gratis</a>
+    </div>
+
+    <!-- PREMIUM -->
+    <div class="pricing-card featured reveal">
+      <div class="pricing-badge">Più popolare</div>
+      <div class="pricing-name">Premium</div>
+      <div class="pricing-price">4,99€<span>/mese</span></div>
+      <p class="pricing-desc">Per chi vuole il controllo completo delle proprie finanze.</p>
+      <ul class="pricing-features">
+        <li class="included"><span class="check">✓</span>Transazioni illimitate</li>
+        <li class="included"><span class="check">✓</span>Obiettivi illimitati</li>
+        <li class="included"><span class="check">✓</span>Storico completo a vita</li>
+        <li class="included"><span class="check">✓</span>Export CSV/Excel</li>
+        <li class="included"><span class="check">✓</span>Categorie personalizzate</li>
+        <li class="included"><span class="check">✓</span>Notifiche proattive</li>
+        <li class="included"><span class="check">✓</span>Recap avanzati</li>
+        <li><span class="cross">✗</span>AI Coach personalizzato</li>
+      </ul>
+      <a href="https://valorem-albomerigo-2081s-projects.vercel.app" class="pricing-btn filled">Inizia Premium</a>
+    </div>
+
+    <!-- PRO -->
+    <div class="pricing-card reveal">
+      <div class="pricing-name">Pro</div>
+      <div class="pricing-price">9,99€<span>/mese</span></div>
+      <p class="pricing-desc">Per chi vuole l'intelligenza artificiale al servizio delle proprie finanze.</p>
+      <ul class="pricing-features">
+        <li class="included"><span class="check">✓</span>Tutto di Premium</li>
+        <li class="included"><span class="check">✓</span>AI Coach personalizzato</li>
+        <li class="included"><span class="check">✓</span>Modalità coppia 💑</li>
+        <li class="included"><span class="check">✓</span>Confronto coetanei</li>
+        <li class="included"><span class="check">✓</span>Previsioni spesa mensile</li>
+        <li class="included"><span class="check">✓</span>Sync bancario (prossimamente)</li>
+        <li class="included"><span class="check">✓</span>Supporto prioritario</li>
+        <li class="included"><span class="check">✓</span>Accesso beta feature</li>
+      </ul>
+      <a href="https://valorem-albomerigo-2081s-projects.vercel.app" class="pricing-btn outline">Inizia Pro</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- SOCIAL PROOF -->
+<section class="proof" id="recensioni">
+  <div class="reveal">
+    <div class="section-eyebrow">Beta Tester</div>
+    <h2 class="section-title">Chi l'ha provato, <em>non torna indietro</em>.</h2>
+  </div>
+  <div class="proof-grid">
+    <div class="proof-card reveal">
+      <div class="proof-stars">★★★★★</div>
+      <p class="proof-quote">"Finalmente un'app che non mi fa sentire in colpa. Il Safe-to-Spend mi ha cambiato il modo di vedere i soldi."</p>
+      <div class="proof-author">
+        <div class="proof-avatar" style="background:linear-gradient(135deg,#A88BFA,#E879F9)">M</div>
+        <div>
+          <div class="proof-name">Marco T.</div>
+          <div class="proof-role">Freelance, 28 anni</div>
+        </div>
+      </div>
+    </div>
+    <div class="proof-card reveal">
+      <div class="proof-stars">★★★★★</div>
+      <p class="proof-quote">"Il Recap mensile mi ha fatto capire che spendo il 40% in cibo senza rendermene conto. Nessun'altra app me l'aveva mai mostrato così."</p>
+      <div class="proof-author">
+        <div class="proof-avatar" style="background:linear-gradient(135deg,#60A5FA,#67E8F9)">S</div>
+        <div>
+          <div class="proof-name">Sara B.</div>
+          <div class="proof-role">Impiegata, 31 anni</div>
+        </div>
+      </div>
+    </div>
+    <div class="proof-card reveal">
+      <div class="proof-stars">★★★★★</div>
+      <p class="proof-quote">"Tradurre le spese in ore di lavoro è geniale. Ora prima di comprare qualcosa penso: 'vale 3 ore del mio lunedì?'"</p>
+      <div class="proof-author">
+        <div class="proof-avatar" style="background:linear-gradient(135deg,#E879F9,#A88BFA)">L</div>
+        <div>
+          <div class="proof-name">Luca R.</div>
+          <div class="proof-role">Sviluppatore, 26 anni</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final-cta">
+  <h2 class="reveal">Ogni euro è <em>tempo della tua vita</em>.<br>Inizia a vederlo chiaramente.</h2>
+  <p class="reveal">Gratis per sempre nel piano base. Nessuna carta di credito richiesta.</p>
+  <div class="final-actions reveal">
+    <a href="https://valorem-albomerigo-2081s-projects.vercel.app" class="btn-primary">Inizia gratis ora →</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">valorem</div>
+  <ul class="footer-links">
+    <li><a href="#pricing">Piani</a></li>
+    <li><a href="#">Privacy Policy</a></li>
+    <li><a href="#">Termini di Servizio</a></li>
+    <li><a href="https://valorem-albomerigo-2081s-projects.vercel.app">Apri l'app</a></li>
+  </ul>
+  <div class="footer-copy">© 2026 Valorem. Made in Italy.</div>
+</footer>
+
+<script>
+// Reveal on scroll
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((entry, i) => {
+    if (entry.isIntersecting) {
+      setTimeout(() => entry.target.classList.add('visible'), i * 80);
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
