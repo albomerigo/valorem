@@ -338,12 +338,50 @@ section,div[id]{position:relative;z-index:2}
 .footer-made{font-size:.78rem;color:var(--muted);display:flex;align-items:center;gap:.35rem}
 .footer-made span{color:var(--v)}
 
-/* REVEAL */
-.reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease}
-.reveal.visible{opacity:1;transform:none}
-.reveal-left{opacity:0;transform:translateX(-28px);transition:opacity .7s ease,transform .7s ease}.reveal-left.visible{opacity:1;transform:none}
-.reveal-right{opacity:0;transform:translateX(28px);transition:opacity .7s ease,transform .7s ease}.reveal-right.visible{opacity:1;transform:none}
+/* ── SCROLL ANIMATION SYSTEM ── */
+/* Base states */
+[data-anim]{will-change:transform,opacity}
+
+/* Fade up (default) */
+.reveal{opacity:0;transform:translateY(36px);transition:opacity .65s cubic-bezier(.16,1,.3,1),transform .65s cubic-bezier(.16,1,.3,1)}
+.reveal.in{opacity:1;transform:none}
+.reveal.out{opacity:0;transform:translateY(-24px)}
+
+/* Fade left */
+.reveal-left{opacity:0;transform:translateX(-40px);transition:opacity .65s cubic-bezier(.16,1,.3,1),transform .65s cubic-bezier(.16,1,.3,1)}
+.reveal-left.in{opacity:1;transform:none}
+.reveal-left.out{opacity:0;transform:translateX(20px)}
+
+/* Fade right */
+.reveal-right{opacity:0;transform:translateX(40px);transition:opacity .65s cubic-bezier(.16,1,.3,1),transform .65s cubic-bezier(.16,1,.3,1)}
+.reveal-right.in{opacity:1;transform:none}
+.reveal-right.out{opacity:0;transform:translateX(-20px)}
+
+/* Scale up */
+.reveal-scale{opacity:0;transform:scale(.92) translateY(20px);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1)}
+.reveal-scale.in{opacity:1;transform:none}
+.reveal-scale.out{opacity:0;transform:scale(1.03) translateY(-12px)}
+
+/* Flip card */
+.reveal-flip{opacity:0;transform:perspective(800px) rotateX(12deg) translateY(24px);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1)}
+.reveal-flip.in{opacity:1;transform:perspective(800px) rotateX(0) translateY(0)}
+.reveal-flip.out{opacity:0;transform:perspective(800px) rotateX(-8deg) translateY(-16px)}
+
+/* Stagger delays */
+.d1{transition-delay:.08s}.d2{transition-delay:.16s}.d3{transition-delay:.24s}.d4{transition-delay:.32s}
+/* Legacy compat */
 .reveal-delay-1{transition-delay:.1s}.reveal-delay-2{transition-delay:.2s}.reveal-delay-3{transition-delay:.3s}
+
+/* Card hover lift — stronger */
+.prob-card:hover,.feat-card:hover,.proof-card:hover,.price-card:hover,.faq-item:hover{
+  transform:translateY(-6px) scale(1.01)!important;
+  transition:transform .3s cubic-bezier(.16,1,.3,1),box-shadow .3s,border-color .3s!important
+}
+.prob-card,.feat-card,.proof-card,.faq-item{transition:transform .3s cubic-bezier(.16,1,.3,1),box-shadow .3s,border-color .3s}
+
+/* Parallax sections */
+.parallax-slow{transition:transform .1s linear}
+.parallax-mid{transition:transform .1s linear}
 
 /* RESPONSIVE */
 @media(max-width:900px){
@@ -435,34 +473,34 @@ section,div[id]{position:relative;z-index:2}
 <!-- STATS STRIP -->
 <div class="stats-strip">
   <div class="stats-inner">
-    <div class="reveal"><div class="stat-n" data-target="2847" data-suffix="">0</div><div class="stat-l">transazioni tracciate</div></div>
-    <div class="reveal reveal-delay-1"><div class="stat-n" data-target="1240" data-prefix="€ ">€ 0</div><div class="stat-l">risparmiati dal Cimitero</div></div>
-    <div class="reveal reveal-delay-2"><div class="stat-n" data-target="94" data-suffix="%">0%</div><div class="stat-l">utenti attivi dopo 30 giorni</div></div>
-    <div class="reveal reveal-delay-3"><div class="stat-n" data-target="4" data-suffix=" min">0 min</div><div class="stat-l">per il primo accesso</div></div>
+    <div class="reveal-scale"><div class="stat-n" data-target="2847" data-suffix="">0</div><div class="stat-l">transazioni tracciate</div></div>
+    <div class="reveal-scale d1"><div class="stat-n" data-target="1240" data-prefix="€ ">€ 0</div><div class="stat-l">risparmiati dal Cimitero</div></div>
+    <div class="reveal-scale d2"><div class="stat-n" data-target="94" data-suffix="%">0%</div><div class="stat-l">utenti attivi dopo 30 giorni</div></div>
+    <div class="reveal-scale d3"><div class="stat-n" data-target="4" data-suffix=" min">0 min</div><div class="stat-l">per il primo accesso</div></div>
   </div>
 </div>
 
 <!-- IL PROBLEMA -->
 <section class="problema" id="problema">
   <div class="wrap">
-    <div class="reveal"><div class="sec-eye">Il Problema</div><h2 class="sec-h">Le app di finanza ti mostrano <em>numeri</em>.<br>Valorem ti mostra <em>scelte</em>.</h2></div>
+    <div class="reveal-left"><div class="sec-eye">Il Problema</div><h2 class="sec-h">Le app di finanza ti mostrano <em>numeri</em>.<br>Valorem ti mostra <em>scelte</em>.</h2></div>
     <div class="prob-grid">
-      <div class="prob-card glass reveal">
+      <div class="prob-card glass reveal-flip">
         <svg width="40" height="40" viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="11" fill="rgba(168,139,250,0.1)"/><rect x="9" y="22" width="5" height="10" rx="2" fill="#A88BFA" opacity="0.35"/><rect x="16" y="16" width="5" height="16" rx="2" fill="#A88BFA" opacity="0.6"/><rect x="23" y="11" width="5" height="21" rx="2" fill="#A88BFA"/><circle cx="31" cy="10" r="4.5" fill="rgba(232,121,249,0.15)" stroke="#E879F9" stroke-width="1.5"/><text x="31" y="13.5" text-anchor="middle" font-size="6.5" fill="#E879F9" font-weight="700">?</text></svg>
         <h3>Dati senza contesto</h3>
         <p>Sapere che hai speso 340€ questo mese non ti dice nulla. Sapere che equivalgono a 17 ore del tuo lavoro — quello cambia il modo in cui prendi decisioni.</p>
       </div>
-      <div class="prob-card glass reveal reveal-delay-1">
+      <div class="prob-card glass reveal-flip d1">
         <svg width="40" height="40" viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="11" fill="rgba(96,165,250,0.1)"/><circle cx="20" cy="20" r="10" stroke="#60A5FA" stroke-width="1.5" fill="none"/><circle cx="16" cy="18" r="1.75" fill="#60A5FA"/><circle cx="24" cy="18" r="1.75" fill="#60A5FA"/><path d="M15.5 24.5h9" stroke="#60A5FA" stroke-width="1.5" stroke-linecap="round"/><path d="M11 11l2.5 2.5M29 11l-2.5 2.5" stroke="#60A5FA" stroke-width="1.2" stroke-linecap="round" opacity="0.4"/></svg>
         <h3>Nessuna empatia</h3>
         <p>Le app ti giudicano con grafici rossi. Valorem capisce che la finanza è emotiva e ti parla come un coach, non come un foglio Excel.</p>
       </div>
-      <div class="prob-card glass reveal reveal-delay-2">
+      <div class="prob-card glass reveal-flip d2">
         <svg width="40" height="40" viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="11" fill="rgba(232,121,249,0.1)"/><path d="M22 9l-7 12h6l-4 11 11-14h-7l3-9z" fill="#E879F9" opacity="0.85"/><circle cx="11" cy="13" r="2.5" fill="rgba(232,121,249,0.25)"/><circle cx="30" cy="28" r="2" fill="rgba(232,121,249,0.2)"/></svg>
         <h3>Acquisti impulsivi senza memoria</h3>
         <p>Il Cimitero degli Impulsi conserva ogni vittoria. Trasforma la disciplina in gratificazione concreta e visibile, mese dopo mese.</p>
       </div>
-      <div class="prob-card glass reveal reveal-delay-3">
+      <div class="prob-card glass reveal-flip d3">
         <svg width="40" height="40" viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="11" fill="rgba(16,185,129,0.1)"/><rect x="10" y="13" width="6" height="15" rx="1.5" fill="#10B981"/><rect x="17" y="13" width="6" height="15" rx="1.5" fill="rgba(255,255,255,0.12)"/><rect x="24" y="13" width="6" height="15" rx="1.5" fill="#F87171" opacity="0.7"/></svg>
         <h3>Nessuna soluzione italiana di qualità</h3>
         <p>Mint è americana, Emma è britannica. Valorem è costruita sulla mentalità italiana: stipendio mensile, costi fissi precisi, ritmo prevedibile.</p>
@@ -474,11 +512,11 @@ section,div[id]{position:relative;z-index:2}
 <!-- COME FUNZIONA -->
 <section class="come" id="come-funziona">
   <div class="wrap">
-    <div class="reveal"><div class="sec-eye">Come Funziona</div><h2 class="sec-h" style="text-align:center">Tre passi verso la <em>chiarezza</em></h2></div>
+    <div class="reveal-left"><div class="sec-eye">Come Funziona</div><h2 class="sec-h" style="text-align:center">Tre passi verso la <em>chiarezza</em></h2></div>
     <div class="steps">
-      <div class="step reveal"><div class="step-n">01</div><h3>Inserisci le spese</h3><p>In 5 secondi con il pulsante iridescente. Nessun CSV, nessuna sincronizzazione complicata.</p></div>
-      <div class="step reveal reveal-delay-1"><div class="step-n">02</div><h3>Valorem elabora</h3><p>Ogni euro diventa minuti di vita. Safe-to-Spend aggiornato istantaneamente. Il Coach osserva pattern nel tempo.</p></div>
-      <div class="step reveal reveal-delay-2"><div class="step-n">03</div><h3>Il Coach ti racconta</h3><p>A fine mese leggi una storia sui tuoi dati. "Aprile — il mese del costruttore." Analisi comportamentale personalizzata.</p></div>
+      <div class="step reveal-scale"><div class="step-n">01</div><h3>Inserisci le spese</h3><p>In 5 secondi con il pulsante iridescente. Nessun CSV, nessuna sincronizzazione complicata.</p></div>
+      <div class="step reveal-scale d1"><div class="step-n">02</div><h3>Valorem elabora</h3><p>Ogni euro diventa minuti di vita. Safe-to-Spend aggiornato istantaneamente. Il Coach osserva pattern nel tempo.</p></div>
+      <div class="step reveal-scale d2"><div class="step-n">03</div><h3>Il Coach ti racconta</h3><p>A fine mese leggi una storia sui tuoi dati. "Aprile — il mese del costruttore." Analisi comportamentale personalizzata.</p></div>
     </div>
   </div>
 </section>
@@ -486,8 +524,8 @@ section,div[id]{position:relative;z-index:2}
 <!-- CONFRONTO -->
 <section class="comparison" id="confronto">
   <div class="wrap">
-    <div class="reveal"><div class="sec-eye">Confronto</div><h2 class="sec-h">Perché <em>Valorem</em> e non le alternative?</h2></div>
-    <div class="comp-table reveal" style="margin-top:3.5rem">
+    <div class="reveal-left"><div class="sec-eye">Confronto</div><h2 class="sec-h">Perché <em>Valorem</em> e non le alternative?</h2></div>
+    <div class="comp-table reveal-scale" style="margin-top:3.5rem">
       <div class="comp-head"><div class="comp-head-cell">Funzionalità</div><div class="comp-head-cell hl">Valorem</div><div class="comp-head-cell">Mint</div><div class="comp-head-cell">YNAB</div><div class="comp-head-cell">Excel</div></div>
       <div class="comp-row"><div class="comp-cell feature">Traduzione spese in ore di lavoro</div><div class="comp-cell hl"><span class="comp-yes">✓</span></div><div class="comp-cell"><span class="comp-no">✗</span></div><div class="comp-cell"><span class="comp-no">✗</span></div><div class="comp-cell"><span class="comp-no">✗</span></div></div>
       <div class="comp-row"><div class="comp-cell feature">Coach narrativo mensile</div><div class="comp-cell hl"><span class="comp-yes">✓</span></div><div class="comp-cell"><span class="comp-no">✗</span></div><div class="comp-cell"><span class="comp-no">✗</span></div><div class="comp-cell"><span class="comp-no">✗</span></div></div>
@@ -503,9 +541,9 @@ section,div[id]{position:relative;z-index:2}
 <!-- FEATURES -->
 <section class="features" id="features">
   <div class="wrap">
-    <div class="reveal"><div class="sec-eye">Funzionalità</div><h2 class="sec-h">Tutto quello che ti serve,<br><em>niente di troppo</em>.</h2></div>
+    <div class="reveal-left"><div class="sec-eye">Funzionalità</div><h2 class="sec-h">Tutto quello che ti serve,<br><em>niente di troppo</em>.</h2></div>
     <div class="feat-layout">
-      <div class="feat-card big glass reveal">
+      <div class="feat-card big glass reveal-left">
         <div>
           <div class="feat-tag"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4"/></svg>Funzione principale</div>
           <svg width="44" height="44" viewBox="0 0 44 44" fill="none" style="margin-bottom:1rem"><rect width="44" height="44" rx="13" fill="rgba(168,139,250,0.12)"/><circle cx="22" cy="22" r="10" stroke="#A88BFA" stroke-width="1.5" fill="none" opacity="0.4"/><path d="M22 13v2M22 29v2M13 22h2M29 22h2" stroke="#A88BFA" stroke-width="1.5" stroke-linecap="round"/><circle cx="22" cy="22" r="5" fill="#A88BFA" opacity="0.3"/><circle cx="22" cy="22" r="2.5" fill="#A88BFA"/></svg>
@@ -521,18 +559,18 @@ section,div[id]{position:relative;z-index:2}
         </div>
       </div>
       <div style="display:flex;flex-direction:column;gap:1rem">
-        <div class="feat-card glass reveal reveal-delay-1">
+        <div class="feat-card glass reveal-right d1">
           <svg width="36" height="36" viewBox="0 0 36 36" fill="none" style="margin-bottom:.875rem"><rect width="36" height="36" rx="10" fill="rgba(96,165,250,0.12)"/><circle cx="18" cy="18" r="8" stroke="#60A5FA" stroke-width="1.4" fill="none"/><polyline points="18 13 18 18 21.5 21.5" stroke="#60A5FA" stroke-width="1.4" stroke-linecap="round"/></svg>
           <h3>Traduttore € → Tempo</h3>
           <p>120€ di scarpe non sono 120€ — sono 6 ore del tuo lunedì. Vedere ogni spesa in ore di vita cambia le decisioni radicalmente.</p>
         </div>
-        <div class="feat-card glass reveal reveal-delay-2">
+        <div class="feat-card glass reveal-right d2">
           <svg width="36" height="36" viewBox="0 0 36 36" fill="none" style="margin-bottom:.875rem"><rect width="36" height="36" rx="10" fill="rgba(232,121,249,0.12)"/><rect x="9" y="10" width="18" height="17" rx="2.5" stroke="#E879F9" stroke-width="1.4" fill="none"/><path d="M13 10V8M23 10V8M9 15h18" stroke="#E879F9" stroke-width="1.4" stroke-linecap="round"/><path d="M13 20h4M13 23.5h7" stroke="#E879F9" stroke-width="1.2" stroke-linecap="round" opacity="0.6"/></svg>
           <h3>Recap stile Spotify Wrapped</h3>
           <p>A fine mese leggi una storia scritta sui tuoi dati. Coach personalizzato, trend, comportamenti. Non tabelle — narrazione.</p>
         </div>
       </div>
-      <div class="feat-card wide glass reveal" style="display:grid;grid-template-columns:1fr 1fr;gap:2.5rem;align-items:center">
+      <div class="feat-card wide glass reveal-scale" style="display:grid;grid-template-columns:1fr 1fr;gap:2.5rem;align-items:center">
         <div>
           <svg width="40" height="40" viewBox="0 0 40 40" fill="none" style="margin-bottom:.875rem"><rect width="40" height="40" rx="12" fill="rgba(168,139,250,0.1)"/><rect x="13" y="12" width="14" height="18" rx="3" stroke="#A88BFA" stroke-width="1.4" fill="none"/><path d="M20 12V10M17 28v3M23 28v3" stroke="#A88BFA" stroke-width="1.4" stroke-linecap="round" opacity="0.5"/><path d="M17 18h6M17 22h4" stroke="#A88BFA" stroke-width="1.2" stroke-linecap="round"/></svg>
           <h3>Cimitero degli Impulsi</h3>
@@ -595,7 +633,7 @@ section,div[id]{position:relative;z-index:2}
 <section class="demo-sec" id="demo">
   <div class="wrap" style="text-align:center">
     <div class="reveal"><div class="sec-eye">Demo Interattiva</div><h2 class="sec-h" style="text-align:center">Calcola il tuo <em>Safe-to-Spend</em> adesso</h2><p class="sec-sub" style="margin:1rem auto 0;text-align:center">Nessuna registrazione richiesta. Vedi subito il valore di Valorem.</p></div>
-    <div class="demo-card glass reveal">
+    <div class="demo-card glass reveal-scale">
       <div class="demo-title">Il tuo Safe-to-Spend</div>
       <div class="demo-sub">Inserisci i tuoi dati — il calcolo è immediato</div>
       <div class="income-toggle">
@@ -629,7 +667,7 @@ section,div[id]{position:relative;z-index:2}
   <div class="wrap">
     <div class="reveal"><div class="sec-eye" style="text-align:center">Piani</div><h2 class="sec-h" style="text-align:center">Semplice. <em>Trasparente</em>. Senza sorprese.</h2></div>
     <div class="billing-wrap">
-      <div class="billing-toggle reveal">
+      <div class="billing-toggle reveal-scale">
         <span class="bill-lbl active" id="lbl-m">Mensile</span>
         <div class="tog-sw" id="tog" onclick="toggleBilling()"><div class="tog-knob"></div></div>
         <span class="bill-lbl" id="lbl-a">Annuale</span>
@@ -637,7 +675,7 @@ section,div[id]{position:relative;z-index:2}
       </div>
     </div>
     <div class="price-grid">
-      <div class="price-card glass reveal">
+      <div class="price-card glass reveal-scale">
         <div class="price-name">Free</div>
         <div class="price-amount" id="p-free">0€<span>/mese</span></div>
         <div class="price-note" id="n-free"></div>
@@ -654,7 +692,7 @@ section,div[id]{position:relative;z-index:2}
         </ul>
         <a href="https://valorem-albomerigo-2081s-projects.vercel.app" class="price-btn out">Inizia gratis</a>
       </div>
-      <div class="price-card feat glass reveal reveal-delay-1">
+      <div class="price-card feat glass reveal-scale d1">
         <div class="price-badge">Più popolare</div>
         <div class="price-name">Premium</div>
         <div class="price-amount" id="p-premium">4,99€<span>/mese</span></div>
@@ -672,7 +710,7 @@ section,div[id]{position:relative;z-index:2}
         </ul>
         <a href="https://valorem-albomerigo-2081s-projects.vercel.app" class="price-btn fill">Inizia Premium →</a>
       </div>
-      <div class="price-card glass reveal reveal-delay-2">
+      <div class="price-card glass reveal-scale d2">
         <div class="price-name">Pro</div>
         <div class="price-amount" id="p-pro">9,99€<span>/mese</span></div>
         <div class="price-note" id="n-pro"></div>
@@ -695,7 +733,7 @@ section,div[id]{position:relative;z-index:2}
 
 <!-- WAITLIST -->
 <section class="waitlist-sec" id="waitlist">
-  <div class="wl-card glass reveal">
+  <div class="wl-card glass reveal-scale">
     <div class="wl-counter"><span class="wl-dot"></span><span>83 persone già in lista · accesso anticipato limitato</span></div>
     <h2>Vuoi sapere quando esce<br>il <em>Piano Premium</em>?</h2>
     <p>Lascia la tua email. Avrai accesso anticipato, un'offerta esclusiva e zero spam.</p>
@@ -714,11 +752,11 @@ section,div[id]{position:relative;z-index:2}
 <!-- PROOF -->
 <section class="proof-sec" id="recensioni">
   <div class="wrap">
-    <div class="reveal"><div class="sec-eye">Beta Tester</div><h2 class="sec-h">Chi l'ha provato, <em>non torna indietro</em>.</h2></div>
+    <div class="reveal-left"><div class="sec-eye">Beta Tester</div><h2 class="sec-h">Chi l'ha provato, <em>non torna indietro</em>.</h2></div>
     <div class="proof-grid">
-      <div class="proof-card glass reveal"><div class="proof-stars">★★★★★</div><p class="proof-q">"Finalmente un'app che non mi fa sentire in colpa. Il Safe-to-Spend mi ha cambiato il modo di vedere i soldi."</p><div class="proof-author"><div class="proof-av" style="background:linear-gradient(135deg,#A88BFA,#E879F9)">M</div><div><div class="proof-name">Marco T.</div><div class="proof-role">Freelance, 28 anni · Milano</div></div></div></div>
-      <div class="proof-card glass reveal reveal-delay-1"><div class="proof-stars">★★★★★</div><p class="proof-q">"Il Recap mensile mi ha fatto capire che spendo il 40% in cibo. Nessuna altra app me lo aveva mai mostrato così."</p><div class="proof-author"><div class="proof-av" style="background:linear-gradient(135deg,#60A5FA,#67E8F9)">S</div><div><div class="proof-name">Sara B.</div><div class="proof-role">Impiegata, 31 anni · Roma</div></div></div></div>
-      <div class="proof-card glass reveal reveal-delay-2"><div class="proof-stars">★★★★★</div><p class="proof-q">"Tradurre le spese in ore di lavoro è geniale. Ora mi chiedo: 'vale davvero 3 ore del mio lunedì?'"</p><div class="proof-author"><div class="proof-av" style="background:linear-gradient(135deg,#E879F9,#A88BFA)">L</div><div><div class="proof-name">Luca R.</div><div class="proof-role">Sviluppatore, 26 anni · Torino</div></div></div></div>
+      <div class="proof-card glass reveal-flip"><div class="proof-stars">★★★★★</div><p class="proof-q">"Finalmente un'app che non mi fa sentire in colpa. Il Safe-to-Spend mi ha cambiato il modo di vedere i soldi."</p><div class="proof-author"><div class="proof-av" style="background:linear-gradient(135deg,#A88BFA,#E879F9)">M</div><div><div class="proof-name">Marco T.</div><div class="proof-role">Freelance, 28 anni · Milano</div></div></div></div>
+      <div class="proof-card glass reveal-flip d1"><div class="proof-stars">★★★★★</div><p class="proof-q">"Il Recap mensile mi ha fatto capire che spendo il 40% in cibo. Nessuna altra app me lo aveva mai mostrato così."</p><div class="proof-author"><div class="proof-av" style="background:linear-gradient(135deg,#60A5FA,#67E8F9)">S</div><div><div class="proof-name">Sara B.</div><div class="proof-role">Impiegata, 31 anni · Roma</div></div></div></div>
+      <div class="proof-card glass reveal-flip d2"><div class="proof-stars">★★★★★</div><p class="proof-q">"Tradurre le spese in ore di lavoro è geniale. Ora mi chiedo: 'vale davvero 3 ore del mio lunedì?'"</p><div class="proof-author"><div class="proof-av" style="background:linear-gradient(135deg,#E879F9,#A88BFA)">L</div><div><div class="proof-name">Luca R.</div><div class="proof-role">Sviluppatore, 26 anni · Torino</div></div></div></div>
     </div>
   </div>
 </section>
@@ -727,12 +765,12 @@ section,div[id]{position:relative;z-index:2}
 <section class="faq-sec" id="faq">
   <div class="reveal" style="text-align:center"><div class="sec-eye" style="text-align:center">FAQ</div><h2 class="sec-h" style="text-align:center">Domande <em>frequenti</em></h2></div>
   <div class="faq-list">
-    <div class="faq-item glass"><div class="faq-q" onclick="toggleFaq(this)">I miei dati sono al sicuro? Dove vengono salvati?<div class="faq-icon">+</div></div><div class="faq-a"><p>Tutti i dati sono salvati su <strong>Supabase</strong> (infrastruttura PostgreSQL europea, GDPR-compliant) con <strong>Row Level Security</strong>. Solo tu puoi vedere i tuoi dati. Valorem non vende dati, non mostra pubblicità. Puoi esportare o cancellare tutto in qualsiasi momento.</p></div></div>
-    <div class="faq-item glass"><div class="faq-q" onclick="toggleFaq(this)">Devo collegare il mio conto bancario?<div class="faq-icon">+</div></div><div class="faq-a"><p>No. Valorem è volutamente <strong>manuale</strong> — aggiungi tu le transazioni in 5 secondi. Questo ti rende più consapevole di ogni spesa. La sincronizzazione bancaria è in roadmap per il piano Pro, ma rimarrà sempre opzionale.</p></div></div>
-    <div class="faq-item glass"><div class="faq-q" onclick="toggleFaq(this)">Funziona su iPhone e Android?<div class="faq-icon">+</div></div><div class="faq-a"><p>Sì. Valorem è una <strong>Progressive Web App (PWA)</strong> — funziona su qualsiasi browser. Su iOS Safari clicca "Aggiungi a schermata Home", su Android Chrome "Installa app". Nessun App Store richiesto.</p></div></div>
-    <div class="faq-item glass"><div class="faq-q" onclick="toggleFaq(this)">Posso cancellare l'account e tutti i miei dati?<div class="faq-icon">+</div></div><div class="faq-a"><p>Sì, sempre. Impostazioni → cancella account. Tutti i dati vengono eliminati entro 24 ore. Puoi esportare tutto prima in CSV o JSON. Diritto garantito dal GDPR, rispettato senza eccezioni.</p></div></div>
-    <div class="faq-item glass"><div class="faq-q" onclick="toggleFaq(this)">Cosa succede quando finisce il piano Free?<div class="faq-icon">+</div></div><div class="faq-a"><p>Nulla di brusco. Il piano Free è gratuito per sempre con limiti. I tuoi dati non spariscono — puoi continuare a leggerli, ma non aggiungerne di nuovi finché non liberi spazio o aggiorni il piano.</p></div></div>
-    <div class="faq-item glass"><div class="faq-q" onclick="toggleFaq(this)">Il Coach narrativo è personalizzato o preimpostato?<div class="faq-icon">+</div></div><div class="faq-a"><p>Il Coach analizza il tuo mese specifico — top categorie, giorni di picco, trend vs mese precedente — e genera un testo personalizzato sui tuoi numeri reali. Il piano Pro includerà AI Coach con Claude per analisi conversazionali avanzate.</p></div></div>
+    <div class="faq-item glass reveal-left"><div class="faq-q" onclick="toggleFaq(this)">I miei dati sono al sicuro? Dove vengono salvati?<div class="faq-icon">+</div></div><div class="faq-a"><p>Tutti i dati sono salvati su <strong>Supabase</strong> (infrastruttura PostgreSQL europea, GDPR-compliant) con <strong>Row Level Security</strong>. Solo tu puoi vedere i tuoi dati. Valorem non vende dati, non mostra pubblicità. Puoi esportare o cancellare tutto in qualsiasi momento.</p></div></div>
+    <div class="faq-item glass reveal-left d1"><div class="faq-q" onclick="toggleFaq(this)">Devo collegare il mio conto bancario?<div class="faq-icon">+</div></div><div class="faq-a"><p>No. Valorem è volutamente <strong>manuale</strong> — aggiungi tu le transazioni in 5 secondi. Questo ti rende più consapevole di ogni spesa. La sincronizzazione bancaria è in roadmap per il piano Pro, ma rimarrà sempre opzionale.</p></div></div>
+    <div class="faq-item glass reveal-left d2"><div class="faq-q" onclick="toggleFaq(this)">Funziona su iPhone e Android?<div class="faq-icon">+</div></div><div class="faq-a"><p>Sì. Valorem è una <strong>Progressive Web App (PWA)</strong> — funziona su qualsiasi browser. Su iOS Safari clicca "Aggiungi a schermata Home", su Android Chrome "Installa app". Nessun App Store richiesto.</p></div></div>
+    <div class="faq-item glass reveal-left d3"><div class="faq-q" onclick="toggleFaq(this)">Posso cancellare l'account e tutti i miei dati?<div class="faq-icon">+</div></div><div class="faq-a"><p>Sì, sempre. Impostazioni → cancella account. Tutti i dati vengono eliminati entro 24 ore. Puoi esportare tutto prima in CSV o JSON. Diritto garantito dal GDPR, rispettato senza eccezioni.</p></div></div>
+    <div class="faq-item glass reveal-left d4"><div class="faq-q" onclick="toggleFaq(this)">Cosa succede quando finisce il piano Free?<div class="faq-icon">+</div></div><div class="faq-a"><p>Nulla di brusco. Il piano Free è gratuito per sempre con limiti. I tuoi dati non spariscono — puoi continuare a leggerli, ma non aggiungerne di nuovi finché non liberi spazio o aggiorni il piano.</p></div></div>
+    <div class="faq-item glass reveal-left d4"><div class="faq-q" onclick="toggleFaq(this)">Il Coach narrativo è personalizzato o preimpostato?<div class="faq-icon">+</div></div><div class="faq-a"><p>Il Coach analizza il tuo mese specifico — top categorie, giorni di picco, trend vs mese precedente — e genera un testo personalizzato sui tuoi numeri reali. Il piano Pro includerà AI Coach con Claude per analisi conversazionali avanzate.</p></div></div>
   </div>
 </section>
 
@@ -770,11 +808,56 @@ section,div[id]{position:relative;z-index:2}
 <script>
 
 
-// ── REVEAL ON SCROLL ──
-const obs=new IntersectionObserver((entries)=>{
-  entries.forEach((e,i)=>{if(e.isIntersecting)setTimeout(()=>e.target.classList.add('visible'),i*70);});
-},{threshold:.08});
-document.querySelectorAll('.reveal,.reveal-left,.reveal-right').forEach(el=>obs.observe(el));
+// ── BIDIRECTIONAL SCROLL ANIMATION SYSTEM ──
+const ANIM_CLASSES = ['.reveal','.reveal-left','.reveal-right','.reveal-scale','.reveal-flip'];
+const allAnimEls = document.querySelectorAll(ANIM_CLASSES.join(','));
+
+// Track scroll direction
+let lastScrollY = window.scrollY;
+let scrollDir = 1; // 1=down, -1=up
+window.addEventListener('scroll', () => {
+  scrollDir = window.scrollY > lastScrollY ? 1 : -1;
+  lastScrollY = window.scrollY;
+}, { passive: true });
+
+// Bidirectional observer
+const animObs = new IntersectionObserver((entries) => {
+  entries.forEach((entry, i) => {
+    const el = entry.target;
+    if (entry.isIntersecting) {
+      // Entering viewport — animate in
+      const delay = parseFloat(getComputedStyle(el).transitionDelay) * 1000 || 0;
+      setTimeout(() => {
+        el.classList.add('in');
+        el.classList.remove('out');
+      }, i * 55);
+    } else {
+      // Leaving viewport — animate out based on direction
+      const rect = entry.boundingClientRect;
+      if (rect.top > 0) {
+        // Element is below viewport (scrolled back up past it)
+        el.classList.remove('in');
+        el.classList.remove('out');
+      } else {
+        // Element is above viewport (scrolled down past it)
+        el.classList.add('out');
+        el.classList.remove('in');
+      }
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+
+allAnimEls.forEach(el => animObs.observe(el));
+
+// ── PARALLAX on hero orbs ──
+window.addEventListener('scroll', () => {
+  const sy = window.scrollY;
+  document.querySelectorAll('.mesh-orb').forEach((orb, i) => {
+    const speed = [0.08, 0.12, 0.06, 0.1][i] || 0.08;
+    const dir = i % 2 === 0 ? 1 : -1;
+    orb.style.transform = `translateY(${sy * speed * dir}px)`;
+  });
+}, { passive: true });
 
 // ── ANIMATED MOCKUP ──
 const mockupObs=new IntersectionObserver(entries=>{
