@@ -19,6 +19,7 @@ import {
   ChoiceCard,
   NavButtons,
 } from "./wizard-shell";
+import { OnboardingIntro } from "./onboarding-intro";
 import { completeOnboarding } from "./actions";
 import type { IncomeType, TimeMetric } from "@/lib/finance";
 
@@ -27,7 +28,13 @@ type FixedCostEntry = { name: string; amount: number };
 const TOTAL_STEPS = 5;
 
 export default function OnboardingPage() {
+  const [showIntro, setShowIntro] = useState(true);
   const [step, setStep] = useState(1);
+
+  // Mostra le 3 slide narrative prima del wizard tecnico
+  if (showIntro) {
+    return <OnboardingIntro onComplete={() => setShowIntro(false)} />;
+  }
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
