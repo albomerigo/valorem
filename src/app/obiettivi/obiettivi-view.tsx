@@ -20,6 +20,7 @@ import { FabButton } from "@/components/fab-button";
 import { Topbar } from "@/components/topbar";
 import { NewGoalModal } from "@/components/new-goal-modal";
 import { DepositGoalModal } from "@/components/deposit-goal-modal";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 import { deleteGoal } from "@/app/actions/goals";
 import { splitCurrency } from "@/lib/utils";
 
@@ -152,6 +153,7 @@ function GoalCard({
   onDeposit: () => void;
 }) {
   const [isPending, startTransition] = useTransition();
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   const progress = getGoalProgress(goal);
   const { daysToGo, targetDate, months } = estimateGoalReachDate(
@@ -199,7 +201,6 @@ function GoalCard({
   })();
 
   function handleDelete() {
-    if (!confirm(`Eliminare l'obiettivo "${goal.title}"?`)) return;
     startTransition(async () => {
       await deleteGoal(goal.id);
     });
@@ -231,7 +232,7 @@ function GoalCard({
         </div>
         <button
           type="button"
-          onClick={handleDelete}
+          onClick={() => setConfirmOpen(true)}
           disabled={isPending}
           title="Elimina"
           className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg text-ink-faint transition-colors hover:bg-red-500/10 hover:text-red-300"
@@ -323,6 +324,14 @@ function GoalCard({
         <PiggyBank className="h-3.5 w-3.5 transition-transform group-hover:scale-110" strokeWidth={1.8} />
         Accantona
       </button>
+
+      <ConfirmDialog
+        isOpen={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={handleDelete}
+        title="Elimina obiettivo?"
+        description={`Questa azione non può essere annullata. L'obiettivo "${goal.title}" verrà rimosso definitivamente.`}
+      />
     </div>
   );
 }
