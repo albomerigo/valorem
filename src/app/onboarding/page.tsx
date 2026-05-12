@@ -29,7 +29,6 @@ const TOTAL_STEPS = 5;
 
 export default function OnboardingPage() {
   const [showIntro, setShowIntro] = useState(true);
-  const [step, setStep] = useState(1);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [name, setName] = useState("");
@@ -42,11 +41,14 @@ export default function OnboardingPage() {
   const [fixedCosts, setFixedCosts] = useState<FixedCostEntry[]>([
     { name: "", amount: 0 },
   ]);
+  const [step, setStep] = useState(1);
 
-  // Mostra le 3 slide narrative prima del wizard tecnico
+  // Mostra le slide intro prima del wizard
   if (showIntro) {
     return <OnboardingIntro onComplete={() => setShowIntro(false)} />;
   }
+
+  // ...resto del codice invariato
 
   async function handleComplete() {
     if (!incomeType || !timeMetric) return;
