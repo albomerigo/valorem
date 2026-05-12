@@ -49,6 +49,7 @@ export type UserProfile = {
   savings_goal: number;
   safe_mode: SafeMode;
   onboarded: boolean;
+  plan?: "free" | "premium" | "pro" | null;
 };
 
 export type FixedCost = {

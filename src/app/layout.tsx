@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter, Fraunces } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import { SwRegister } from "@/components/sw-register";
+import { PaddleProvider } from "@/components/paddle-provider";
 import "./globals.css";
 
 const inter = Inter({
@@ -64,9 +65,11 @@ export default function RootLayout({
           themes={["light", "dark"]}
           storageKey="valorem-theme"
         >
-          <SwRegister />
-          <div className="ambient-bg" />
-          {children}
+          <PaddleProvider>
+            <SwRegister />
+            <div className="ambient-bg" />
+            {children}
+          </PaddleProvider>
         </ThemeProvider>
       </body>
     </html>

@@ -10,10 +10,12 @@ import {
   Plus,
   Ghost,
   ListOrdered,
+  Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { signOut } from "@/app/(auth)/actions";
 import { NewTransactionModal } from "./new-transaction-modal";
+import { usePlan } from "@/hooks/usePlan";
 
 type Route = "dashboard" | "activity" | "cimitero" | "goals" | "settings";
 
@@ -26,6 +28,7 @@ const navItems: { icon: typeof Home; label: string; route: Route; href: string }
 
 export function Sidebar({ activeRoute = "dashboard" }: { activeRoute?: Route }) {
   const [modalOpen, setModalOpen] = useState(false);
+  const { plan } = usePlan();
 
   return (
     <>
@@ -48,6 +51,21 @@ export function Sidebar({ activeRoute = "dashboard" }: { activeRoute?: Route }) 
         ))}
 
         <div className="flex-1" />
+
+        {/* Upgrade — visibile solo agli utenti free */}
+        {plan === "free" && (
+          <Link
+            href="/pricing"
+            title="Upgrade"
+            className="group relative flex h-9 w-9 items-center justify-center rounded-[10px] transition-all duration-[350ms] [transition-timing-function:cubic-bezier(0.2,0.8,0.2,1)] hover:scale-[1.08]"
+            style={{
+              background: "rgba(168,139,250,0.12)",
+              border: "1px solid rgba(168,139,250,0.3)",
+            }}
+          >
+            <Sparkles className="h-4 w-4" style={{ color: "#A88BFA" }} strokeWidth={1.8} />
+          </Link>
+        )}
 
         <NavLink
           icon={Settings}

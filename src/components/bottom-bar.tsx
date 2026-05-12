@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { Home, ListOrdered, Ghost, Target, Settings } from "lucide-react";
+import { Home, ListOrdered, Ghost, Target, Settings, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { usePlan } from "@/hooks/usePlan";
 
 type Route = "dashboard" | "activity" | "cimitero" | "goals" | "settings";
 
@@ -23,6 +24,8 @@ export function BottomBar({
 }: {
   activeRoute?: Route;
 }) {
+  const { plan } = usePlan();
+
   return (
    <nav
       className="glass-panel-strong fixed bottom-0 left-0 right-0 z-30 flex md:hidden items-center justify-around border-t border-white/[0.06] px-2 pt-2"
@@ -33,6 +36,16 @@ export function BottomBar({
       {items.map((item) => (
         <BottomLink key={item.route} {...item} active={item.route === activeRoute} />
       ))}
+      {plan === "free" && (
+        <Link
+          href="/pricing"
+          className="relative flex flex-1 flex-col items-center justify-center gap-1 rounded-lg py-2 transition-all duration-[250ms] active:scale-95"
+          style={{ color: "#A88BFA" }}
+        >
+          <Sparkles className="h-[18px] w-[18px]" strokeWidth={1.6} />
+          <span className="text-[9px] font-medium uppercase tracking-[0.04em]">Upgrade</span>
+        </Link>
+      )}
     </nav>
   );
 }
