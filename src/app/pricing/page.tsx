@@ -202,7 +202,7 @@ export default function PricingPage() {
         <div className="mb-14 text-center">
           <Link
             href="/"
-            className="mb-8 inline-flex items-center gap-2 text-[12px] font-medium uppercase tracking-[0.12em] transition-opacity hover:opacity-70"
+            className="inline-flex items-center gap-2 text-[12px] font-medium uppercase tracking-[0.12em] transition-opacity hover:opacity-70"
             style={{ color: "rgba(168,139,250,0.7)" }}
           >
             <ArrowLeft className="h-3 w-3" />
@@ -210,7 +210,7 @@ export default function PricingPage() {
           </Link>
 
           <div
-            className="mx-auto mb-4 mt-6 inline-flex items-center gap-2 rounded-full px-4 py-1.5"
+            className="mx-auto mt-8 mb-4 inline-flex items-center gap-2 rounded-full px-4 py-1.5"
             style={{
               background: "rgba(168,139,250,0.08)",
               border: "1px solid rgba(168,139,250,0.2)",
