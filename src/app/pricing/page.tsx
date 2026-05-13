@@ -209,8 +209,10 @@ export default function PricingPage() {
             Dashboard
           </Link>
 
+          <div style={{ height: "32px" }} />
+
           <div
-            className="mx-auto mt-8 mb-4 inline-flex items-center gap-2 rounded-full px-4 py-1.5"
+            className="mx-auto mb-4 inline-flex items-center gap-2 rounded-full px-4 py-1.5"
             style={{
               background: "rgba(168,139,250,0.08)",
               border: "1px solid rgba(168,139,250,0.2)",
