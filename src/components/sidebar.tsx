@@ -52,20 +52,24 @@ export function Sidebar({ activeRoute = "dashboard" }: { activeRoute?: Route }) 
 
         <div className="flex-1" />
 
-        {/* Upgrade — visibile solo agli utenti free */}
-        {plan === "free" && (
-          <Link
-            href="/pricing"
-            title="Upgrade"
-            className="group relative flex h-9 w-9 items-center justify-center rounded-[10px] transition-all duration-[350ms] [transition-timing-function:cubic-bezier(0.2,0.8,0.2,1)] hover:scale-[1.08]"
-            style={{
-              background: "rgba(168,139,250,0.12)",
-              border: "1px solid rgba(168,139,250,0.3)",
-            }}
-          >
+        {/* Piano corrente — sempre visibile */}
+        <Link
+          href="/pricing"
+          title={plan === "free" ? "Upgrade" : plan === "premium" ? "Premium ✦" : "Pro ✦"}
+          className="group relative flex h-9 w-9 items-center justify-center rounded-[10px] transition-all duration-[350ms] [transition-timing-function:cubic-bezier(0.2,0.8,0.2,1)] hover:scale-[1.08]"
+          style={{
+            background: plan === "free" ? "rgba(168,139,250,0.12)" : plan === "premium" ? "rgba(245,158,11,0.1)" : "rgba(168,139,250,0.18)",
+            border: plan === "free" ? "1px solid rgba(168,139,250,0.3)" : plan === "premium" ? "1px solid rgba(245,158,11,0.3)" : "1px solid rgba(168,139,250,0.5)",
+          }}
+        >
+          {plan === "free" ? (
             <Sparkles className="h-4 w-4" style={{ color: "#A88BFA" }} strokeWidth={1.8} />
-          </Link>
-        )}
+          ) : plan === "premium" ? (
+            <Sparkles className="h-4 w-4" style={{ color: "#F59E0B" }} strokeWidth={1.8} />
+          ) : (
+            <Sparkles className="h-4 w-4" style={{ color: "#C4B5FD" }} strokeWidth={1.8} />
+          )}
+        </Link>
 
         <NavLink
           icon={Settings}
