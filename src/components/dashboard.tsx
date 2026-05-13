@@ -4,7 +4,6 @@ import { BottomBar } from "./bottom-bar";
 import { FabButton } from "./fab-button";
 import { Topbar } from "./topbar";
 import { HeroCard } from "./hero-card";
-import { UpgradeBanner } from "./upgrade-banner";
 import { KPIRow } from "./kpi-row";
 import { CoachStripe } from "./coach-stripe";
 import { CoachBanner } from "./coach-banner";
@@ -34,7 +33,6 @@ export function Dashboard({
           <div className="mt-5 flex flex-col gap-4 md:mt-6 md:gap-5">
             <RecapBanner />
             <HeroCard stats={data.stats} />
-            <UpgradeBanner plan={data.profile?.plan ?? "free"} />
             <KPIRow stats={data.stats} />
             <CoachBanner stats={data.stats} transactions={data.transactions} />
             <SpendingChart
