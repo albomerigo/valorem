@@ -15,7 +15,7 @@ export async function GET() {
   const { data: profile } = await supabase
     .from("users_profiles")
     .select("plan")
-    .eq("user_id", user.id)
+    .eq("id", user.id)
     .single();
 
   const plan = profile?.plan || "free";
