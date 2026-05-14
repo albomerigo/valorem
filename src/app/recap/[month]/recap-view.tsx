@@ -20,6 +20,7 @@ import {
   ShoppingBag,
   MoreHorizontal,
   BarChart2,
+  Zap,
 } from "lucide-react";
 import type { UserProfile, DashboardStats } from "@/lib/finance";
 import type { RecapData } from "@/lib/recap";
@@ -87,6 +88,35 @@ export function RecapView({
 
           {/* CITAZIONE FINALE */}
           <FinalQuote recap={recap} />
+
+          {/* UPSELL STORICO (solo free) */}
+          {(profile.plan || "free") === "free" && (
+            <div className="relative mb-8 overflow-hidden rounded-[20px] border border-iri-violet/25 bg-gradient-to-br from-iri-violet/[0.08] via-iri-magenta/[0.05] to-transparent p-6">
+              <div
+                className="pointer-events-none absolute inset-0"
+                style={{
+                  background:
+                    "radial-gradient(ellipse 70% 60% at 80% 20%, rgba(168,139,250,0.12), transparent 70%)",
+                }}
+              />
+              <div className="relative z-10">
+                <p className="eyebrow-accent mb-2 text-[10px]">Storico completo</p>
+                <p className="mb-1 font-serif text-[18px] italic leading-[1.4] text-ink-primary">
+                  Vuoi vedere i recap di tutti i mesi?
+                </p>
+                <p className="mb-4 text-[13px] text-ink-secondary">
+                  Passa a Premium per accedere allo storico completo e confrontare ogni mese.
+                </p>
+                <Link
+                  href="/pricing"
+                  className="inline-flex items-center gap-2 rounded-[10px] bg-gradient-to-r from-iri-violet to-iri-magenta px-4 py-2.5 text-[13px] font-medium text-white transition-all hover:opacity-90"
+                >
+                  <Zap className="h-4 w-4" />
+                  Passa a Premium
+                </Link>
+              </div>
+            </div>
+          )}
 
           {/* CTA */}
           <div className="mt-10 mb-16 flex justify-center">

@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { X, Plus } from "lucide-react";
+import { X, Plus, Zap } from "lucide-react";
+import Link from "next/link";
 import { createTransaction, updateTransaction } from "@/app/actions";
 import { Transaction } from "@/lib/finance";
 import {
@@ -47,6 +48,7 @@ export function NewTransactionModal({
   const [recurring, setRecurring] = useState(false);
   const [notes, setNotes] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [limitReached, setLimitReached] = useState(false);
 
   // Precompila i campi se in modalità editing
   useEffect(() => {
@@ -107,6 +109,9 @@ export function NewTransactionModal({
         setDate(new Date().toISOString().split("T")[0]);
         setRecurring(false);
         setNotes("");
+        setLimitReached(false);
+      } else if (result.error === "LIMIT_REACHED") {
+        setLimitReached(true);
       } else {
         alert(result.error || "Errore durante il salvataggio");
       }
@@ -298,10 +303,26 @@ export function NewTransactionModal({
             />
           </div>
 
+          {/* Limit reached banner */}
+          {limitReached && (
+            <div className="rounded-xl border border-amber-400/25 bg-amber-500/[0.08] p-4">
+              <p className="mb-3 text-[13px] text-amber-200">
+                Hai raggiunto il limite di 50 transazioni del piano gratuito.
+              </p>
+              <Link
+                href="/pricing"
+                className="flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-iri-violet to-iri-magenta px-4 py-2.5 text-sm font-medium text-white transition-all hover:opacity-90"
+              >
+                <Zap className="h-4 w-4" />
+                Passa a Premium
+              </Link>
+            </div>
+          )}
+
           {/* Submit */}
           <button
             type="submit"
-            disabled={isSubmitting}
+            disabled={isSubmitting || limitReached}
             className="flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-iri-violet to-iri-magenta px-4 py-3 text-sm font-medium text-white transition-all hover:opacity-90 disabled:opacity-50"
           >
             {isSubmitting ? (

@@ -72,6 +72,30 @@ export async function createTransaction(formData: FormData) {
     return { success: false, error: "Campi obbligatori mancanti" };
   }
 
+  // Feature gating: max 50 transactions/month for free plan
+  const { data: profileData } = await supabase
+    .from("users_profiles")
+    .select("plan")
+    .eq("user_id", user.id)
+    .single();
+
+  const plan = profileData?.plan || "free";
+  if (plan === "free") {
+    const now = new Date();
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
+      .toISOString()
+      .split("T")[0];
+    const { count } = await supabase
+      .from("transactions")
+      .select("*", { count: "exact", head: true })
+      .eq("user_id", user.id)
+      .gte("transaction_date", monthStart);
+
+    if ((count ?? 0) >= 50) {
+      return { success: false, error: "LIMIT_REACHED" };
+    }
+  }
+
   const { error } = await supabase.from("transactions").insert({
     user_id: user.id,
     amount,

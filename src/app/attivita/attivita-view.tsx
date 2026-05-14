@@ -19,7 +19,9 @@ import {
   ShoppingBag,
   MoreHorizontal,
   TrendingUp,
+  Download,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 import { EmptyActivity, EmptyActivityFiltered } from "@/components/empty-states";
 import type {
@@ -68,6 +70,7 @@ export function AttivitaView({
   transactions: Transaction[];
   stats: DashboardStats;
 }) {
+  const router = useRouter();
   const [search, setSearch] = useState("");
   const [period, setPeriod] = useState<Period>("month");
   const [typeFilter, setTypeFilter] = useState<TypeFilter>("all");
@@ -76,6 +79,35 @@ export function AttivitaView({
   );
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const [deletingTransactionId, setDeletingTransactionId] = useState<string | null>(null);
+  const [isExporting, setIsExporting] = useState(false);
+
+  const monthlyCount = useMemo(() => {
+    const now = new Date();
+    const cutoff = new Date(now.getFullYear(), now.getMonth(), 1);
+    return transactions.filter((tx) => new Date(tx.transaction_date) >= cutoff).length;
+  }, [transactions]);
+
+  const handleExportCSV = async () => {
+    const plan = profile.plan || "free";
+    if (plan === "free") {
+      router.push("/pricing");
+      return;
+    }
+    setIsExporting(true);
+    try {
+      const res = await fetch("/api/export");
+      if (!res.ok) return;
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "valorem-export.csv";
+      a.click();
+      URL.revokeObjectURL(url);
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   const handleDelete = async (id: string) => {
     const result = await deleteTransaction(id);
@@ -197,19 +229,58 @@ export function AttivitaView({
 
           {/* HEADER */}
           <header className="mb-6 mt-8">
-            <div className="flex items-center gap-3">
-              <ListOrdered
-                className="h-5 w-5 text-iri-pale"
-                strokeWidth={1.6}
-              />
-              <h1 className="m-0 font-serif text-[32px] font-normal italic leading-tight text-ink-primary">
-                La tua storia finanziaria
-              </h1>
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <div className="flex items-center gap-3">
+                  <ListOrdered
+                    className="h-5 w-5 text-iri-pale"
+                    strokeWidth={1.6}
+                  />
+                  <h1 className="m-0 font-serif text-[32px] font-normal italic leading-tight text-ink-primary">
+                    La tua storia finanziaria
+                  </h1>
+                </div>
+                <div className="mt-2 flex items-center gap-3">
+                  <p className="max-w-[560px] text-[14px] leading-[1.6] text-ink-secondary">
+                    Ogni transazione che hai registrato, in un&apos;unica vista. Filtra,
+                    cerca, comprendi.
+                  </p>
+                  <span
+                    className={`shrink-0 rounded-full border px-2.5 py-0.5 font-mono-tabular text-[11px] font-medium ${
+                      (profile.plan || "free") === "free" && monthlyCount > 40
+                        ? "border-red-400/30 bg-red-500/[0.08] text-red-300"
+                        : (profile.plan || "free") === "free" && monthlyCount > 30
+                        ? "border-amber-400/30 bg-amber-500/[0.08] text-amber-300"
+                        : "border-emerald-400/30 bg-emerald-500/[0.08] text-emerald-300"
+                    }`}
+                  >
+                    {monthlyCount} transazioni questo mese
+                  </span>
+                </div>
+              </div>
+
+              <div className="relative shrink-0">
+                <button
+                  type="button"
+                  onClick={handleExportCSV}
+                  disabled={isExporting}
+                  title={
+                    (profile.plan || "free") === "free"
+                      ? "Disponibile dal piano Premium"
+                      : "Esporta CSV"
+                  }
+                  className="flex items-center gap-2 rounded-[10px] border border-white/[0.08] bg-white/[0.03] px-3.5 py-2 text-[12px] font-medium text-ink-secondary transition-all hover:border-iri-violet/30 hover:bg-iri-violet/[0.06] hover:text-ink-primary disabled:opacity-50"
+                >
+                  <Download className="h-3.5 w-3.5" strokeWidth={1.8} />
+                  {isExporting ? "Esportando…" : "Esporta CSV"}
+                  {(profile.plan || "free") === "free" && (
+                    <span className="rounded-md border border-iri-violet/25 bg-iri-violet/[0.1] px-1.5 py-px text-[9px] font-medium uppercase tracking-[0.08em] text-iri-pale">
+                      Premium
+                    </span>
+                  )}
+                </button>
+              </div>
             </div>
-            <p className="mt-2 max-w-[560px] text-[14px] leading-[1.6] text-ink-secondary">
-              Ogni transazione che hai registrato, in un'unica vista. Filtra,
-              cerca, comprendi.
-            </p>
           </header>
 
           {/* FILTERS BAR */}

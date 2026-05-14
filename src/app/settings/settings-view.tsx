@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import { CreditCard, ArrowUpRight, Zap } from "lucide-react";
 import type { UserProfile, FixedCost } from "@/lib/finance";
 import { Sidebar } from "@/components/sidebar";
 import { BottomBar } from "@/components/bottom-bar";
@@ -48,6 +50,8 @@ export function SettingsView({
               <TimeMetricSection profile={profile} />
               <FixedCostsSection fixedCosts={fixedCosts} />
             </div>
+
+            <PlanSection profile={profile} />
           </div>
        </div>
       </div>
@@ -57,3 +61,57 @@ export function SettingsView({
     </div>
   );
 }
+
+function PlanSection({ profile }: { profile: UserProfile }) {
+  const plan = profile.plan || "free";
+  const planLabel =
+    plan === "pro" ? "Pro" : plan === "premium" ? "Premium" : "Free";
+  const planColor =
+    plan === "pro"
+      ? "text-emerald-300 border-emerald-400/25 bg-emerald-500/[0.06]"
+      : plan === "premium"
+      ? "text-iri-pale border-iri-violet/30 bg-iri-violet/[0.08]"
+      : "text-ink-secondary border-white/[0.08] bg-white/[0.03]";
+
+  return (
+    <div className="mt-5 glass-panel rounded-[20px] p-6">
+      <div className="mb-5 flex items-center gap-3">
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-iri-violet/25 bg-iri-violet/[0.08] text-iri-pale">
+          <CreditCard className="h-5 w-5" strokeWidth={1.6} />
+        </div>
+        <div>
+          <p className="eyebrow-accent text-[10px]">Piano attuale</p>
+          <p className="m-0 mt-0.5 text-[13px] text-ink-secondary">
+            Gestisci il tuo abbonamento Valorem
+          </p>
+        </div>
+      </div>
+
+      <div className={`inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-[13px] font-medium ${planColor}`}>
+        <span className="h-1.5 w-1.5 rounded-full bg-current opacity-70" />
+        Piano {planLabel}
+      </div>
+
+      <div className="mt-5 flex flex-wrap gap-3">
+        {plan === "free" ? (
+          <Link
+            href="/pricing"
+            className="flex items-center gap-2 rounded-[10px] bg-gradient-to-r from-iri-violet to-iri-magenta px-4 py-2.5 text-[13px] font-medium text-white transition-all hover:opacity-90"
+          >
+            <Zap className="h-4 w-4" />
+            Upgrade a Premium
+          </Link>
+        ) : (
+          <Link
+            href="/pricing"
+            className="flex items-center gap-2 rounded-[10px] border border-white/[0.08] bg-white/[0.03] px-4 py-2.5 text-[13px] font-medium text-ink-secondary transition-all hover:border-white/[0.16] hover:text-ink-primary"
+          >
+            Gestisci piano
+            <ArrowUpRight className="h-3.5 w-3.5" />
+          </Link>
+        )}
+      </div>
+    </div>
+  );
+}
+
