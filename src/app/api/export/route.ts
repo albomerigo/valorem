@@ -39,7 +39,7 @@ export async function GET() {
       tx.transaction_date,
       escape(tx.merchant || ""),
       tx.category || "",
-      tx.type,
+      tx.type === "expense" ? "Uscita" : "Entrata",
       tx.amount,
       tx.recurring ? "Si" : "No",
       escape(tx.notes || ""),
