@@ -1,3 +1,7 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
 import type { DashboardData } from "@/lib/finance";
 import { Sidebar } from "./sidebar";
 import { BottomBar } from "./bottom-bar";
@@ -11,7 +15,8 @@ import { RecapBanner } from "./recap-banner";
 import { TransactionsList } from "./transactions-list";
 import { SpendingChart } from "./spending-chart";
 import { UpgradeBanner } from "./upgrade-banner";
-import Link from "next/link";
+import { OnboardingChecklist } from "./onboarding-checklist";
+import { NewTransactionModal } from "./new-transaction-modal";
 
 type DailyPoint = { date: string; amount: number; label: string };
 
@@ -74,11 +79,16 @@ function PlanPill({ plan }: { plan: string }) {
 export function Dashboard({
   data,
   dailyData,
+  goalsCount = 0,
 }: {
   data: DashboardData;
   dailyData: DailyPoint[];
+  goalsCount?: number;
 }) {
   const plan = data.profile?.plan ?? "free";
+  const [isAddingTransaction, setIsAddingTransaction] = useState(false);
+
+  const openNewTransaction = () => setIsAddingTransaction(true);
 
   return (
     <div className="relative min-h-screen">
@@ -90,6 +100,12 @@ export function Dashboard({
           <Topbar userName={data.profile?.name || "ospite"} />
           <div className="mt-5 flex flex-col gap-4 md:mt-6 md:gap-5">
             <RecapBanner />
+            <OnboardingChecklist
+              transactions={data.transactions.length}
+              goals={goalsCount}
+              onAddTransaction={openNewTransaction}
+              profileCreatedAt={(data.profile as unknown as { created_at?: string })?.created_at}
+            />
             <PlanPill plan={plan} />
             <HeroCard stats={data.stats} />
             <UpgradeBanner plan={plan} />
@@ -97,10 +113,19 @@ export function Dashboard({
             <CoachBanner stats={data.stats} transactions={data.transactions} />
             <SpendingChart data={dailyData} dailyBudgetBase={data.stats.dailyBudgetBase} />
             <CoachStripe coachMessage={data.stats.coachMessage} stats={data.stats} />
-            <TransactionsList transactions={data.transactions} stats={data.stats} />
+            <TransactionsList
+              transactions={data.transactions}
+              stats={data.stats}
+              onAddTransaction={openNewTransaction}
+            />
           </div>
         </div>
       </div>
+
+      <NewTransactionModal
+        isOpen={isAddingTransaction}
+        onClose={() => setIsAddingTransaction(false)}
+      />
       <FabButton />
       <BottomBar activeRoute="dashboard" />
     </div>

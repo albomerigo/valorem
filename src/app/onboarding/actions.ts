@@ -1,7 +1,6 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import type { IncomeType, TimeMetric } from "@/lib/finance";
 
@@ -72,5 +71,5 @@ export async function completeOnboarding(payload: OnboardingPayload) {
   }
 
   revalidatePath("/", "layout");
-  redirect("/");
+  return { success: true };
 }

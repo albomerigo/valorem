@@ -169,14 +169,52 @@ export function EmptyDashboard({ userName }: { userName: string }) {
 /**
  * Lista transazioni in Dashboard → nessun movimento
  */
-export function EmptyTransactionsList() {
+export function EmptyTransactionsList({
+  onAddTransaction,
+}: {
+  onAddTransaction?: () => void;
+}) {
   return (
-    <EmptyShell
-      illustration={<ReceiptIllustration />}
-      eyebrow="Movimenti recenti"
-      title="Qui prenderanno vita i tuoi gesti"
-      description="Aggiungi la prima transazione per iniziare a tradurre denaro in tempo. Basta il pulsante + nella barra laterale."
-    />
+    <div
+      className="relative overflow-hidden rounded-[20px] px-10 py-10 text-center"
+      style={{
+        background: "rgba(168,139,250,0.06)",
+        border: "1px solid rgba(168,139,250,0.15)",
+        borderRadius: "20px",
+      }}
+    >
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(ellipse 70% 50% at 50% 0%, rgba(168,139,250,0.14), transparent 70%)",
+        }}
+      />
+      <div className="relative z-10 mx-auto flex max-w-[400px] flex-col items-center">
+        {/* Icona */}
+        <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-iri-violet via-iri-magenta to-iri-blue shadow-[0_12px_32px_-8px_rgba(168,139,250,0.55)] [background-size:200%_200%] animate-gradient-shift">
+          <Sparkles className="h-7 w-7 text-white" strokeWidth={1.6} />
+        </div>
+
+        <h3 className="m-0 font-serif text-[22px] font-normal italic leading-[1.2] text-ink-primary">
+          Inizia il tuo percorso finanziario
+        </h3>
+        <p className="mt-3 text-[13px] leading-[1.6] text-ink-secondary">
+          Aggiungi la tua prima transazione per vedere Valorem in azione
+        </p>
+
+        {onAddTransaction && (
+          <button
+            type="button"
+            onClick={onAddTransaction}
+            className="mt-6 flex items-center gap-2 rounded-[12px] bg-gradient-to-br from-iri-violet via-iri-magenta to-iri-blue px-6 py-3 text-[13px] font-medium text-white shadow-[0_10px_28px_-8px_rgba(168,139,250,0.55)] transition-all duration-[300ms] [background-size:200%_200%] animate-gradient-shift hover:-translate-y-0.5 hover:shadow-[0_18px_40px_-10px_rgba(168,139,250,0.7)]"
+          >
+            <Target className="h-4 w-4" strokeWidth={2} />
+            Aggiungi la prima transazione
+          </button>
+        )}
+      </div>
+    </div>
   );
 }
 

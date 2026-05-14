@@ -26,9 +26,11 @@ import { deleteTransaction } from "@/app/actions";
 export function TransactionsList({
   transactions,
   stats,
+  onAddTransaction,
 }: {
   transactions: Transaction[];
   stats: DashboardStats;
+  onAddTransaction?: () => void;
 }) {
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const [deletingTransactionId, setDeletingTransactionId] = useState<string | null>(null);
@@ -55,7 +57,7 @@ export function TransactionsList({
         </div>
 
         {transactions.length === 0 ? (
-          <EmptyTransactionsList />
+          <EmptyTransactionsList onAddTransaction={onAddTransaction} />
         ) : (
           <div className="glass-panel overflow-hidden rounded-[18px]">
             {transactions.slice(0, 6).map((tx, i) => (

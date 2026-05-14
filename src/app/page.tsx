@@ -4,6 +4,7 @@ import {
   loadDashboardData,
   fetchRecentTransactions,
   aggregateDailySpending,
+  fetchGoals,
 } from "@/lib/finance";
 import { Dashboard } from "@/components/dashboard";
 
@@ -25,8 +26,17 @@ export default async function Home() {
   }
 
   // Carichiamo anche le transazioni delle ultime 4 settimane per il chart
-  const recentTransactions = await fetchRecentTransactions(supabase, 28);
+  const [recentTransactions, goals] = await Promise.all([
+    fetchRecentTransactions(supabase, 28),
+    fetchGoals(supabase),
+  ]);
   const dailyData = aggregateDailySpending(recentTransactions, 28);
 
-  return <Dashboard data={dashboardData} dailyData={dailyData} />;
+  return (
+    <Dashboard
+      data={dashboardData}
+      dailyData={dailyData}
+      goalsCount={goals.length}
+    />
+  );
 }

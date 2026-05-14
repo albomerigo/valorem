@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import {
   Briefcase,
   TrendingUp,
@@ -11,6 +12,11 @@ import {
   Percent,
   Plus,
   Trash2,
+  CheckCircle,
+  ArrowRight,
+  Receipt,
+  Target,
+  Sparkles,
 } from "lucide-react";
 import {
   WizardShell,
@@ -27,8 +33,88 @@ type FixedCostEntry = { name: string; amount: number };
 
 const TOTAL_STEPS = 5;
 
+function AllReadyScreen() {
+  const router = useRouter();
+
+  useEffect(() => {
+    const t = setTimeout(() => router.push("/"), 4000);
+    return () => clearTimeout(t);
+  }, [router]);
+
+  return (
+    <div
+      className="flex min-h-screen items-center justify-center p-6"
+      style={{
+        background:
+          "radial-gradient(ellipse 80% 50% at 50% 0%, #1A1530 0%, #0A0812 40%, #060508 100%)",
+      }}
+    >
+      <div className="relative w-full max-w-[560px] text-center">
+        {/* Aura */}
+        <div className="pointer-events-none absolute inset-0 z-0">
+          <div
+            className="absolute left-1/2 top-1/2 h-[400px] w-[400px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-30 animate-rotate-slow"
+            style={{
+              background:
+                "conic-gradient(from 0deg, rgba(168,139,250,0) 0%, rgba(168,139,250,0.5) 25%, rgba(232,121,249,0.4) 50%, rgba(96,165,250,0.45) 75%, rgba(168,139,250,0) 100%)",
+              filter: "blur(80px)",
+            }}
+          />
+        </div>
+
+        <div className="relative z-10 flex flex-col items-center animate-slide-up">
+          {/* Check icon animato */}
+          <div className="mb-8 flex h-20 w-20 items-center justify-center rounded-full border border-emerald-400/30 bg-emerald-500/[0.1]">
+            <CheckCircle className="h-10 w-10 text-emerald-400" strokeWidth={1.5} />
+          </div>
+
+          <h1 className="m-0 font-serif text-[38px] font-normal italic leading-tight text-ink-primary md:text-[48px]">
+            Valorem è pronto per te.
+          </h1>
+          <p className="mt-4 max-w-[400px] text-[15px] leading-[1.6] text-ink-secondary">
+            Porta con te la consapevolezza — ogni giorno.
+          </p>
+
+          {/* 3 feature cards */}
+          <div className="mt-8 grid w-full grid-cols-3 gap-3">
+            {[
+              { icon: Receipt, label: "Traccia le spese", desc: "Ogni euro diventa tempo" },
+              { icon: Target, label: "Imposta obiettivi", desc: "Dai un nome ai desideri" },
+              { icon: Sparkles, label: "Leggi il Coach", desc: "Insight quotidiani" },
+            ].map(({ icon: Icon, label, desc }) => (
+              <div
+                key={label}
+                className="rounded-[14px] border border-white/[0.07] bg-white/[0.03] px-3 py-4 text-center"
+              >
+                <div className="mx-auto mb-2 flex h-9 w-9 items-center justify-center rounded-[10px] bg-gradient-to-br from-iri-violet/20 to-iri-magenta/10 text-iri-pale">
+                  <Icon className="h-4 w-4" strokeWidth={1.6} />
+                </div>
+                <p className="text-[11px] font-medium text-ink-primary">{label}</p>
+                <p className="mt-0.5 text-[10px] text-ink-secondary">{desc}</p>
+              </div>
+            ))}
+          </div>
+
+          <button
+            type="button"
+            onClick={() => router.push("/")}
+            className="mt-8 flex items-center gap-2 rounded-xl bg-gradient-to-br from-iri-violet via-iri-magenta to-iri-blue px-7 py-3.5 text-[13px] font-medium uppercase tracking-[0.12em] text-white shadow-[0_10px_28px_-8px_rgba(168,139,250,0.55)] transition-all duration-[400ms] [background-size:200%_200%] animate-gradient-shift hover:-translate-y-0.5 hover:shadow-[0_18px_40px_-10px_rgba(168,139,250,0.7)]"
+          >
+            Vai alla dashboard
+            <ArrowRight className="h-4 w-4" strokeWidth={2} />
+          </button>
+          <p className="mt-3 text-[11px] text-ink-muted">
+            Redirect automatico tra pochi secondi…
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function OnboardingPage() {
   const [showIntro, setShowIntro] = useState(true);
+  const [showAllReady, setShowAllReady] = useState(false);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [name, setName] = useState("");
@@ -48,7 +134,10 @@ export default function OnboardingPage() {
     return <OnboardingIntro onComplete={() => setShowIntro(false)} />;
   }
 
-  // ...resto del codice invariato
+  // Schermata "Tutto pronto" dopo il completamento
+  if (showAllReady) {
+    return <AllReadyScreen />;
+  }
 
   async function handleComplete() {
     if (!incomeType || !timeMetric) return;
@@ -67,6 +156,8 @@ export default function OnboardingPage() {
     if (result?.error) {
       setError(result.error);
       setPending(false);
+    } else {
+      setShowAllReady(true);
     }
   }
 
