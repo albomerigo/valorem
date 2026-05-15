@@ -11,19 +11,21 @@ import {
   Ghost,
   ListOrdered,
   Sparkles,
+  History,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { signOut } from "@/app/(auth)/actions";
 import { NewTransactionModal } from "./new-transaction-modal";
 import { usePlan } from "@/hooks/usePlan";
 
-type Route = "dashboard" | "activity" | "cimitero" | "goals" | "settings";
+type Route = "dashboard" | "activity" | "cimitero" | "goals" | "settings" | "storico";
 
 const navItems: { icon: typeof Home; label: string; route: Route; href: string }[] = [
   { icon: Home, label: "Dashboard", route: "dashboard", href: "/" },
   { icon: ListOrdered, label: "Attività", route: "activity", href: "/attivita" },
   { icon: Ghost, label: "Cimitero Impulsi", route: "cimitero", href: "/cimitero" },
   { icon: Target, label: "Obiettivi", route: "goals", href: "/obiettivi" },
+  { icon: History, label: "Storico", route: "storico", href: "/storico" },
 ];
 
 export function Sidebar({ activeRoute = "dashboard" }: { activeRoute?: Route }) {

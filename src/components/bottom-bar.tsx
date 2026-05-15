@@ -1,18 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { Home, ListOrdered, Ghost, Target, Settings, Sparkles } from "lucide-react";
+import { Home, ListOrdered, Ghost, Target, History, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { usePlan } from "@/hooks/usePlan";
 
-type Route = "dashboard" | "activity" | "cimitero" | "goals" | "settings";
+type Route = "dashboard" | "activity" | "cimitero" | "goals" | "settings" | "storico";
 
 const items: { icon: typeof Home; label: string; route: Route; href: string }[] = [
   { icon: Home, label: "Home", route: "dashboard", href: "/" },
   { icon: ListOrdered, label: "Attività", route: "activity", href: "/attivita" },
   { icon: Ghost, label: "Cimitero", route: "cimitero", href: "/cimitero" },
   { icon: Target, label: "Obiettivi", route: "goals", href: "/obiettivi" },
-  { icon: Settings, label: "Setup", route: "settings", href: "/settings" },
+  { icon: History, label: "Storico", route: "storico", href: "/storico" },
 ];
 
 /**

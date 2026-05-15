@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import {
   Sparkles,
@@ -21,6 +22,7 @@ import {
   MoreHorizontal,
   BarChart2,
   Zap,
+  ChevronDown,
 } from "lucide-react";
 import type { UserProfile, DashboardStats } from "@/lib/finance";
 import type { RecapData } from "@/lib/recap";
@@ -54,6 +56,9 @@ export function RecapView({
 
           {/* HERO NARRATIVO */}
           <HeroRecap recap={recap} />
+
+          {/* ANALISI DETTAGLIATA ESPANDIBILE */}
+          <DetailAnalysisCard recap={recap} />
 
           {/* TOTALE SPESA + NETTO */}
           <Overview recap={recap} />
@@ -139,6 +144,162 @@ export function RecapView({
 // ═══════════════════════════════════════════════════════════
 //  SEZIONI
 // ═══════════════════════════════════════════════════════════
+
+function DetailAnalysisCard({ recap }: { recap: RecapData }) {
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <div
+      className="glass-panel mb-8 overflow-hidden rounded-[18px] animate-slide-up [animation-delay:0.05s]"
+      style={{ animationFillMode: "both" }}
+    >
+      <button
+        type="button"
+        onClick={() => setExpanded(!expanded)}
+        className="flex w-full items-center justify-between px-6 py-4 text-left transition-colors hover:bg-white/[0.02]"
+      >
+        <div className="flex items-center gap-3">
+          <div className="flex h-9 w-9 items-center justify-center rounded-[10px] border border-iri-violet/25 bg-iri-violet/[0.08] text-iri-pale">
+            <BarChart2 className="h-4 w-4" strokeWidth={1.8} />
+          </div>
+          <div>
+            <p className="eyebrow-accent text-[10px]">Analisi dettagliata</p>
+            <p className="m-0 mt-0.5 text-[13px] text-ink-secondary">
+              Categorie, giorni e confronto mensile
+            </p>
+          </div>
+        </div>
+        <ChevronDown
+          className={`h-4 w-4 text-ink-muted transition-transform duration-[300ms] ${expanded ? "rotate-180" : ""}`}
+          strokeWidth={1.8}
+        />
+      </button>
+
+      {expanded && (
+        <div className="border-t border-white/[0.04] px-6 pb-6 pt-5">
+          {/* Breakdown categorie */}
+          {recap.categoryBreakdown.length > 0 && (
+            <div className="mb-6">
+              <p className="eyebrow mb-3 text-[9px]">Ripartizione categorie</p>
+              <div className="flex flex-col gap-2.5">
+                {recap.categoryBreakdown.slice(0, 6).map((cat) => {
+                  const catSplit = splitCurrency(cat.amount);
+                  return (
+                    <div key={cat.name} className="flex items-center gap-3">
+                      <span className="w-[88px] flex-shrink-0 truncate text-[11px] text-ink-secondary">
+                        {cat.name}
+                      </span>
+                      <div className="relative h-1.5 flex-1 overflow-hidden rounded-full bg-white/[0.05]">
+                        <div
+                          className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-iri-violet via-iri-magenta to-iri-blue"
+                          style={{ width: `${cat.percent}%` }}
+                        />
+                      </div>
+                      <span className="w-9 flex-shrink-0 text-right font-mono-tabular text-[11px] text-ink-muted">
+                        {cat.percent}%
+                      </span>
+                      <span className="w-16 flex-shrink-0 text-right font-mono-tabular text-[11px] text-ink-primary">
+                        {catSplit.int}€
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Giorni più costoso / virtuoso */}
+          {recap.mostExpensiveDay && recap.leastExpensiveDay && (
+            <div className="mb-6 grid grid-cols-2 gap-3">
+              <div className="rounded-[12px] border border-red-400/15 bg-red-500/[0.04] p-3.5">
+                <p className="eyebrow mb-1.5 text-[9px] text-red-300/70">Giorno più costoso</p>
+                <p className="m-0 font-mono-tabular text-[20px] font-medium leading-none text-red-300">
+                  {splitCurrency(recap.mostExpensiveDay.amount).int}
+                  <span className="text-[12px] text-red-300/60">
+                    ,{splitCurrency(recap.mostExpensiveDay.amount).dec}€
+                  </span>
+                </p>
+                <p className="mt-1 text-[10px] text-ink-secondary">
+                  {new Date(recap.mostExpensiveDay.date).toLocaleDateString("it-IT", {
+                    day: "numeric",
+                    month: "long",
+                  })}
+                </p>
+              </div>
+              <div className="rounded-[12px] border border-emerald-400/15 bg-emerald-500/[0.04] p-3.5">
+                <p className="eyebrow mb-1.5 text-[9px] text-emerald-300/70">Giorno più virtuoso</p>
+                <p className="m-0 font-mono-tabular text-[20px] font-medium leading-none text-emerald-300">
+                  {splitCurrency(recap.leastExpensiveDay.amount).int}
+                  <span className="text-[12px] text-emerald-300/60">
+                    ,{splitCurrency(recap.leastExpensiveDay.amount).dec}€
+                  </span>
+                </p>
+                <p className="mt-1 text-[10px] text-ink-secondary">
+                  {new Date(recap.leastExpensiveDay.date).toLocaleDateString("it-IT", {
+                    day: "numeric",
+                    month: "long",
+                  })}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Confronto mese precedente */}
+          {recap.trendVsPrevMonth !== null && (
+            <div className="mb-6 rounded-[12px] border border-white/[0.06] bg-white/[0.02] p-4">
+              <p className="eyebrow mb-3 text-[9px]">Confronto mese precedente</p>
+              <div className="flex items-center justify-around gap-4">
+                <div className="text-center">
+                  <p className="text-[10px] text-ink-muted">Variazione spese</p>
+                  <p
+                    className={`mt-1 font-mono-tabular text-[18px] font-medium ${
+                      recap.trendVsPrevMonth > 0 ? "text-red-300" : "text-emerald-300"
+                    }`}
+                  >
+                    {recap.trendVsPrevMonth > 0 ? "+" : ""}
+                    {recap.trendVsPrevMonth}%
+                  </p>
+                </div>
+                <div className="h-10 w-[1px] bg-white/[0.06]" />
+                <div className="text-center">
+                  <p className="text-[10px] text-ink-muted">Spesa totale</p>
+                  <p className="mt-1 font-mono-tabular text-[18px] font-medium text-ink-primary">
+                    {splitCurrency(recap.totalSpent).int}€
+                  </p>
+                </div>
+                <div className="h-10 w-[1px] bg-white/[0.06]" />
+                <div className="text-center">
+                  <p className="text-[10px] text-ink-muted">Media giornaliera</p>
+                  <p className="mt-1 font-mono-tabular text-[18px] font-medium text-ink-primary">
+                    {splitCurrency(recap.avgPerDay).int}€
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Media giornaliera */}
+          <div className="rounded-[12px] border border-white/[0.04] bg-white/[0.015] p-4">
+            <p className="eyebrow mb-2 text-[9px]">Media giornaliera</p>
+            <div className="flex items-baseline gap-2">
+              <span className="font-mono-tabular text-[26px] font-medium text-ink-primary [letter-spacing:-0.02em]">
+                {splitCurrency(recap.avgPerDay).int}
+              </span>
+              <span className="text-[14px] text-ink-primary/60">
+                ,{splitCurrency(recap.avgPerDay).dec}€
+              </span>
+              <span className="text-[12px] text-ink-muted">/ giorno</span>
+            </div>
+            <p className="mt-1 text-[11px] text-ink-secondary">
+              Su {recap.daysActive}{" "}
+              {recap.daysActive === 1 ? "giorno attivo" : "giorni attivi"} nel mese
+            </p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 function HeroRecap({ recap }: { recap: RecapData }) {
   return (
