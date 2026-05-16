@@ -23,22 +23,32 @@ export function HelpTooltip({ title, content, example }: HelpTooltipProps) {
     if (triggerRef.current) {
       const rect = triggerRef.current.getBoundingClientRect();
       const popoverW = 260;
-      const left = Math.max(8, Math.min(rect.left, window.innerWidth - popoverW - 8));
-      setPos({ top: rect.bottom + 8, left });
+      const left = Math.max(8, Math.min(rect.left - popoverW / 2 + 9, window.innerWidth - popoverW - 8));
+const topPos = rect.bottom + 8 + window.scrollY;
+      setPos({ top: topPos, left });
     }
     setOpen(true);
   };
 
   useEffect(() => {
-    if (!open) return;
-    const handle = (e: MouseEvent) => {
-      if (triggerRef.current && !triggerRef.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
-    };
+  if (!open) return;
+  const handle = (e: MouseEvent) => {
+    if (
+      triggerRef.current && 
+      !triggerRef.current.contains(e.target as Node)
+    ) {
+      setOpen(false);
+    }
+  };
+  // Usa timeout per evitare che il click di apertura chiuda subito
+  const timer = setTimeout(() => {
     document.addEventListener("mousedown", handle);
-    return () => document.removeEventListener("mousedown", handle);
-  }, [open]);
+  }, 100);
+  return () => {
+    clearTimeout(timer);
+    document.removeEventListener("mousedown", handle);
+  };
+}, [open]);
 
   // Close on scroll
   useEffect(() => {
@@ -71,8 +81,9 @@ export function HelpTooltip({ title, content, example }: HelpTooltipProps) {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          zIndex: 10,
+          zIndex: 50,
           flexShrink: 0,
+          pointerEvents: "all",
           lineHeight: 1,
           transition: "background 200ms, border-color 200ms",
         }}
