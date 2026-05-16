@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { TrendingDown, TrendingUp } from "lucide-react";
+import { HelpTooltip } from "./help-tooltip";
 
 type DailyPoint = { date: string; amount: number; label: string };
 
@@ -213,6 +214,11 @@ export function SpendingChart({
       className="glass-panel relative overflow-hidden rounded-[18px] p-5 animate-slide-up [animation-delay:0.25s]"
       style={{ animationFillMode: "both" }}
     >
+      <HelpTooltip
+        title="Ritmo di Spesa"
+        content="Le tue spese giornaliere nelle ultime 4 settimane. La linea LED ti aiuta a vedere i picchi e i giorni virtuosi a colpo d'occhio."
+      />
+
       {/* Header */}
       <div className="mb-4 flex items-start justify-between gap-4">
         <div>

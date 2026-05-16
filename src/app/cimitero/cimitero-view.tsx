@@ -30,6 +30,7 @@ import { FabButton } from "@/components/fab-button";
 import { Topbar } from "@/components/topbar";
 import { splitCurrency } from "@/lib/utils";
 import { deleteDeclinedSimulation } from "@/app/actions/declined";
+import { HelpTooltip } from "@/components/help-tooltip";
 
 type Scope = "month" | "all";
 
@@ -72,7 +73,12 @@ export function CimiteroView({
           />
 
           {/* HEADER */}
-          <header className="mb-8 mt-8">
+          <header className="relative mb-8 mt-8">
+            <HelpTooltip
+              title="Cimitero degli Impulsi"
+              content="Ogni acquisto impulsivo che rifiuti viene sepolto qui. A fine mese vedi quanto hai risparmiato grazie alla tua disciplina."
+              example="Es: hai resistito a scarpe da 80€ → 80€ nel cimitero"
+            />
             <div className="flex items-center gap-3">
               <Ghost
                 className="h-5 w-5 text-iri-pale"

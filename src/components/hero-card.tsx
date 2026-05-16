@@ -7,6 +7,7 @@ import { amountToTimeLabel, getTimeMetricSuffix } from "@/lib/finance";
 import { SafeModeSwitcher } from "./safe-mode-switcher";
 import { splitCurrency } from "@/lib/utils";
 import { useAnimatedCurrency } from "./animated-number";
+import { HelpTooltip } from "./help-tooltip";
 
 export function HeroCard({ stats }: { stats: DashboardStats }) {
   const cardRef = useRef<HTMLDivElement>(null);
@@ -49,6 +50,11 @@ export function HeroCard({ stats }: { stats: DashboardStats }) {
         `,
       }}
     >
+      <HelpTooltip
+        title="Safe-to-Spend"
+        content="È quanto puoi spendere oggi in modo sereno. Calcolato sottraendo dal reddito i costi fissi, il risparmio obiettivo e le spese già fatte questo mese."
+        example="Es: 1.800€ - 850€ fissi - 200€ risparmio = 750€ ÷ 30 giorni = 25€/giorno"
+      />
       <AuraLayers />
       <Stars />
 

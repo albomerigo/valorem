@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   ChevronRight,
   ShoppingCart,
@@ -34,11 +35,14 @@ export function TransactionsList({
 }) {
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const [deletingTransactionId, setDeletingTransactionId] = useState<string | null>(null);
+  const router = useRouter();
 
   const handleDelete = async (id: string) => {
     const result = await deleteTransaction(id);
     if (!result.success) {
       alert(result.error || "Errore durante l'eliminazione");
+    } else {
+      router.refresh();
     }
     setDeletingTransactionId(null);
   };

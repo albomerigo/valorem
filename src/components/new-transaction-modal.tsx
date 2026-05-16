@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { X, Plus, Zap } from "lucide-react";
 import Link from "next/link";
 import { createTransaction, updateTransaction } from "@/app/actions";
@@ -39,6 +40,7 @@ export function NewTransactionModal({
   editingTransaction,
 }: NewTransactionModalProps) {
   const isEditing = !!editingTransaction;
+  const router = useRouter();
 
   const [type, setType] = useState<"expense" | "income">("expense");
   const [amount, setAmount] = useState("");
@@ -102,6 +104,7 @@ export function NewTransactionModal({
 
       if (result.success) {
         onClose();
+        router.refresh();
         // Reset form
         setAmount("");
         setMerchant("");

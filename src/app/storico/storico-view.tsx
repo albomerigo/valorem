@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
+import { useMemo } from "react";
 import { useRouter } from "next/navigation";
 import {
   TrendingUp,
@@ -11,6 +11,18 @@ import {
   Sparkles,
   Star,
 } from "lucide-react";
+import {
+  ComposedChart,
+  Bar,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ReferenceLine,
+  ResponsiveContainer,
+  Cell,
+} from "recharts";
 import { Sidebar } from "@/components/sidebar";
 import { BottomBar } from "@/components/bottom-bar";
 import { FabButton } from "@/components/fab-button";
@@ -98,7 +110,7 @@ export function StoricoView({
       </div>
 
       <div className="md:ml-[64px] min-h-screen pb-36 md:pb-0">
-        <div className="mx-auto max-w-[900px] px-4 py-5 md:px-8 md:py-7">
+        <div className="mx-auto max-w-[1400px] px-4 py-5 md:px-8 md:py-7">
           <Topbar userName={profile.name || "ospite"} section="Storico" />
 
           <header className="mb-10 mt-8">
@@ -244,8 +256,49 @@ function AggregateKPIs({ agg, recaps }: { agg: AggData; recaps: MonthEntry[] }) 
 }
 
 // ─────────────────────────────────────────
-//  GRAFICO TREND MENSILE (SVG)
+//  GRAFICO TREND MENSILE (Recharts)
 // ─────────────────────────────────────────
+
+type ChartDatum = {
+  name: string;
+  fullName: string;
+  spese: number;
+  aboveAvg: boolean;
+  trendLine: number;
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function CustomTooltip({ active, payload }: { active?: boolean; payload?: any[] }) {
+  if (!active || !payload || payload.length === 0) return null;
+  const barPayload = payload.find((p: { dataKey: string }) => p.dataKey === "spese");
+  if (!barPayload) return null;
+  const value: number = barPayload.value;
+  const fullName: string = barPayload.payload?.fullName ?? "";
+  return (
+    <div
+      style={{
+        background: "rgba(13,10,30,0.97)",
+        border: "1px solid rgba(168,139,250,0.2)",
+        borderRadius: 12,
+        padding: "10px 14px",
+        boxShadow: "0 8px 32px rgba(0,0,0,0.6)",
+      }}
+    >
+      <p style={{ margin: 0, fontSize: 11, color: "#7C6FA0" }}>{fullName}</p>
+      <p
+        style={{
+          margin: "4px 0 0",
+          fontFamily: "monospace",
+          fontSize: 16,
+          fontWeight: 600,
+          color: "#F0EEFF",
+        }}
+      >
+        {value?.toFixed(0)}€
+      </p>
+    </div>
+  );
+}
 
 function TrendChart({
   recaps,
@@ -254,140 +307,127 @@ function TrendChart({
   recaps: MonthEntry[];
   avgMonthlySpent: number;
 }) {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    const t = setTimeout(() => setMounted(true), 80);
-    return () => clearTimeout(t);
-  }, []);
+  const chartData: ChartDatum[] = useMemo(() => {
+    const chronological = [...recaps].reverse();
+    const raw = chronological.map((entry) => {
+      const [yr, mo] = entry.slug.split("-").map(Number);
+      const name = new Date(yr, mo - 1, 1)
+        .toLocaleDateString("it-IT", { month: "short" })
+        .replace(".", "")
+        .slice(0, 3);
+      return {
+        name,
+        fullName: entry.recap.monthYear,
+        spese: entry.recap.totalSpent,
+        aboveAvg: entry.recap.totalSpent > avgMonthlySpent,
+      };
+    });
 
-  const chronological = useMemo(() => [...recaps].reverse(), [recaps]);
-  const maxSpent = Math.max(...chronological.map((e) => e.recap.totalSpent), 1);
-  const n = chronological.length;
-
-  const BAR_W = 32;
-  const GAP = 10;
-  const MAX_BAR_H = 160;
-  const LABEL_H = 24;
-  const PADDING_Y = 8;
-  const CHART_H = MAX_BAR_H + LABEL_H + PADDING_Y;
-  const TOTAL_W = Math.max(n * BAR_W + (n - 1) * GAP, 280);
-
-  const avgY = PADDING_Y + MAX_BAR_H - (avgMonthlySpent / maxSpent) * MAX_BAR_H;
+    // Linear regression trend
+    const n = raw.length;
+    if (n < 2) return raw.map((d) => ({ ...d, trendLine: d.spese }));
+    const xMean = (n - 1) / 2;
+    const yMean = raw.reduce((s, d) => s + d.spese, 0) / n;
+    const num = raw.reduce((s, d, i) => s + (i - xMean) * (d.spese - yMean), 0);
+    const den = raw.reduce((s, _, i) => s + (i - xMean) ** 2, 0);
+    const slope = den !== 0 ? num / den : 0;
+    const intercept = yMean - slope * xMean;
+    return raw.map((d, i) => ({ ...d, trendLine: Math.max(0, intercept + slope * i) }));
+  }, [recaps, avgMonthlySpent]);
 
   return (
     <div className="glass-panel overflow-hidden rounded-[16px] p-5">
       <p className="eyebrow mb-4 text-[9px]">Spese mensili</p>
-      <div className="overflow-x-auto">
-        <svg
-          viewBox={`0 0 ${TOTAL_W} ${CHART_H}`}
-          width={TOTAL_W}
-          height={CHART_H}
-          style={{ minWidth: "100%", display: "block" }}
-        >
-          <defs>
-            {chronological.map((entry, i) => {
-              const isAboveAvg = entry.recap.totalSpent > avgMonthlySpent;
-              return (
-                <linearGradient key={i} id={`bar-grad-${i}`} x1="0" y1="0" x2="0" y2="1">
-                  <stop
-                    offset="0%"
-                    stopColor={isAboveAvg ? "#F87171" : "#A88BFA"}
-                    stopOpacity="0.95"
-                  />
-                  <stop
-                    offset="100%"
-                    stopColor={isAboveAvg ? "#FB923C" : "#E879F9"}
-                    stopOpacity="0.55"
-                  />
-                </linearGradient>
-              );
-            })}
-          </defs>
 
-          {chronological.map((entry, i) => {
-            const spent = entry.recap.totalSpent;
-            const barH = spent > 0 ? (spent / maxSpent) * MAX_BAR_H : 3;
-            const x = i * (BAR_W + GAP);
-            const yTop = PADDING_Y + MAX_BAR_H - barH;
+      {/* Gradient defs hidden — referenced by Recharts Cell fill */}
+      <svg width="0" height="0" style={{ position: "absolute" }}>
+        <defs>
+          <linearGradient id="chart-grad-above" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#F87171" stopOpacity="0.95" />
+            <stop offset="100%" stopColor="#FB923C" stopOpacity="0.6" />
+          </linearGradient>
+          <linearGradient id="chart-grad-below" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#A88BFA" stopOpacity="0.95" />
+            <stop offset="100%" stopColor="#E879F9" stopOpacity="0.6" />
+          </linearGradient>
+        </defs>
+      </svg>
 
-            const [yr, mo] = entry.slug.split("-").map(Number);
-            const monthAbbr = new Date(yr, mo - 1, 1)
-              .toLocaleDateString("it-IT", { month: "short" })
-              .replace(".", "")
-              .slice(0, 3);
-
-            return (
-              <g key={entry.slug}>
-                <g
-                  style={{
-                    transformOrigin: `${x + BAR_W / 2}px ${PADDING_Y + MAX_BAR_H}px`,
-                    transform: mounted ? "scaleY(1)" : "scaleY(0)",
-                    transition: `transform 700ms cubic-bezier(0.2,0.8,0.2,1) ${i * 55}ms`,
-                  }}
-                >
-                  <rect
-                    x={x}
-                    y={yTop}
-                    width={BAR_W}
-                    height={barH}
-                    rx={6}
-                    fill={`url(#bar-grad-${i})`}
-                  />
-                </g>
-                <title>
-                  {entry.recap.monthYear}: {entry.recap.totalSpent.toFixed(0)}€
-                </title>
-                <text
-                  x={x + BAR_W / 2}
-                  y={PADDING_Y + MAX_BAR_H + 16}
-                  textAnchor="middle"
-                  fontSize={9}
-                  fill="rgba(255,255,255,0.35)"
-                  fontFamily="system-ui, sans-serif"
-                >
-                  {monthAbbr}
-                </text>
-              </g>
-            );
-          })}
-
+      <ResponsiveContainer width="100%" height={260}>
+        <ComposedChart data={chartData} margin={{ top: 8, right: 16, bottom: 0, left: 0 }}>
+          <CartesianGrid
+            vertical={false}
+            stroke="rgba(255,255,255,0.05)"
+            strokeDasharray=""
+          />
+          <XAxis
+            dataKey="name"
+            axisLine={false}
+            tickLine={false}
+            tick={{ fill: "rgba(255,255,255,0.35)", fontSize: 10, fontFamily: "system-ui" }}
+          />
+          <YAxis hide />
+          <Tooltip
+            content={<CustomTooltip />}
+            cursor={{ fill: "rgba(168,139,250,0.06)" }}
+          />
           {avgMonthlySpent > 0 && (
-            <g>
-              <line
-                x1={0}
-                y1={avgY}
-                x2={TOTAL_W}
-                y2={avgY}
-                stroke="rgba(255,255,255,0.2)"
-                strokeWidth={1}
-                strokeDasharray="4 4"
-              />
-              <text
-                x={TOTAL_W - 2}
-                y={avgY - 4}
-                textAnchor="end"
-                fontSize={8}
-                fill="rgba(255,255,255,0.35)"
-                fontFamily="system-ui, sans-serif"
-              >
-                media
-              </text>
-            </g>
+            <ReferenceLine
+              y={avgMonthlySpent}
+              stroke="rgba(168,139,250,0.5)"
+              strokeDasharray="4 4"
+              label={{
+                value: "media",
+                position: "insideTopRight",
+                fill: "#A88BFA",
+                fontSize: 9,
+                fontFamily: "system-ui",
+              }}
+            />
           )}
-        </svg>
-      </div>
+          <Bar
+            dataKey="spese"
+            radius={[6, 6, 0, 0]}
+            isAnimationActive
+            animationDuration={800}
+            maxBarSize={48}
+          >
+            {chartData.map((entry, index) => (
+              <Cell
+                key={`cell-${index}`}
+                fill={
+                  entry.aboveAvg
+                    ? "url(#chart-grad-above)"
+                    : "url(#chart-grad-below)"
+                }
+              />
+            ))}
+          </Bar>
+          <Line
+            type="monotone"
+            dataKey="trendLine"
+            stroke="rgba(168,139,250,0.45)"
+            strokeWidth={1.5}
+            dot={false}
+            strokeDasharray="4 3"
+            isAnimationActive
+            animationDuration={1000}
+          />
+        </ComposedChart>
+      </ResponsiveContainer>
+
       <div className="mt-3 flex items-center gap-5">
         <div className="flex items-center gap-1.5">
           <span
             className="h-2 w-3 rounded-sm"
-            style={{ background: "linear-gradient(90deg, #F87171, #FB923C)", opacity: 0.85 }}
+            style={{ background: "linear-gradient(180deg,#F87171,#FB923C)", opacity: 0.85 }}
           />
           <span className="text-[10px] text-ink-muted">Sopra la media</span>
         </div>
         <div className="flex items-center gap-1.5">
           <span
             className="h-2 w-3 rounded-sm"
-            style={{ background: "linear-gradient(90deg, #A88BFA, #E879F9)", opacity: 0.85 }}
+            style={{ background: "linear-gradient(180deg,#A88BFA,#E879F9)", opacity: 0.85 }}
           />
           <span className="text-[10px] text-ink-muted">Sotto la media</span>
         </div>
@@ -396,10 +436,10 @@ function TrendChart({
             className="h-[1px] w-4"
             style={{
               background:
-                "repeating-linear-gradient(90deg, rgba(255,255,255,0.28) 0, rgba(255,255,255,0.28) 4px, transparent 4px, transparent 8px)",
+                "repeating-linear-gradient(90deg,rgba(168,139,250,0.5) 0,rgba(168,139,250,0.5) 4px,transparent 4px,transparent 8px)",
             }}
           />
-          <span className="text-[10px] text-ink-muted">Media</span>
+          <span className="text-[10px] text-ink-muted">Tendenza</span>
         </div>
       </div>
     </div>

@@ -23,6 +23,7 @@ import { DepositGoalModal } from "@/components/deposit-goal-modal";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { deleteGoal } from "@/app/actions/goals";
 import { splitCurrency } from "@/lib/utils";
+import { HelpTooltip } from "@/components/help-tooltip";
 
 export function ObiettiviView({
   profile,
@@ -51,7 +52,12 @@ export function ObiettiviView({
         <div className="mx-auto max-w-[1400px] px-4 py-5 md:px-8 md:py-7">
           <Topbar userName={profile.name || "ospite"} section="Obiettivi" />
 
-          <header className="mb-8 mt-8 flex items-start justify-between gap-4">
+          <header className="relative mb-8 mt-8 flex items-start justify-between gap-4">
+            <HelpTooltip
+              title="Obiettivi Intelligenti"
+              content="Crea un obiettivo con importo target. Valorem calcola quanto devi mettere da parte ogni mese in base al tuo ritmo reale di risparmio."
+              example="Es: Vacanza 1.000€ tra 8 mesi = 125€/mese"
+            />
             <div>
               <div className="flex items-center gap-3">
                 <Target className="h-5 w-5 text-iri-pale" strokeWidth={1.6} />

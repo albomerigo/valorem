@@ -4,6 +4,7 @@ import { useRef } from "react";
 import { TrendingUp } from "lucide-react";
 import type { DashboardStats } from "@/lib/finance";
 import { splitCurrency } from "@/lib/utils";
+import { HelpTooltip } from "./help-tooltip";
 
 export function KPIRow({ stats }: { stats: DashboardStats }) {
   const { monthlyFree, spentToday, capitalInvested, capitalInvestedCount, trendVsLastMonth } = stats;
@@ -17,11 +18,17 @@ export function KPIRow({ stats }: { stats: DashboardStats }) {
       className="grid grid-cols-3 gap-4 animate-slide-up [animation-delay:0.2s]"
       style={{ animationFillMode: "both" }}
     >
-      <KPITile
-        label="Disponibile mensile"
-        valueInt={monthlyFreeSplit.int}
-        valueDec={monthlyFreeSplit.dec}
-        trend={
+      <div className="relative">
+        <HelpTooltip
+          title="Traduttore di Tempo"
+          content="Le spese vengono convertite in ore/minuti del tuo lavoro. Vedere il denaro come tempo aiuta a valutare meglio ogni acquisto."
+          example="Es: 12€ = 36 min del tuo lavoro (con 20€/ora)"
+        />
+        <KPITile
+          label="Disponibile mensile"
+          valueInt={monthlyFreeSplit.int}
+          valueDec={monthlyFreeSplit.dec}
+          trend={
           trendVsLastMonth !== 0 ? (
             <span className="flex items-center gap-1 text-[10px] font-medium tracking-[0.08em] text-emerald-300 font-mono-tabular">
               <TrendingUp className="h-2.5 w-2.5" />
@@ -31,7 +38,8 @@ export function KPIRow({ stats }: { stats: DashboardStats }) {
             <span className="eyebrow text-[9px]">budget libero</span>
           )
         }
-      />
+        />
+      </div>
       <KPITile
         label="Spese oggi"
         valueInt={spentTodaySplit.int}
