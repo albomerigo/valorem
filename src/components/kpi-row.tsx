@@ -23,7 +23,6 @@ const monthlyFreeSplit = splitCurrency(remainingBudget);
   content="È quanto puoi ancora spendere questo mese in modo sereno. Si aggiorna ad ogni transazione sottraendo le spese già fatte dal tuo budget libero mensile."
   example="Es: 750€ budget libero - 320€ già spesi = 430€ ancora disponibili"
 />
-        />
         <KPITile
           label="Disponibile mensile"
           valueInt={monthlyFreeSplit.int}
