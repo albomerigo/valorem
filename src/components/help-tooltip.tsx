@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 
 interface HelpTooltipProps {
@@ -13,6 +14,7 @@ export function HelpTooltip({ title, content, example }: HelpTooltipProps) {
   const [open, setOpen] = useState(false);
   const [pos, setPos] = useState({ top: 0, left: 0 });
   const triggerRef = useRef<HTMLButtonElement>(null);
+  const popoverRef = useRef<HTMLDivElement>(null);
 
   const handleOpen = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -23,32 +25,27 @@ export function HelpTooltip({ title, content, example }: HelpTooltipProps) {
     if (triggerRef.current) {
       const rect = triggerRef.current.getBoundingClientRect();
       const popoverW = 260;
-      const left = Math.max(8, Math.min(rect.left - popoverW / 2 + 9, window.innerWidth - popoverW - 8));
-const topPos = rect.bottom + 8 + window.scrollY;
-      setPos({ top: topPos, left });
+      const left = Math.max(8, Math.min(rect.left, window.innerWidth - popoverW - 8));
+      setPos({ top: rect.bottom + 8, left });
     }
     setOpen(true);
   };
 
+  // Close on outside click — excludes both trigger and popover
   useEffect(() => {
-  if (!open) return;
-  const handle = (e: MouseEvent) => {
-    if (
-      triggerRef.current && 
-      !triggerRef.current.contains(e.target as Node)
-    ) {
-      setOpen(false);
-    }
-  };
-  // Usa timeout per evitare che il click di apertura chiuda subito
-  const timer = setTimeout(() => {
+    if (!open) return;
+    const handle = (e: MouseEvent) => {
+      const target = e.target as Node;
+      if (
+        !triggerRef.current?.contains(target) &&
+        !popoverRef.current?.contains(target)
+      ) {
+        setOpen(false);
+      }
+    };
     document.addEventListener("mousedown", handle);
-  }, 100);
-  return () => {
-    clearTimeout(timer);
-    document.removeEventListener("mousedown", handle);
-  };
-}, [open]);
+    return () => document.removeEventListener("mousedown", handle);
+  }, [open]);
 
   // Close on scroll
   useEffect(() => {
@@ -57,6 +54,119 @@ const topPos = rect.bottom + 8 + window.scrollY;
     window.addEventListener("scroll", handle, { passive: true });
     return () => window.removeEventListener("scroll", handle);
   }, [open]);
+
+  const popover = open ? (
+    <div
+      ref={popoverRef}
+      style={{
+        position: "fixed",
+        top: pos.top,
+        left: pos.left,
+        zIndex: 9999,
+        width: 260,
+        pointerEvents: "all",
+        background: "rgba(13,10,30,0.97)",
+        border: "1px solid rgba(168,139,250,0.2)",
+        borderRadius: 14,
+        padding: "14px 16px",
+        boxShadow: "0 8px 32px rgba(0,0,0,0.6)",
+        animation: "htFadeIn 150ms ease-out both",
+      }}
+    >
+      <style>{`
+        @keyframes htFadeIn {
+          from { opacity: 0; transform: translateY(4px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
+
+      {/* Header */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          marginBottom: 8,
+        }}
+      >
+        <p
+          style={{
+            margin: 0,
+            fontSize: 13,
+            fontWeight: 600,
+            color: "#F0EEFF",
+            lineHeight: 1.3,
+          }}
+        >
+          {title}
+        </p>
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            setOpen(false);
+          }}
+          style={{
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+            color: "rgba(168,139,250,0.5)",
+            padding: 2,
+            display: "flex",
+            alignItems: "center",
+            flexShrink: 0,
+          }}
+        >
+          <X size={12} />
+        </button>
+      </div>
+
+      {/* Separator */}
+      <div
+        style={{
+          height: 1,
+          background: "rgba(168,139,250,0.15)",
+          marginBottom: 10,
+        }}
+      />
+
+      {/* Content */}
+      <p
+        style={{
+          margin: 0,
+          fontSize: 12,
+          color: "#7C6FA0",
+          lineHeight: 1.65,
+        }}
+      >
+        {content}
+      </p>
+
+      {/* Example */}
+      {example && (
+        <div
+          style={{
+            marginTop: 10,
+            background: "rgba(168,139,250,0.08)",
+            borderRadius: 8,
+            padding: "8px 10px",
+          }}
+        >
+          <p
+            style={{
+              margin: 0,
+              fontSize: 11,
+              fontStyle: "italic",
+              color: "#A88BFA",
+              lineHeight: 1.55,
+            }}
+          >
+            {example}
+          </p>
+        </div>
+      )}
+    </div>
+  ) : null;
 
   return (
     <>
@@ -81,10 +191,10 @@ const topPos = rect.bottom + 8 + window.scrollY;
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          zIndex: 50,
+          zIndex: 9999,
           flexShrink: 0,
-          pointerEvents: "all",
           lineHeight: 1,
+          pointerEvents: "all",
           transition: "background 200ms, border-color 200ms",
         }}
         onMouseEnter={(e) => {
@@ -103,116 +213,8 @@ const topPos = rect.bottom + 8 + window.scrollY;
         ?
       </button>
 
-      {open && (
-        <div
-          style={{
-            position: "fixed",
-            top: pos.top,
-            left: pos.left,
-            zIndex: 9999,
-            width: 260,
-            background: "rgba(13,10,30,0.97)",
-            border: "1px solid rgba(168,139,250,0.2)",
-            borderRadius: 14,
-            padding: "14px 16px",
-            boxShadow: "0 8px 32px rgba(0,0,0,0.6)",
-            animation: "htFadeIn 150ms ease-out both",
-          }}
-        >
-          <style>{`
-            @keyframes htFadeIn {
-              from { opacity: 0; transform: translateY(4px); }
-              to   { opacity: 1; transform: translateY(0); }
-            }
-          `}</style>
-
-          {/* Header */}
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              marginBottom: 8,
-            }}
-          >
-            <p
-              style={{
-                margin: 0,
-                fontSize: 13,
-                fontWeight: 600,
-                color: "#F0EEFF",
-                lineHeight: 1.3,
-              }}
-            >
-              {title}
-            </p>
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                setOpen(false);
-              }}
-              style={{
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-                color: "rgba(168,139,250,0.5)",
-                padding: 2,
-                display: "flex",
-                alignItems: "center",
-                flexShrink: 0,
-              }}
-            >
-              <X size={12} />
-            </button>
-          </div>
-
-          {/* Separator */}
-          <div
-            style={{
-              height: 1,
-              background: "rgba(168,139,250,0.15)",
-              marginBottom: 10,
-            }}
-          />
-
-          {/* Content */}
-          <p
-            style={{
-              margin: 0,
-              fontSize: 12,
-              color: "#7C6FA0",
-              lineHeight: 1.65,
-            }}
-          >
-            {content}
-          </p>
-
-          {/* Example */}
-          {example && (
-            <div
-              style={{
-                marginTop: 10,
-                background: "rgba(168,139,250,0.08)",
-                borderRadius: 8,
-                padding: "8px 10px",
-              }}
-            >
-              <p
-                style={{
-                  margin: 0,
-                  fontSize: 11,
-                  fontStyle: "italic",
-                  color: "#A88BFA",
-                  lineHeight: 1.55,
-                }}
-              >
-                {example}
-              </p>
-            </div>
-          )}
-        </div>
-      )}
+      {typeof document !== "undefined" &&
+        createPortal(popover, document.body)}
     </>
   );
 }
