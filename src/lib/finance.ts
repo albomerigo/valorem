@@ -601,6 +601,8 @@ function emptyStats(profile: UserProfile | null): DashboardStats {
     monthlyFree: 0,
     spentToday: 0,
     savingsPercent: 0,
+    remainingBudget: 0,
+    monthlyFree: 0,
     remainingDays: getRemainingDays(),
     dayOfMonth: getDayOfMonth(),
     daysInMonth: getDaysInMonth(),
