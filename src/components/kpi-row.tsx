@@ -7,9 +7,8 @@ import { splitCurrency } from "@/lib/utils";
 import { HelpTooltip } from "./help-tooltip";
 
 export function KPIRow({ stats }: { stats: DashboardStats }) {
-  const { monthlyFree, spentToday, capitalInvested, capitalInvestedCount, trendVsLastMonth } = stats;
-
-  const monthlyFreeSplit = splitCurrency(monthlyFree);
+  const { remainingBudget, spentToday, capitalInvested, capitalInvestedCount, trendVsLastMonth } = stats;
+const monthlyFreeSplit = splitCurrency(remainingBudget);
   const spentTodaySplit = splitCurrency(spentToday);
   const investedSplit = splitCurrency(capitalInvested);
 
@@ -20,9 +19,10 @@ export function KPIRow({ stats }: { stats: DashboardStats }) {
     >
       <div className="relative">
         <HelpTooltip
-          title="Traduttore di Tempo"
-          content="Le spese vengono convertite in ore/minuti del tuo lavoro. Vedere il denaro come tempo aiuta a valutare meglio ogni acquisto."
-          example="Es: 12€ = 36 min del tuo lavoro (con 20€/ora)"
+  title="Disponibile mensile"
+  content="È quanto puoi ancora spendere questo mese in modo sereno. Si aggiorna ad ogni transazione sottraendo le spese già fatte dal tuo budget libero mensile."
+  example="Es: 750€ budget libero - 320€ già spesi = 430€ ancora disponibili"
+/>
         />
         <KPITile
           label="Disponibile mensile"

@@ -102,6 +102,7 @@ export type DashboardData = {
 export type DashboardStats = {
   safeToSpendToday: number;
   monthlyFree: number;
+  remainingBudget: number;
   spentToday: number;
   savingsPercent: number;
   remainingDays: number;
@@ -550,6 +551,8 @@ export async function loadDashboardData(
   }
 
   const monthlyFree = getMonthlyFreeBudget(profile, fixedCosts);
+  const alreadySpent = getSpentThisMonth(transactions);
+  const remainingBudget = Math.max(0, monthlyFree - alreadySpent);
   const daysInMonth = getDaysInMonth();
 
   const hourlyRate =
@@ -565,6 +568,7 @@ export async function loadDashboardData(
   const stats: DashboardStats = {
     safeToSpendToday: getSafeToSpendToday(profile, fixedCosts, transactions),
     monthlyFree,
+    remainingBudget,
     spentToday: getSpentToday(transactions),
     savingsPercent: getSavingsPercent(profile, fixedCosts, transactions),
     remainingDays: getRemainingDays(),
