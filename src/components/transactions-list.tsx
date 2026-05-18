@@ -117,8 +117,14 @@ function TransactionRow({
 
   const [swipeOffset, setSwipeOffset] = useState(0);
   const [isSwiped, setIsSwiped] = useState(false);
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
   const rowRef = useRef<HTMLDivElement>(null);
   const touchStartX = useRef(0);
+
+  // Rileva touch device al mount
+  useEffect(() => {
+    setIsTouchDevice("ontouchstart" in window || navigator.maxTouchPoints > 0);
+  }, []);
 
   // Reset swipe quando l'utente tocca altrove
   useEffect(() => {
@@ -141,14 +147,14 @@ function TransactionRow({
     <div
       ref={rowRef}
       className={`group relative overflow-hidden ${!isLast ? "border-b border-white/[0.04]" : ""}`}
-      onTouchStart={(e) => {
+      onTouchStart={isTouchDevice ? (e) => {
         touchStartX.current = e.touches[0].clientX;
-      }}
-      onTouchMove={(e) => {
+      } : undefined}
+      onTouchMove={isTouchDevice ? (e) => {
         const deltaX = e.touches[0].clientX - touchStartX.current;
         if (deltaX < 0) setSwipeOffset(Math.max(deltaX, -88));
-      }}
-      onTouchEnd={() => {
+      } : undefined}
+      onTouchEnd={isTouchDevice ? () => {
         if (swipeOffset < -44) {
           setIsSwiped(true);
           setSwipeOffset(-88);
@@ -156,10 +162,10 @@ function TransactionRow({
           setIsSwiped(false);
           setSwipeOffset(0);
         }
-      }}
+      } : undefined}
     >
-      {/* Bottoni azione swipe (dietro la row) */}
-      <div
+      {/* Bottoni azione swipe (dietro la row) — solo su touch device */}
+      {isTouchDevice && <div
         style={{
           position: "absolute",
           right: 0,
@@ -201,16 +207,16 @@ function TransactionRow({
         >
           <Trash2 className="h-4 w-4 text-white" strokeWidth={2} />
         </button>
-      </div>
+      </div>}
 
-      {/* Contenuto principale (scorre a sinistra con lo swipe) */}
+      {/* Contenuto principale (scorre a sinistra con lo swipe solo su touch device) */}
       <div
-        style={{
+        style={isTouchDevice ? {
           transform: `translateX(${swipeOffset}px)`,
           transition: isSwiped ? "none" : "transform 0.3s cubic-bezier(0.2,0.8,0.2,1)",
           position: "relative",
           zIndex: 1,
-        }}
+        } : undefined}
         className="flex items-center gap-4 px-5 py-4 transition-all duration-[350ms] [transition-timing-function:cubic-bezier(0.2,0.8,0.2,1)] hover:bg-white/[0.025]"
       >
         {/* Icona categoria */}
