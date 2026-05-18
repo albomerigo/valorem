@@ -28,16 +28,25 @@ const CATEGORIES = [
   { value: "Altro", icon: MoreHorizontal },
 ];
 
+export type CustomCategory = {
+  id: string;
+  name: string;
+  emoji: string;
+  color: string;
+};
+
 interface NewTransactionModalProps {
   isOpen: boolean;
   onClose: () => void;
   editingTransaction?: Transaction | null;
+  customCategories?: CustomCategory[];
 }
 
 export function NewTransactionModal({
   isOpen,
   onClose,
   editingTransaction,
+  customCategories = [],
 }: NewTransactionModalProps) {
   const isEditing = !!editingTransaction;
   const router = useRouter();
@@ -251,6 +260,32 @@ export function NewTransactionModal({
                 );
               })}
             </div>
+
+            {/* Categorie personalizzate */}
+            {customCategories.length > 0 && (
+              <>
+                <p className="mb-1.5 mt-3 text-[10px] font-medium uppercase tracking-wider text-ink-muted">
+                  Le tue categorie
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {customCategories.map((cat) => (
+                    <button
+                      key={cat.id}
+                      type="button"
+                      onClick={() => setCategory(cat.name)}
+                      className={`flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-[11px] transition-all ${
+                        category === cat.name
+                          ? "border-iri-violet bg-iri-violet/10 text-iri-pale"
+                          : "border-white/[0.08] text-ink-secondary hover:border-iri-violet/30"
+                      }`}
+                    >
+                      <span style={{ color: cat.color }}>{cat.emoji}</span>
+                      {cat.name}
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
           </div>
 
           {/* Data */}

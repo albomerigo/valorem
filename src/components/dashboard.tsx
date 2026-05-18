@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import type { DashboardData } from "@/lib/finance";
 import { Sidebar } from "./sidebar";
@@ -17,6 +17,8 @@ import { SpendingChart } from "./spending-chart";
 import { UpgradeBanner } from "./upgrade-banner";
 import { OnboardingChecklist } from "./onboarding-checklist";
 import { NewTransactionModal } from "./new-transaction-modal";
+import { getCustomCategories } from "@/app/settings/categories-actions";
+import type { CustomCategory } from "@/app/settings/categories-actions";
 
 type DailyPoint = { date: string; amount: number; label: string };
 
@@ -87,6 +89,11 @@ export function Dashboard({
 }) {
   const plan = data.profile?.plan ?? "free";
   const [isAddingTransaction, setIsAddingTransaction] = useState(false);
+  const [customCategories, setCustomCategories] = useState<CustomCategory[]>([]);
+
+  useEffect(() => {
+    getCustomCategories().then(setCustomCategories);
+  }, []);
 
   const openNewTransaction = () => setIsAddingTransaction(true);
 
@@ -125,6 +132,7 @@ export function Dashboard({
       <NewTransactionModal
         isOpen={isAddingTransaction}
         onClose={() => setIsAddingTransaction(false)}
+        customCategories={customCategories}
       />
       <FabButton />
       <BottomBar activeRoute="dashboard" />
