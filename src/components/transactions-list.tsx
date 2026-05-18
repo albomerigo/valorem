@@ -179,14 +179,16 @@ function TransactionRow({
         }
       } : undefined}
     >
-      {/* Layer bottoni — fisso, rivelato dallo scorrimento del contenuto */}
+      {/* Layer bottoni — fisso a destra, nascosto dal layer contenuto quando offset=0 */}
       {isTouchDevice && (
         <div
           style={{
             position: "absolute",
-            inset: 0,
+            right: 0,
+            top: 0,
+            bottom: 0,
+            width: 88,
             display: "flex",
-            justifyContent: "flex-end",
           }}
         >
           <button
@@ -226,13 +228,15 @@ function TransactionRow({
         </div>
       )}
 
-      {/* Layer contenuto — scorre a sinistra rivelando i bottoni */}
+      {/* Layer contenuto — copre i bottoni (width 100%, background opaco), scorre a sinistra con lo swipe */}
       <div
         style={isTouchDevice ? {
           transform: `translateX(${swipeOffset}px)`,
           transition: "transform 0.2s ease-out",
           position: "relative",
           zIndex: 1,
+          width: "100%",
+          background: "var(--color-surface-1)",
         } : undefined}
         className="flex items-center gap-4 px-5 py-4 transition-all duration-[350ms] [transition-timing-function:cubic-bezier(0.2,0.8,0.2,1)] hover:bg-white/[0.025]"
       >
