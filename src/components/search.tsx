@@ -111,7 +111,21 @@ export function Search({ transactions, goals }: SearchProps) {
   const noResults = hasQuery && filteredTransactions.length === 0 && filteredGoals.length === 0;
 
   return (
-    <div ref={containerRef} className="relative hidden md:block">
+    <>
+      {/* Overlay trasparente — blocca click sottostanti quando il pannello è aperto */}
+      {open && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 40,
+            background: "transparent",
+          }}
+          onClick={closeSearch}
+        />
+      )}
+
+    <div ref={containerRef} className="relative hidden md:block" style={{ zIndex: open ? 50 : undefined }}>
       {/* Trigger / input bar */}
       <div
         onClick={!open ? openSearch : undefined}
@@ -168,7 +182,7 @@ export function Search({ transactions, goals }: SearchProps) {
             left: 0,
             width: "400px",
             zIndex: 50,
-            background: "rgba(13,10,30,0.97)",
+            background: "rgb(13,10,30)",
             border: "1px solid rgba(168,139,250,0.15)",
             borderRadius: "16px",
             boxShadow: "0 16px 48px rgba(0,0,0,0.6)",
@@ -330,6 +344,7 @@ export function Search({ transactions, goals }: SearchProps) {
         </div>
       )}
     </div>
+    </>
   );
 }
 
