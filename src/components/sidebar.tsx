@@ -12,6 +12,7 @@ import {
   ListOrdered,
   Sparkles,
   History,
+  Upload,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { signOut } from "@/app/(auth)/actions";
@@ -24,7 +25,8 @@ export type Route =
   | "cimitero"
   | "goals"
   | "settings"
-  | "storico";
+  | "storico"
+  | "import";
 
 const navItems: { icon: typeof Home; label: string; route: Route; href: string }[] = [
   { icon: Home, label: "Dashboard", route: "dashboard", href: "/" },
@@ -32,6 +34,7 @@ const navItems: { icon: typeof Home; label: string; route: Route; href: string }
   { icon: Ghost, label: "Cimitero", route: "cimitero", href: "/cimitero" },
   { icon: Target, label: "Obiettivi", route: "goals", href: "/obiettivi" },
   { icon: History, label: "Storico", route: "storico", href: "/storico" },
+  { icon: Upload, label: "Importa", route: "import", href: "/import" },
 ];
 
 export function Sidebar({ activeRoute = "dashboard" }: { activeRoute?: Route }) {
