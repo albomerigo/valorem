@@ -159,12 +159,14 @@ export function Search({ transactions, goals }: SearchProps) {
           <div
             className="absolute left-0 top-full z-50 mt-2 w-[400px] overflow-hidden rounded-[16px]"
             style={{
-  background: "#120F22",
+  background: "#0D0A1E",
   border: "1px solid rgba(168,139,250,0.5)",
   boxShadow: "0 24px 48px -12px rgba(0,0,0,0.9), 0 8px 16px -4px rgba(168,139,250,0.3)",
   animation: "searchFadeIn 150ms ease-out both",
   backdropFilter: "none",
   WebkitBackdropFilter: "none",
+  isolation: "isolate",
+  contain: "paint",
 }}
           >
             <style>{`
