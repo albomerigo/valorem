@@ -120,6 +120,8 @@ function TransactionRow({
   const [isTouchDevice, setIsTouchDevice] = useState(false);
   const rowRef = useRef<HTMLDivElement>(null);
   const touchStartX = useRef(0);
+  const touchStartY = useRef(0);
+  const isHorizontalSwipe = useRef<boolean | null>(null);
 
   // Rileva touch device al mount
   useEffect(() => {
@@ -149,12 +151,25 @@ function TransactionRow({
       className={`group relative overflow-hidden ${!isLast ? "border-b border-white/[0.04]" : ""}`}
       onTouchStart={isTouchDevice ? (e) => {
         touchStartX.current = e.touches[0].clientX;
+        touchStartY.current = e.touches[0].clientY;
+        isHorizontalSwipe.current = null;
       } : undefined}
       onTouchMove={isTouchDevice ? (e) => {
         const deltaX = e.touches[0].clientX - touchStartX.current;
-        if (deltaX < 0) setSwipeOffset(Math.max(deltaX, -88));
+        const deltaY = e.touches[0].clientY - touchStartY.current;
+        // Determina direzione al primo movimento significativo
+        if (isHorizontalSwipe.current === null) {
+          if (Math.abs(deltaX) < 5 && Math.abs(deltaY) < 5) return;
+          isHorizontalSwipe.current = Math.abs(deltaX) > Math.abs(deltaY);
+        }
+        if (!isHorizontalSwipe.current) return; // scroll verticale — ignora
+        if (deltaX < -10) {
+          e.preventDefault();
+          setSwipeOffset(Math.max(deltaX, -88));
+        }
       } : undefined}
       onTouchEnd={isTouchDevice ? () => {
+        isHorizontalSwipe.current = null;
         if (swipeOffset < -44) {
           setIsSwiped(true);
           setSwipeOffset(-88);
@@ -164,56 +179,58 @@ function TransactionRow({
         }
       } : undefined}
     >
-      {/* Bottoni azione swipe (dietro la row) — solo su touch device */}
-      {isTouchDevice && <div
-        style={{
-          position: "absolute",
-          right: 0,
-          top: 0,
-          bottom: 0,
-          width: 88,
-          display: "flex",
-        }}
-      >
-        <button
-          type="button"
-          onClick={() => { onEdit(); resetSwipe(); }}
+      {/* Layer bottoni — fisso, rivelato dallo scorrimento del contenuto */}
+      {isTouchDevice && (
+        <div
           style={{
-            width: 44,
-            height: "100%",
-            background: "rgba(168,139,250,0.9)",
+            position: "absolute",
+            inset: 0,
             display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            border: "none",
-            cursor: "pointer",
+            justifyContent: "flex-end",
           }}
         >
-          <Pencil className="h-4 w-4 text-white" strokeWidth={2} />
-        </button>
-        <button
-          type="button"
-          onClick={() => { onDelete(); resetSwipe(); }}
-          style={{
-            width: 44,
-            height: "100%",
-            background: "rgba(239,68,68,0.9)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            border: "none",
-            cursor: "pointer",
-          }}
-        >
-          <Trash2 className="h-4 w-4 text-white" strokeWidth={2} />
-        </button>
-      </div>}
+          <button
+            type="button"
+            onClick={() => { onEdit(); resetSwipe(); }}
+            style={{
+              width: 44,
+              height: "100%",
+              background: "#7C3AED",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              border: "none",
+              cursor: "pointer",
+              flexShrink: 0,
+            }}
+          >
+            <Pencil style={{ width: 18, height: 18, color: "white" }} strokeWidth={2} />
+          </button>
+          <button
+            type="button"
+            onClick={() => { onDelete(); resetSwipe(); }}
+            style={{
+              width: 44,
+              height: "100%",
+              background: "#DC2626",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              border: "none",
+              cursor: "pointer",
+              flexShrink: 0,
+            }}
+          >
+            <Trash2 style={{ width: 18, height: 18, color: "white" }} strokeWidth={2} />
+          </button>
+        </div>
+      )}
 
-      {/* Contenuto principale (scorre a sinistra con lo swipe solo su touch device) */}
+      {/* Layer contenuto — scorre a sinistra rivelando i bottoni */}
       <div
         style={isTouchDevice ? {
           transform: `translateX(${swipeOffset}px)`,
-          transition: isSwiped ? "none" : "transform 0.3s cubic-bezier(0.2,0.8,0.2,1)",
+          transition: "transform 0.2s ease-out",
           position: "relative",
           zIndex: 1,
         } : undefined}
