@@ -2,14 +2,20 @@
 
 import { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
-import { Search, Sun, Moon } from "lucide-react";
+import { Sun, Moon } from "lucide-react";
+import { Search } from "./search";
+import type { Transaction, Goal } from "@/lib/finance";
 
 export function Topbar({
   userName,
   section = "Dashboard",
+  transactions = [],
+  goals = [],
 }: {
   userName: string;
   section?: string;
+  transactions?: Transaction[];
+  goals?: Goal[];
 }) {
   return (
     <div className="flex items-center justify-between gap-3 animate-slide-up">
@@ -27,13 +33,7 @@ export function Topbar({
 
       <div className="flex items-center gap-2 flex-shrink-0">
         <ThemeToggle />
-        <div className="hidden md:flex glass-panel-subtle w-[280px] cursor-text items-center gap-2.5 rounded-[12px] px-3.5 py-[9px] text-xs text-ink-secondary transition-all duration-300 hover:border-iri-violet/30 hover:text-ink-primary">
-          <Search className="h-3.5 w-3.5" />
-          <span className="flex-1 truncate">Cerca movimenti, categorie…</span>
-          <span className="rounded-md border border-white/[0.08] bg-white/[0.04] px-1.5 py-[2px] font-mono text-[10px] text-ink-muted">
-            ⌘K
-          </span>
-        </div>
+        <Search transactions={transactions} goals={goals} />
       </div>
     </div>
   );

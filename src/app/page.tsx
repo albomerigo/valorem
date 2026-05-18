@@ -37,6 +37,7 @@ export default async function Home() {
       data={dashboardData}
       dailyData={dailyData}
       goalsCount={goals.length}
+      goals={goals}
     />
   );
 }

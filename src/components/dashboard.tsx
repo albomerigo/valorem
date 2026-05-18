@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import type { DashboardData } from "@/lib/finance";
+import type { DashboardData, Goal } from "@/lib/finance";
 import { Sidebar } from "./sidebar";
 import { BottomBar } from "./bottom-bar";
 import { FabButton } from "./fab-button";
@@ -80,10 +80,12 @@ export function Dashboard({
   data,
   dailyData,
   goalsCount = 0,
+  goals = [],
 }: {
   data: DashboardData;
   dailyData: DailyPoint[];
   goalsCount?: number;
+  goals?: Goal[];
 }) {
   const plan = data.profile?.plan ?? "free";
   const [isAddingTransaction, setIsAddingTransaction] = useState(false);
@@ -97,7 +99,11 @@ export function Dashboard({
       </div>
       <div className="md:ml-[64px] min-h-screen pb-36 md:pb-0">
         <div className="mx-auto max-w-[1400px] px-4 py-5 md:px-8 md:py-7">
-          <Topbar userName={data.profile?.name || "ospite"} />
+          <Topbar
+            userName={data.profile?.name || "ospite"}
+            transactions={data.transactions}
+            goals={goals}
+          />
           <div className="mt-5 flex flex-col gap-4 md:mt-6 md:gap-5">
             <RecapBanner />
             <OnboardingChecklist
