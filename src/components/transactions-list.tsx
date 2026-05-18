@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import {
   ChevronRight,
@@ -115,72 +115,165 @@ function TransactionRow({
   const { int: eurosInt, dec: eurosDec } = splitCurrency(amount);
   const { Icon, color } = categoryMeta(tx.category, tx.type);
 
+  const [swipeOffset, setSwipeOffset] = useState(0);
+  const [isSwiped, setIsSwiped] = useState(false);
+  const rowRef = useRef<HTMLDivElement>(null);
+  const touchStartX = useRef(0);
+
+  // Reset swipe quando l'utente tocca altrove
+  useEffect(() => {
+    const handler = (e: TouchEvent) => {
+      if (rowRef.current && !rowRef.current.contains(e.target as Node)) {
+        setSwipeOffset(0);
+        setIsSwiped(false);
+      }
+    };
+    document.addEventListener("touchstart", handler, { passive: true });
+    return () => document.removeEventListener("touchstart", handler);
+  }, []);
+
+  function resetSwipe() {
+    setSwipeOffset(0);
+    setIsSwiped(false);
+  }
+
   return (
     <div
-      className={`group relative flex items-center gap-4 px-5 py-4 transition-all duration-[350ms] [transition-timing-function:cubic-bezier(0.2,0.8,0.2,1)] hover:bg-white/[0.025] ${
-        !isLast ? "border-b border-white/[0.04]" : ""
-      }`}
+      ref={rowRef}
+      className={`group relative overflow-hidden ${!isLast ? "border-b border-white/[0.04]" : ""}`}
+      onTouchStart={(e) => {
+        touchStartX.current = e.touches[0].clientX;
+      }}
+      onTouchMove={(e) => {
+        const deltaX = e.touches[0].clientX - touchStartX.current;
+        if (deltaX < 0) setSwipeOffset(Math.max(deltaX, -88));
+      }}
+      onTouchEnd={() => {
+        if (swipeOffset < -44) {
+          setIsSwiped(true);
+          setSwipeOffset(-88);
+        } else {
+          setIsSwiped(false);
+          setSwipeOffset(0);
+        }
+      }}
     >
-      {/* Icona categoria */}
+      {/* Bottoni azione swipe (dietro la row) */}
       <div
-        className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-[12px] border border-white/[0.06] bg-white/[0.03]"
-        style={{ color }}
+        style={{
+          position: "absolute",
+          right: 0,
+          top: 0,
+          bottom: 0,
+          width: 88,
+          display: "flex",
+        }}
       >
-        <Icon className="h-[17px] w-[17px]" strokeWidth={1.6} />
+        <button
+          type="button"
+          onClick={() => { onEdit(); resetSwipe(); }}
+          style={{
+            width: 44,
+            height: "100%",
+            background: "rgba(168,139,250,0.9)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            border: "none",
+            cursor: "pointer",
+          }}
+        >
+          <Pencil className="h-4 w-4 text-white" strokeWidth={2} />
+        </button>
+        <button
+          type="button"
+          onClick={() => { onDelete(); resetSwipe(); }}
+          style={{
+            width: 44,
+            height: "100%",
+            background: "rgba(239,68,68,0.9)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            border: "none",
+            cursor: "pointer",
+          }}
+        >
+          <Trash2 className="h-4 w-4 text-white" strokeWidth={2} />
+        </button>
       </div>
 
-      <div className="min-w-0 flex-1">
-        <div className="flex items-baseline justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <p className="m-0 text-[14px] font-medium text-ink-primary">
-              {tx.merchant}
+      {/* Contenuto principale (scorre a sinistra con lo swipe) */}
+      <div
+        style={{
+          transform: `translateX(${swipeOffset}px)`,
+          transition: isSwiped ? "none" : "transform 0.3s cubic-bezier(0.2,0.8,0.2,1)",
+          position: "relative",
+          zIndex: 1,
+        }}
+        className="flex items-center gap-4 px-5 py-4 transition-all duration-[350ms] [transition-timing-function:cubic-bezier(0.2,0.8,0.2,1)] hover:bg-white/[0.025]"
+      >
+        {/* Icona categoria */}
+        <div
+          className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-[12px] border border-white/[0.06] bg-white/[0.03]"
+          style={{ color }}
+        >
+          <Icon className="h-[17px] w-[17px]" strokeWidth={1.6} />
+        </div>
+
+        <div className="min-w-0 flex-1">
+          <div className="flex items-baseline justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <p className="m-0 text-[14px] font-medium text-ink-primary">
+                {tx.merchant}
+              </p>
+              {tx.recurring && (
+                <span className="flex items-center gap-1 rounded-md border border-iri-violet/25 bg-iri-violet/[0.1] px-2 py-px text-[9px] font-medium uppercase tracking-[0.08em] text-iri-pale">
+                  <Repeat2 className="h-2.5 w-2.5" strokeWidth={2} />
+                  Ricorrente
+                </span>
+              )}
+            </div>
+            <p className="m-0 font-mono-tabular text-[14px] font-medium text-ink-primary [letter-spacing:-0.01em]">
+              {tx.type === "expense" ? "−" : "+"}
+              {eurosInt}
+              <span className="text-[11px] text-ink-primary/65">,{eurosDec}</span>
+              <span className="ml-0.5 text-[11px] text-ink-muted">€</span>
             </p>
-            {tx.recurring && (
-              <span className="flex items-center gap-1 rounded-md border border-iri-violet/25 bg-iri-violet/[0.1] px-2 py-px text-[9px] font-medium uppercase tracking-[0.08em] text-iri-pale">
-                <Repeat2 className="h-2.5 w-2.5" strokeWidth={2} />
-                Ricorrente
-              </span>
-            )}
           </div>
-          <p className="m-0 font-mono-tabular text-[14px] font-medium text-ink-primary [letter-spacing:-0.01em]">
-            {tx.type === "expense" ? "−" : "+"}
-            {eurosInt}
-            <span className="text-[11px] text-ink-primary/65">,{eurosDec}</span>
-            <span className="ml-0.5 text-[11px] text-ink-muted">€</span>
-          </p>
+          <div className="mt-1 flex items-center justify-between gap-3">
+            <span className="text-[11px] text-ink-secondary">
+              {tx.category || "Altro"} · {formatRelativeDate(tx.transaction_date)}
+            </span>
+            <p className="m-0 font-mono-tabular text-[11px] text-ink-muted">
+              {timeLabel}
+            </p>
+          </div>
         </div>
-        <div className="mt-1 flex items-center justify-between gap-3">
-          <span className="text-[11px] text-ink-secondary">
-            {tx.category || "Altro"} · {formatRelativeDate(tx.transaction_date)}
-          </span>
-          <p className="m-0 font-mono-tabular text-[11px] text-ink-muted">
-            {timeLabel}
-          </p>
-        </div>
-      </div>
 
-      {/* Pulsanti modifica/elimina (visibili al hover) */}
-      <div className="flex flex-shrink-0 items-center gap-1 opacity-0 transition-all duration-[250ms] group-hover:opacity-100">
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onEdit();
-          }}
-          className="rounded-lg p-2 text-ink-muted transition-colors hover:bg-iri-violet/10 hover:text-iri-pale"
-          title="Modifica"
-        >
-          <Pencil className="h-3.5 w-3.5" strokeWidth={2} />
-        </button>
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onDelete();
-          }}
-          className="rounded-lg p-2 text-ink-muted transition-colors hover:bg-red-500/10 hover:text-red-400"
-          title="Elimina"
-        >
-          <Trash2 className="h-3.5 w-3.5" strokeWidth={2} />
-        </button>
+        {/* Pulsanti modifica/elimina (visibili al hover su desktop) */}
+        <div className="flex flex-shrink-0 items-center gap-1 opacity-0 transition-all duration-[250ms] group-hover:opacity-100">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onEdit();
+            }}
+            className="rounded-lg p-2 text-ink-muted transition-colors hover:bg-iri-violet/10 hover:text-iri-pale"
+            title="Modifica"
+          >
+            <Pencil className="h-3.5 w-3.5" strokeWidth={2} />
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete();
+            }}
+            className="rounded-lg p-2 text-ink-muted transition-colors hover:bg-red-500/10 hover:text-red-400"
+            title="Elimina"
+          >
+            <Trash2 className="h-3.5 w-3.5" strokeWidth={2} />
+          </button>
+        </div>
       </div>
     </div>
   );
