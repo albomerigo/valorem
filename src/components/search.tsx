@@ -28,7 +28,6 @@ export function Search({ transactions, goals }: SearchProps) {
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(-1);
   const router = useRouter();
-  const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const q = query.toLowerCase().trim();
@@ -63,7 +62,7 @@ export function Search({ transactions, goals }: SearchProps) {
     setActiveIndex(-1);
   }, []);
 
-  // ⌘K / Ctrl+K
+  // ⌘K / Ctrl+K + Escape
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
@@ -77,16 +76,6 @@ export function Search({ transactions, goals }: SearchProps) {
     return () => document.removeEventListener("keydown", handler);
   }, [open, openSearch, closeSearch]);
 
-  // Click outside
-  useEffect(() => {
-    if (!open) return;
-    const handler = (e: MouseEvent) => {
-      if (!containerRef.current?.contains(e.target as Node)) closeSearch();
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, [open, closeSearch]);
-
   // Arrow navigation
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "ArrowDown") {
@@ -99,33 +88,21 @@ export function Search({ transactions, goals }: SearchProps) {
       e.preventDefault();
       if (activeIndex < filteredTransactions.length) {
         router.push(`/attivita?search=${encodeURIComponent(query)}`);
-        closeSearch();
       } else {
         router.push("/obiettivi");
-        closeSearch();
       }
+      closeSearch();
     }
   };
 
   const hasQuery = query.length > 0;
-  const noResults = hasQuery && filteredTransactions.length === 0 && filteredGoals.length === 0;
+  const noResults =
+    hasQuery &&
+    filteredTransactions.length === 0 &&
+    filteredGoals.length === 0;
 
   return (
-    <>
-      {/* Overlay trasparente — blocca click sottostanti quando il pannello è aperto */}
-      {open && (
-        <div
-          style={{
-            position: "fixed",
-            inset: 0,
-            zIndex: 40,
-            background: "transparent",
-          }}
-          onClick={closeSearch}
-        />
-      )}
-
-    <div ref={containerRef} className="relative hidden md:block" style={{ zIndex: open ? 50 : undefined }}>
+    <div className="relative hidden md:block">
       {/* Trigger / input bar */}
       <div
         onClick={!open ? openSearch : undefined}
@@ -173,178 +150,179 @@ export function Search({ transactions, goals }: SearchProps) {
         )}
       </div>
 
-      {/* Results panel */}
       {open && (
-        <div
-          style={{
-            position: "absolute",
-            top: "calc(100% + 8px)",
-            left: 0,
-            width: "400px",
-            zIndex: 50,
-            background: "rgb(13,10,30)",
-            border: "1px solid rgba(168,139,250,0.15)",
-            borderRadius: "16px",
-            boxShadow: "0 16px 48px rgba(0,0,0,0.6)",
-            overflow: "hidden",
-            animation: "searchFadeIn 150ms ease-out both",
-          }}
-        >
-          <style>{`
-            @keyframes searchFadeIn {
-              from { opacity: 0; transform: translateY(6px); }
-              to   { opacity: 1; transform: translateY(0); }
-            }
-          `}</style>
+        <>
+          {/* Overlay — blocca click sottostanti */}
+          <div className="fixed inset-0 z-40" onClick={closeSearch} />
 
-          {noResults ? (
-            <div className="px-4 py-6 text-center">
-              <p className="text-[12px] text-ink-secondary">
-                Nessun risultato per{" "}
-                <span className="text-ink-primary">
-                  &ldquo;{query}&rdquo;
-                </span>
-              </p>
-            </div>
-          ) : (
-            <div className="py-2">
-              {/* Sezione Transazioni */}
-              {filteredTransactions.length > 0 && (
-                <div>
-                  <p
-                    className="eyebrow px-4 py-2"
-                    style={{ fontSize: 10, color: "rgba(168,139,250,0.6)" }}
-                  >
-                    Transazioni
-                  </p>
-                  {filteredTransactions.map((tx, i) => {
-                    const isActive = i === activeIndex;
-                    const { int, dec } = splitAmount(Number(tx.amount));
-                    return (
-                      <button
-                        key={tx.id}
-                        type="button"
-                        onClick={() => {
-                          router.push(
-                            `/attivita?search=${encodeURIComponent(query || tx.merchant)}`
-                          );
-                          closeSearch();
-                        }}
-                        className={`flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors ${
-                          isActive
-                            ? "bg-iri-violet/[0.12]"
-                            : "hover:bg-white/[0.03]"
-                        }`}
-                      >
-                        <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-[9px] border border-white/[0.06] bg-white/[0.03] text-[14px]">
-                          {categoryEmoji(tx.category)}
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <p className="truncate text-[13px] font-medium text-ink-primary">
-                            {tx.merchant}
-                          </p>
-                          <p className="text-[11px] text-ink-secondary">
-                            {tx.category || "Altro"} ·{" "}
-                            {formatDate(tx.transaction_date)}
-                          </p>
-                        </div>
-                        <p
-                          className={`flex-shrink-0 font-mono text-[13px] font-medium ${
-                            tx.type === "income"
-                              ? "text-emerald-400"
-                              : "text-red-400"
+          {/* Pannello risultati */}
+          <div
+            className="absolute left-0 top-full z-50 mt-2 w-[400px] overflow-hidden rounded-[16px]"
+            style={{
+              background: "var(--color-surface-3)",
+              border: "1px solid rgba(168,139,250,0.5)",
+              boxShadow:
+                "0 24px 48px -12px rgba(0,0,0,0.6), 0 8px 16px -4px rgba(168,139,250,0.3)",
+              animation: "searchFadeIn 150ms ease-out both",
+            }}
+          >
+            <style>{`
+              @keyframes searchFadeIn {
+                from { opacity: 0; transform: translateY(6px); }
+                to   { opacity: 1; transform: translateY(0); }
+              }
+            `}</style>
+
+            {noResults ? (
+              <div className="px-4 py-6 text-center">
+                <p className="text-[12px] text-ink-secondary">
+                  Nessun risultato per{" "}
+                  <span className="text-ink-primary">
+                    &ldquo;{query}&rdquo;
+                  </span>
+                </p>
+              </div>
+            ) : (
+              <div className="py-2">
+                {/* Sezione Transazioni */}
+                {filteredTransactions.length > 0 && (
+                  <div>
+                    <p
+                      className="eyebrow px-4 py-2"
+                      style={{ fontSize: 10, color: "rgba(168,139,250,0.6)" }}
+                    >
+                      Transazioni
+                    </p>
+                    {filteredTransactions.map((tx, i) => {
+                      const isActive = i === activeIndex;
+                      const { int, dec } = splitAmount(Number(tx.amount));
+                      return (
+                        <button
+                          key={tx.id}
+                          type="button"
+                          onClick={() => {
+                            router.push(
+                              `/attivita?search=${encodeURIComponent(query || tx.merchant)}`
+                            );
+                            closeSearch();
+                          }}
+                          className={`flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors ${
+                            isActive
+                              ? "bg-iri-violet/[0.12]"
+                              : "hover:bg-white/[0.03]"
                           }`}
                         >
-                          {tx.type === "income" ? "+" : "−"}
-                          {int}
-                          <span className="text-[10px] opacity-70">,{dec}</span>
-                          <span className="ml-0.5 text-[10px] text-ink-muted">
-                            €
-                          </span>
-                        </p>
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
-
-              {/* Sezione Obiettivi */}
-              {filteredGoals.length > 0 && (
-                <div>
-                  {filteredTransactions.length > 0 && (
-                    <div
-                      style={{
-                        height: 1,
-                        background: "rgba(168,139,250,0.08)",
-                        margin: "4px 0",
-                      }}
-                    />
-                  )}
-                  <p
-                    className="eyebrow px-4 py-2"
-                    style={{ fontSize: 10, color: "rgba(168,139,250,0.6)" }}
-                  >
-                    Obiettivi
-                  </p>
-                  {filteredGoals.map((g, i) => {
-                    const idx = filteredTransactions.length + i;
-                    const isActive = idx === activeIndex;
-                    const progress = Math.round(
-                      (Number(g.current_amount) / Number(g.target_amount)) * 100
-                    );
-                    return (
-                      <button
-                        key={g.id}
-                        type="button"
-                        onClick={() => {
-                          router.push("/obiettivi");
-                          closeSearch();
-                        }}
-                        className={`flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors ${
-                          isActive
-                            ? "bg-iri-violet/[0.12]"
-                            : "hover:bg-white/[0.03]"
-                        }`}
-                      >
-                        <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-[9px] border border-white/[0.06] bg-white/[0.03] text-[16px]">
-                          {g.emoji || "🎯"}
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <p className="truncate text-[13px] font-medium text-ink-primary">
-                            {g.title}
-                          </p>
-                          <p className="text-[11px] text-ink-secondary">
-                            {Number(g.current_amount).toFixed(0)}€ /{" "}
-                            {Number(g.target_amount).toFixed(0)}€ · {progress}%
-                          </p>
-                        </div>
-                        <div className="flex-shrink-0">
-                          <div className="h-1.5 w-16 overflow-hidden rounded-full bg-white/[0.06]">
-                            <div
-                              className="h-full rounded-full bg-gradient-to-r from-iri-violet to-iri-magenta"
-                              style={{ width: `${Math.min(progress, 100)}%` }}
-                            />
+                          <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-[9px] border border-white/[0.06] bg-white/[0.03] text-[14px]">
+                            {categoryEmoji(tx.category)}
                           </div>
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
+                          <div className="min-w-0 flex-1">
+                            <p className="truncate text-[13px] font-medium text-ink-primary">
+                              {tx.merchant}
+                            </p>
+                            <p className="text-[11px] text-ink-secondary">
+                              {tx.category || "Altro"} ·{" "}
+                              {formatDate(tx.transaction_date)}
+                            </p>
+                          </div>
+                          <p
+                            className={`flex-shrink-0 font-mono text-[13px] font-medium ${
+                              tx.type === "income"
+                                ? "text-emerald-400"
+                                : "text-red-400"
+                            }`}
+                          >
+                            {tx.type === "income" ? "+" : "−"}
+                            {int}
+                            <span className="text-[10px] opacity-70">,{dec}</span>
+                            <span className="ml-0.5 text-[10px] text-ink-muted">
+                              €
+                            </span>
+                          </p>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
 
-              {!hasQuery && (
-                <div className="border-t border-white/[0.04] px-4 py-2.5">
-                  <p className="text-[10px] text-ink-muted">
-                    Digita per cercare · frecce per navigare · Invio per aprire
-                  </p>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
+                {/* Sezione Obiettivi */}
+                {filteredGoals.length > 0 && (
+                  <div>
+                    {filteredTransactions.length > 0 && (
+                      <div
+                        style={{
+                          height: 1,
+                          background: "rgba(168,139,250,0.08)",
+                          margin: "4px 0",
+                        }}
+                      />
+                    )}
+                    <p
+                      className="eyebrow px-4 py-2"
+                      style={{ fontSize: 10, color: "rgba(168,139,250,0.6)" }}
+                    >
+                      Obiettivi
+                    </p>
+                    {filteredGoals.map((g, i) => {
+                      const idx = filteredTransactions.length + i;
+                      const isActive = idx === activeIndex;
+                      const progress = Math.round(
+                        (Number(g.current_amount) / Number(g.target_amount)) *
+                          100
+                      );
+                      return (
+                        <button
+                          key={g.id}
+                          type="button"
+                          onClick={() => {
+                            router.push("/obiettivi");
+                            closeSearch();
+                          }}
+                          className={`flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors ${
+                            isActive
+                              ? "bg-iri-violet/[0.12]"
+                              : "hover:bg-white/[0.03]"
+                          }`}
+                        >
+                          <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-[9px] border border-white/[0.06] bg-white/[0.03] text-[16px]">
+                            {g.emoji || "🎯"}
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="truncate text-[13px] font-medium text-ink-primary">
+                              {g.title}
+                            </p>
+                            <p className="text-[11px] text-ink-secondary">
+                              {Number(g.current_amount).toFixed(0)}€ /{" "}
+                              {Number(g.target_amount).toFixed(0)}€ · {progress}
+                              %
+                            </p>
+                          </div>
+                          <div className="flex-shrink-0">
+                            <div className="h-1.5 w-16 overflow-hidden rounded-full bg-white/[0.06]">
+                              <div
+                                className="h-full rounded-full bg-gradient-to-r from-iri-violet to-iri-magenta"
+                                style={{ width: `${Math.min(progress, 100)}%` }}
+                              />
+                            </div>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {!hasQuery && (
+                  <div className="border-t border-white/[0.04] px-4 py-2.5">
+                    <p className="text-[10px] text-ink-muted">
+                      Digita per cercare · frecce per navigare · Invio per aprire
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </>
       )}
     </div>
-    </>
   );
 }
 
