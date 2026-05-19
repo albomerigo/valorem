@@ -11,6 +11,8 @@ import { ProfileSection } from "./sections/profile-section";
 import { EconomicsSection } from "./sections/economics-section";
 import { TimeMetricSection } from "./sections/time-metric-section";
 import { FixedCostsSection } from "./sections/fixed-costs-section";
+import { CustomCategoriesSection } from "./sections/custom-categories-section";
+import type { CustomCategory } from "./categories-actions";
 
 /**
  * Pagina "Setup Vitale" — la sala comandi di Valorem.
@@ -19,9 +21,11 @@ import { FixedCostsSection } from "./sections/fixed-costs-section";
 export function SettingsView({
   profile,
   fixedCosts,
+  customCategories = [],
 }: {
   profile: UserProfile;
   fixedCosts: FixedCost[];
+  customCategories?: CustomCategory[];
 }) {
   return (
     <div className="relative min-h-screen">
@@ -49,6 +53,10 @@ export function SettingsView({
               <EconomicsSection profile={profile} />
               <TimeMetricSection profile={profile} />
               <FixedCostsSection fixedCosts={fixedCosts} />
+              <CustomCategoriesSection
+                plan={profile.plan ?? "free"}
+                initialCategories={customCategories}
+              />
             </div>
 
             <PlanSection profile={profile} />

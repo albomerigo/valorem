@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { fetchUserProfile, fetchFixedCosts } from "@/lib/finance";
+import { getCustomCategories } from "./categories-actions";
 import { SettingsView } from "./settings-view";
 
 export const metadata = {
@@ -15,13 +16,20 @@ export default async function SettingsPage() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/signin");
 
-  const [profile, fixedCosts] = await Promise.all([
+  const [profile, fixedCosts, customCategories] = await Promise.all([
     fetchUserProfile(supabase),
     fetchFixedCosts(supabase),
+    getCustomCategories(),
   ]);
 
   if (!profile) redirect("/signin");
   if (!profile.onboarded) redirect("/onboarding");
 
-  return <SettingsView profile={profile} fixedCosts={fixedCosts} />;
+  return (
+    <SettingsView
+      profile={profile}
+      fixedCosts={fixedCosts}
+      customCategories={customCategories}
+    />
+  );
 }

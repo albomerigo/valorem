@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   Search,
   ListOrdered,
@@ -38,6 +38,8 @@ import { deleteTransaction } from "@/app/actions/transactions";
 import { splitCurrency } from "@/lib/utils";
 import { NewTransactionModal } from "@/components/new-transaction-modal";
 import { ConfirmDialog } from "@/components/confirm-dialog";
+import { getCustomCategories } from "@/app/settings/categories-actions";
+import type { CustomCategory } from "@/app/settings/categories-actions";
 type Period = "month" | "30days" | "3months" | "all";
 type TypeFilter = "all" | "expense" | "income";
 
@@ -80,6 +82,11 @@ export function AttivitaView({
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const [deletingTransactionId, setDeletingTransactionId] = useState<string | null>(null);
   const [isExporting, setIsExporting] = useState(false);
+  const [customCategories, setCustomCategories] = useState<CustomCategory[]>([]);
+
+  useEffect(() => {
+    getCustomCategories().then(setCustomCategories);
+  }, []);
 
   const monthlyCount = useMemo(() => {
     const now = new Date();
@@ -444,6 +451,7 @@ export function AttivitaView({
         isOpen={!!editingTransaction}
         onClose={() => setEditingTransaction(null)}
         editingTransaction={editingTransaction}
+        customCategories={customCategories}
       />
 
       <ConfirmDialog
