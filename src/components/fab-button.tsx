@@ -1,16 +1,17 @@
 "use client";
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Plus } from "lucide-react";
 import { NewTransactionModal } from "./new-transaction-modal";
+import { getCustomCategories } from "@/app/settings/categories-actions";
+import type { CustomCategory } from "@/app/settings/categories-actions";
 
-/**
- * Floating Action Button per mobile.
- * Sostituisce il pulsante "+" della sidebar quando in mobile.
- * Posizionato in basso a destra, sopra la bottom bar.
- */
 export function FabButton() {
   const [open, setOpen] = useState(false);
+  const [customCategories, setCustomCategories] = useState<CustomCategory[]>([]);
+
+  useEffect(() => {
+    getCustomCategories().then(setCustomCategories);
+  }, []);
 
   return (
     <>
@@ -22,8 +23,11 @@ export function FabButton() {
       >
         <Plus className="h-6 w-6" strokeWidth={2.2} />
       </button>
-
-      <NewTransactionModal isOpen={open} onClose={() => setOpen(false)} />
+      <NewTransactionModal
+        isOpen={open}
+        onClose={() => setOpen(false)}
+        customCategories={customCategories}
+      />
     </>
   );
 }
