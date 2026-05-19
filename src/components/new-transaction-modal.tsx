@@ -143,8 +143,8 @@ export function NewTransactionModal({
       onClick={onClose}
     >
       <div
-       className="relative w-full max-w-md rounded-2xl p-6"
-style={{ background: "#0D0A1E", border: "1px solid rgba(168,139,250,0.2)", boxShadow: "0 24px 48px -12px rgba(0,0,0,0.9)" }}
+       className="relative w-full max-w-md rounded-2xl p-6 overflow-y-auto"
+style={{ background: "#0D0A1E", border: "1px solid rgba(168,139,250,0.2)", boxShadow: "0 24px 48px -12px rgba(0,0,0,0.9)", maxHeight: "90vh" }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
