@@ -15,9 +15,12 @@ import {
   Upload,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useState, useEffect } from "react";
 import { signOut } from "@/app/(auth)/actions";
 import { NewTransactionModal } from "./new-transaction-modal";
 import { usePlan } from "@/hooks/usePlan";
+import { getCustomCategories } from "@/app/settings/categories-actions";
+import type { CustomCategory } from "@/app/settings/categories-actions";
 
 export type Route =
   | "dashboard"
@@ -40,6 +43,11 @@ const navItems: { icon: typeof Home; label: string; route: Route; href: string }
 export function Sidebar({ activeRoute = "dashboard" }: { activeRoute?: Route }) {
   const [modalOpen, setModalOpen] = useState(false);
   const { plan } = usePlan();
+  const [customCategories, setCustomCategories] = useState<CustomCategory[]>([]);
+
+useEffect(() => {
+  getCustomCategories().then(setCustomCategories);
+}, []);
 
   const planLabel =
     plan === "free" ? "Upgrade" : plan === "premium" ? "Premium" : "Pro";
@@ -139,7 +147,7 @@ export function Sidebar({ activeRoute = "dashboard" }: { activeRoute?: Route }) 
         </form>
       </aside>
 
-      <NewTransactionModal isOpen={modalOpen} onClose={() => setModalOpen(false)} />
+      <NewTransactionModal isOpen={modalOpen} onClose={() => setModalOpen(false)} customCategories={customCategories} />
     </>
   );
 }
