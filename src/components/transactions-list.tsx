@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import {
   ChevronRight,
   ShoppingCart,
@@ -55,9 +56,9 @@ export function TransactionsList({
       >
         <div className="mb-3 flex items-center justify-between px-1">
           <p className="eyebrow">Movimenti recenti</p>
-          <span className="cursor-pointer text-[11px] font-medium text-ink-secondary transition-colors hover:text-iri-pale">
+          <Link href="/attivita" className="text-[11px] font-medium text-ink-secondary transition-colors hover:text-iri-pale">
             Vedi tutti →
-          </span>
+          </Link>
         </div>
 
         {transactions.length === 0 ? (

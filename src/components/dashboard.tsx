@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { Calendar, ChevronRight } from "lucide-react";
 import type { DashboardData, Goal } from "@/lib/finance";
 import { Sidebar } from "./sidebar";
 import { BottomBar } from "./bottom-bar";
@@ -21,6 +22,27 @@ import { getCustomCategories } from "@/app/settings/categories-actions";
 import type { CustomCategory } from "@/app/settings/categories-actions";
 
 type DailyPoint = { date: string; amount: number; label: string };
+
+function CurrentMonthRecapLink() {
+  const now = new Date();
+  const slug = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+  const monthLabel = now.toLocaleDateString("it-IT", { month: "long", year: "numeric" });
+
+  return (
+    <Link
+      href={`/recap/${slug}`}
+      className="glass-panel-subtle flex items-center gap-3 rounded-[14px] px-4 py-3 transition-all hover:bg-white/[0.04]"
+    >
+      <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-[10px] border border-iri-violet/25 bg-iri-violet/[0.08] text-iri-pale">
+        <Calendar className="h-4 w-4" strokeWidth={1.6} />
+      </div>
+      <p className="m-0 flex-1 text-[13px] font-medium text-ink-secondary">
+        Recap di {monthLabel}
+      </p>
+      <ChevronRight className="h-4 w-4 text-ink-muted" strokeWidth={1.6} />
+    </Link>
+  );
+}
 
 function PlanPill({ plan }: { plan: string }) {
   if (plan === "free") return null;
@@ -113,6 +135,7 @@ export function Dashboard({
           />
           <div className="mt-5 flex flex-col gap-4 md:mt-6 md:gap-5">
             <RecapBanner />
+            <CurrentMonthRecapLink />
             <OnboardingChecklist
               transactions={data.transactions.length}
               goals={goalsCount}

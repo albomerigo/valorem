@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import {
   Search,
   ListOrdered,
@@ -625,69 +625,152 @@ function ActivityRow({
   const { int, dec } = splitCurrency(amount);
   const { Icon, color } = categoryMeta(tx.category, tx.type);
 
+  const [swipeOffset, setSwipeOffset] = useState(0);
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
+  const rowRef = useRef<HTMLDivElement>(null);
+  const touchStartX = useRef(0);
+  const touchStartY = useRef(0);
+  const isHorizontalSwipe = useRef<boolean | null>(null);
+
+  useEffect(() => {
+    setIsTouchDevice("ontouchstart" in window || navigator.maxTouchPoints > 0);
+  }, []);
+
+  useEffect(() => {
+    const handler = (e: TouchEvent) => {
+      if (rowRef.current && !rowRef.current.contains(e.target as Node)) {
+        setSwipeOffset(0);
+      }
+    };
+    document.addEventListener("touchstart", handler, { passive: true });
+    return () => document.removeEventListener("touchstart", handler);
+  }, []);
+
+  function resetSwipe() {
+    setSwipeOffset(0);
+  }
+
   return (
     <div
-      className={`group relative flex items-center gap-4 px-5 py-3.5 transition-colors hover:bg-white/[0.02] ${
-        !isLast ? "border-b border-white/[0.04]" : ""
-      }`}
+      ref={rowRef}
+      className={`group relative overflow-hidden ${!isLast ? "border-b border-white/[0.04]" : ""}`}
+      onTouchStart={isTouchDevice ? (e) => {
+        touchStartX.current = e.touches[0].clientX;
+        touchStartY.current = e.touches[0].clientY;
+        isHorizontalSwipe.current = null;
+      } : undefined}
+      onTouchMove={isTouchDevice ? (e) => {
+        const deltaX = e.touches[0].clientX - touchStartX.current;
+        const deltaY = e.touches[0].clientY - touchStartY.current;
+        if (isHorizontalSwipe.current === null) {
+          if (Math.abs(deltaX) < 5 && Math.abs(deltaY) < 5) return;
+          isHorizontalSwipe.current = Math.abs(deltaX) > Math.abs(deltaY);
+        }
+        if (!isHorizontalSwipe.current) return;
+        if (deltaX < -10) {
+          e.preventDefault();
+          setSwipeOffset(Math.max(deltaX, -88));
+        }
+      } : undefined}
+      onTouchEnd={isTouchDevice ? () => {
+        isHorizontalSwipe.current = null;
+        if (swipeOffset < -44) {
+          setSwipeOffset(-88);
+        } else {
+          setSwipeOffset(0);
+        }
+      } : undefined}
     >
-      <div
-        className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-[11px] border border-white/[0.06] bg-white/[0.03]"
-        style={{ color }}
-      >
-        <Icon className="h-[15px] w-[15px]" strokeWidth={1.6} />
-      </div>
-
-      <div className="min-w-0 flex-1">
-        <div className="flex items-baseline justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <p className="m-0 text-[13px] font-medium text-ink-primary">
-              {tx.merchant}
-            </p>
-            {tx.recurring && (
-              <span className="rounded-md border border-iri-violet/25 bg-iri-violet/[0.1] px-1.5 py-px text-[9px] font-medium uppercase tracking-[0.08em] text-iri-pale">
-                Ricorrente
-              </span>
-            )}
-          </div>
-          <p
-            className={`m-0 font-mono-tabular text-[13px] font-medium [letter-spacing:-0.01em] ${
-              tx.type === "income" ? "text-emerald-300" : "text-ink-primary"
-            }`}
+      {/* Layer bottoni — fisso a destra, nascosto dal layer contenuto quando offset=0 */}
+      {isTouchDevice && (
+        <div style={{ position: "absolute", right: 0, top: 0, bottom: 0, width: 88, display: "flex" }}>
+          <button
+            type="button"
+            onClick={() => { onEdit(); resetSwipe(); }}
+            style={{ width: 44, height: "100%", background: "#7C3AED", display: "flex", alignItems: "center", justifyContent: "center", border: "none", cursor: "pointer", flexShrink: 0 }}
           >
-            {tx.type === "expense" ? "−" : "+"}
-            {int}
-            <span className="text-[11px] opacity-65">,{dec}</span>
-            <span className="ml-0.5 text-[11px] text-ink-muted">€</span>
-          </p>
+            <Pencil style={{ width: 16, height: 16, color: "white" }} strokeWidth={2} />
+          </button>
+          <button
+            type="button"
+            onClick={() => { onDelete(); resetSwipe(); }}
+            style={{ width: 44, height: "100%", background: "#DC2626", display: "flex", alignItems: "center", justifyContent: "center", border: "none", cursor: "pointer", flexShrink: 0 }}
+          >
+            <Trash2 style={{ width: 16, height: 16, color: "white" }} strokeWidth={2} />
+          </button>
         </div>
-        <div className="mt-1 flex items-center justify-between gap-3">
-          <span className="text-[11px] text-ink-secondary">
-            {tx.category || "Altro"}
-          </span>
-          <p className="m-0 font-mono-tabular text-[11px] text-ink-muted">
-            ≡ {timeLabel} {suffix}
-          </p>
-        </div>
-      </div>
+      )}
 
-      <div className="flex flex-shrink-0 items-center gap-1 opacity-0 transition-all duration-[200ms] group-hover:opacity-100">
-        <button
-          type="button"
-          onClick={(e) => { e.stopPropagation(); onEdit(); }}
-          title="Modifica"
-          className="flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-ink-faint transition-all duration-[200ms] hover:border-iri-violet/30 hover:bg-iri-violet/[0.08] hover:text-iri-pale"
+      {/* Layer contenuto — copre i bottoni, scorre a sinistra con lo swipe */}
+      <div
+        style={isTouchDevice ? {
+          transform: `translateX(${swipeOffset}px)`,
+          transition: "transform 0.2s ease-out",
+          position: "relative",
+          zIndex: 1,
+          width: "100%",
+          background: "var(--color-surface-1)",
+        } : undefined}
+        className="group flex items-center gap-4 px-5 py-3.5 transition-colors hover:bg-white/[0.02]"
+      >
+        <div
+          className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-[11px] border border-white/[0.06] bg-white/[0.03]"
+          style={{ color }}
         >
-          <Pencil className="h-3 w-3" strokeWidth={1.8} />
-        </button>
-        <button
-          type="button"
-          onClick={(e) => { e.stopPropagation(); onDelete(); }}
-          title="Elimina"
-          className="flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-ink-faint transition-all duration-[200ms] hover:border-red-500/30 hover:bg-red-500/[0.08] hover:text-red-300"
-        >
-          <Trash2 className="h-3 w-3" strokeWidth={1.8} />
-        </button>
+          <Icon className="h-[15px] w-[15px]" strokeWidth={1.6} />
+        </div>
+
+        <div className="min-w-0 flex-1">
+          <div className="flex items-baseline justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <p className="m-0 text-[13px] font-medium text-ink-primary">
+                {tx.merchant}
+              </p>
+              {tx.recurring && (
+                <span className="rounded-md border border-iri-violet/25 bg-iri-violet/[0.1] px-1.5 py-px text-[9px] font-medium uppercase tracking-[0.08em] text-iri-pale">
+                  Ricorrente
+                </span>
+              )}
+            </div>
+            <p
+              className={`m-0 font-mono-tabular text-[13px] font-medium [letter-spacing:-0.01em] ${
+                tx.type === "income" ? "text-emerald-300" : "text-ink-primary"
+              }`}
+            >
+              {tx.type === "expense" ? "−" : "+"}
+              {int}
+              <span className="text-[11px] opacity-65">,{dec}</span>
+              <span className="ml-0.5 text-[11px] text-ink-muted">€</span>
+            </p>
+          </div>
+          <div className="mt-1 flex items-center justify-between gap-3">
+            <span className="text-[11px] text-ink-secondary">
+              {tx.category || "Altro"}
+            </span>
+            <p className="m-0 font-mono-tabular text-[11px] text-ink-muted">
+              ≡ {timeLabel} {suffix}
+            </p>
+          </div>
+        </div>
+
+        <div className="flex flex-shrink-0 items-center gap-1 opacity-0 transition-all duration-[200ms] group-hover:opacity-100">
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); onEdit(); }}
+            title="Modifica"
+            className="flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-ink-faint transition-all duration-[200ms] hover:border-iri-violet/30 hover:bg-iri-violet/[0.08] hover:text-iri-pale"
+          >
+            <Pencil className="h-3 w-3" strokeWidth={1.8} />
+          </button>
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); onDelete(); }}
+            title="Elimina"
+            className="flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-ink-faint transition-all duration-[200ms] hover:border-red-500/30 hover:bg-red-500/[0.08] hover:text-red-300"
+          >
+            <Trash2 className="h-3 w-3" strokeWidth={1.8} />
+          </button>
+        </div>
       </div>
     </div>
   );

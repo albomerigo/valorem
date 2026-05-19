@@ -60,6 +60,17 @@ export function SettingsView({
             </div>
 
             <PlanSection profile={profile} />
+
+            {/* Footer links */}
+            <p className="mt-6 text-center text-[10px] text-ink-muted">
+              <Link href="/privacy" className="hover:text-ink-secondary transition-colors">
+                Privacy Policy
+              </Link>
+              {" · "}
+              <Link href="/termini" className="hover:text-ink-secondary transition-colors">
+                Termini di Servizio
+              </Link>
+            </p>
           </div>
        </div>
       </div>
