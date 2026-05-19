@@ -351,6 +351,28 @@ function GoalCard({
         </div>
       </div>
 
+      {/* Stima raggiungimento inline */}
+      {!isCompleted && (
+        <div className="mb-4 flex items-center gap-1.5">
+          <Calendar className="h-3 w-3 flex-shrink-0 text-iri-violet" strokeWidth={1.8} />
+          <span className="text-[11px] text-ink-secondary">
+            {monthlySavings <= 0 || targetDate === null ? (
+              "Aggiungi depositi per vedere la stima"
+            ) : (
+              <>
+                Raggiungerai questo obiettivo entro{" "}
+                <span className="text-ink-primary">
+                  {targetDate.toLocaleDateString("it-IT", {
+                    month: "long",
+                    year: "numeric",
+                  })}
+                </span>
+              </>
+            )}
+          </span>
+        </div>
+      )}
+
       {/* Calcolo data raggiungimento */}
       <div className="mb-4 rounded-xl border border-cyan-300/15 bg-cyan-300/[0.03] px-4 py-3">
         <div className="flex items-center gap-2 text-cyan-300/85">

@@ -42,6 +42,14 @@ export function SpendingChart({
   const [hoverInfo, setHoverInfo] = useState<{
     label: string; amount: number; x: number; y: number;
   } | null>(null);
+  const [isMobileView, setIsMobileView] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsMobileView(window.innerWidth < 500);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   const totalSpent = data.reduce((s, d) => s + d.amount, 0);
   const avgDaily = data.length > 0 ? totalSpent / data.length : 0;
@@ -61,7 +69,10 @@ export function SpendingChart({
     const ctx = canvas.getContext("2d")!;
     ctx.scale(devicePixelRatio, devicePixelRatio);
 
-    const PAD = { top: 20, right: 8, bottom: 4, left: 8 };
+    const isMobile = W < 500;
+    const PAD = isMobile
+      ? { top: 20, right: 4, bottom: 4, left: 4 }
+      : { top: 20, right: 8, bottom: 4, left: 8 };
     const max = Math.max(...data.map(d => d.amount), dailyBudgetBase * 1.5, 1);
     const n = data.length;
     const toX = (i: number) => PAD.left + (i / (n - 1)) * (W - PAD.left - PAD.right);
@@ -128,7 +139,7 @@ export function SpendingChart({
       const cpx = (pts[i - 1].x + pts[i].x) / 2;
       ctx.bezierCurveTo(cpx, pts[i - 1].y, cpx, pts[i].y, pts[i].x, pts[i].y);
     }
-    ctx.lineWidth = 2;
+    ctx.lineWidth = isMobile ? 2.5 : 2;
     ctx.strokeStyle = lg;
     ctx.lineJoin = "round";
     ctx.lineCap = "round";
@@ -201,18 +212,35 @@ export function SpendingChart({
     setHoverInfo(null);
   }, []);
 
+  const handleTouchMove = useCallback((e: React.TouchEvent<HTMLCanvasElement>) => {
+    e.preventDefault();
+    const touch = e.touches[0];
+    if (!touch) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    const mx = touch.clientX - rect.left;
+    const PAD = (canvas as any)._PAD || { left: 8, right: 8 };
+    const W = (canvas as any)._W || canvas.offsetWidth;
+    const n = data.length;
+    const idx = Math.round((mx - PAD.left) / ((W - PAD.left - PAD.right) / (n - 1)));
+    const ci = Math.max(0, Math.min(n - 1, idx));
+    hoverIdxRef.current = ci;
+    const pts = (canvas as any)._pts;
+    if (!pts) return;
+    setHoverInfo({ label: data[ci].label, amount: data[ci].amount, x: pts[ci].x, y: pts[ci].y });
+  }, [data]);
+
   if (data.length === 0) return null;
 
-  const xLabels = [
-    data[0].label,
-    data[Math.floor(data.length / 2)].label,
-    "oggi",
-  ];
+  const xLabels = isMobileView
+    ? [data[0].label, "oggi"]
+    : [data[0].label, data[Math.floor(data.length / 2)].label, "oggi"];
 
   return (
     <div
       className="glass-panel relative overflow-hidden rounded-[18px] p-5 animate-slide-up [animation-delay:0.25s]"
-      style={{ animationFillMode: "both" }}
+      style={{ animationFillMode: "both", minHeight: isMobileView ? 0 : undefined }}
     >
       <HelpTooltip
         title="Ritmo di Spesa"
@@ -255,7 +283,9 @@ export function SpendingChart({
           className="absolute inset-0 h-full w-full"
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
-          style={{ cursor: "crosshair" }}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleMouseLeave}
+          style={{ cursor: "crosshair", touchAction: "none" }}
         />
 
         {/* Tooltip */}
@@ -267,7 +297,7 @@ export function SpendingChart({
               border: "1px solid rgba(168,139,250,0.3)",
               boxShadow: "0 4px 24px rgba(0,0,0,0.7)",
               left: Math.max(4, Math.min(hoverInfo.x - 65, 260)),
-              top: Math.max(0, hoverInfo.y - 72),
+              top: isMobileView ? 4 : Math.max(0, hoverInfo.y - 72),
               whiteSpace: "nowrap",
             }}
           >

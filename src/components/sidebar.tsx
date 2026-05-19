@@ -73,9 +73,13 @@ useEffect(() => {
       */}
       <aside className="group fixed left-0 top-0 z-20 hidden h-screen w-[64px] overflow-hidden transition-all duration-300 hover:w-[220px] md:flex flex-col items-start gap-1 py-5 border-r border-white/[0.06]" style={{ background: "#0D0A1E", borderRight: "1px solid rgba(168,139,250,0.08)" }}>
         <div className="mb-2 flex h-10 w-full flex-shrink-0 items-center px-[13px]">
-          <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-[10px] bg-gradient-to-br from-iri-violet via-iri-magenta to-iri-blue font-serif italic text-base font-medium text-[#0A0812] shadow-[0_4px_20px_-4px_rgba(168,139,250,0.5)] [background-size:200%_200%] animate-gradient-shift">
+          <Link
+            href="/profilo"
+            title="Profilo"
+            className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-[10px] bg-gradient-to-br from-iri-violet via-iri-magenta to-iri-blue font-serif italic text-base font-medium text-[#0A0812] shadow-[0_4px_20px_-4px_rgba(168,139,250,0.5)] [background-size:200%_200%] animate-gradient-shift transition-opacity hover:opacity-80"
+          >
             v
-          </div>
+          </Link>
           <span className="ml-3 whitespace-nowrap font-serif italic text-[16px] text-ink-primary opacity-0 translate-x-[-6px] transition-all duration-200 delay-75 group-hover:opacity-100 group-hover:translate-x-0">
             valorem
           </span>
