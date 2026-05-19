@@ -23,6 +23,7 @@ import {
   BarChart2,
   Zap,
   ChevronDown,
+  Share2,
 } from "lucide-react";
 import type { UserProfile, DashboardStats } from "@/lib/finance";
 import type { RecapData } from "@/lib/recap";
@@ -302,6 +303,16 @@ function DetailAnalysisCard({ recap }: { recap: RecapData }) {
 }
 
 function HeroRecap({ recap }: { recap: RecapData }) {
+  const [copied, setCopied] = useState(false);
+
+  function handleShare() {
+    const text = `Il mio ${recap.monthLabel} su Valorem: ho speso ${Math.round(recap.totalSpent)}€, resistito a ${recap.savedImpulsesCount} impulsi, e il mio mese si chiama "${recap.narrativeTitle}" 💜 #Valorem`;
+    navigator.clipboard.writeText(text).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  }
+
   return (
     <div className="relative mt-6 mb-8 overflow-hidden rounded-[24px] animate-slide-up">
       <div
@@ -318,6 +329,16 @@ function HeroRecap({ recap }: { recap: RecapData }) {
         <h1 className="m-0 font-serif text-[42px] font-normal italic leading-[1.1] text-ink-primary md:text-[54px]">
           {recap.narrativeTitle}
         </h1>
+        <div className="mt-6 flex justify-center">
+          <button
+            type="button"
+            onClick={handleShare}
+            className="flex items-center gap-2 rounded-full border border-iri-violet/40 bg-iri-violet/[0.08] px-4 py-2 text-[12px] font-medium text-iri-pale transition-all duration-[200ms] hover:border-iri-violet/60 hover:bg-iri-violet/[0.15]"
+          >
+            <Share2 className="h-3.5 w-3.5" strokeWidth={1.8} />
+            {copied ? "Copiato! ✓" : "Condividi"}
+          </button>
+        </div>
       </div>
     </div>
   );

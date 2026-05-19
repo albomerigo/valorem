@@ -22,6 +22,7 @@ import {
   Download,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 import { EmptyActivity, EmptyActivityFiltered } from "@/components/empty-states";
 import type {
@@ -40,7 +41,7 @@ import { NewTransactionModal } from "@/components/new-transaction-modal";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { getCustomCategories } from "@/app/settings/categories-actions";
 import type { CustomCategory } from "@/app/settings/categories-actions";
-type Period = "month" | "30days" | "3months" | "all";
+type Period = "month" | "30days" | "3months" | "all" | "custom";
 type TypeFilter = "all" | "expense" | "income";
 
 const CATEGORIES = [
@@ -57,10 +58,11 @@ const CATEGORIES = [
 ];
 
 const PERIOD_LABELS: Record<Period, string> = {
-  month: "Mese corrente",
-  "30days": "Ultimi 30 giorni",
-  "3months": "Ultimi 3 mesi",
+  month: "Mese",
+  "30days": "30 giorni",
+  "3months": "3 mesi",
   all: "Tutto",
+  custom: "Personalizzato",
 };
 
 export function AttivitaView({
@@ -83,6 +85,8 @@ export function AttivitaView({
   const [deletingTransactionId, setDeletingTransactionId] = useState<string | null>(null);
   const [isExporting, setIsExporting] = useState(false);
   const [customCategories, setCustomCategories] = useState<CustomCategory[]>([]);
+  const [customFrom, setCustomFrom] = useState("");
+  const [customTo, setCustomTo] = useState("");
 
   useEffect(() => {
     getCustomCategories().then(setCustomCategories);
@@ -140,8 +144,14 @@ export function AttivitaView({
     }
 
     return transactions.filter((tx) => {
-      // Filtro data
-      if (cutoff && new Date(tx.transaction_date) < cutoff) return false;
+      // Filtro data standard
+      if (period !== "custom" && cutoff && new Date(tx.transaction_date) < cutoff) return false;
+
+      // Filtro data personalizzato
+      if (period === "custom") {
+        if (customFrom && tx.transaction_date < customFrom) return false;
+        if (customTo && tx.transaction_date > customTo) return false;
+      }
 
       // Filtro tipo
       if (typeFilter !== "all" && tx.type !== typeFilter) return false;
@@ -162,7 +172,7 @@ export function AttivitaView({
 
       return true;
     });
-  }, [transactions, search, period, typeFilter, selectedCategories]);
+  }, [transactions, search, period, typeFilter, selectedCategories, customFrom, customTo]);
 
   // Calcola KPI riassuntivi
   const kpis = useMemo(() => {
@@ -217,12 +227,16 @@ export function AttivitaView({
     setSearch("");
     setTypeFilter("all");
     setSelectedCategories(new Set());
+    setCustomFrom("");
+    setCustomTo("");
   }
 
   const hasActiveFilters =
     search.trim() !== "" ||
     typeFilter !== "all" ||
-    selectedCategories.size > 0;
+    selectedCategories.size > 0 ||
+    customFrom !== "" ||
+    customTo !== "";
 
   return (
     <div className="relative min-h-screen">
@@ -290,6 +304,40 @@ export function AttivitaView({
             </div>
           </header>
 
+          {/* KPI COMPATTI SOPRA I FILTRI */}
+          <div className="mb-4 grid grid-cols-3 gap-3">
+            <div className="glass-panel rounded-[12px] px-4 py-3">
+              <p className="eyebrow text-[9px]">Spese</p>
+              <p className="m-0 mt-1 font-mono-tabular font-medium">
+                <span className="text-[20px] text-red-200 [letter-spacing:-0.02em]">
+                  {splitCurrency(kpis.totalExpense).int}
+                </span>
+                <span className="text-[12px] text-red-200/60">
+                  ,{splitCurrency(kpis.totalExpense).dec}
+                </span>
+                <span className="ml-0.5 text-[11px] text-ink-muted">€</span>
+              </p>
+            </div>
+            <div className="glass-panel rounded-[12px] px-4 py-3">
+              <p className="eyebrow text-[9px]">Entrate</p>
+              <p className="m-0 mt-1 font-mono-tabular font-medium">
+                <span className="text-[20px] text-emerald-200 [letter-spacing:-0.02em]">
+                  {splitCurrency(kpis.totalIncome).int}
+                </span>
+                <span className="text-[12px] text-emerald-200/60">
+                  ,{splitCurrency(kpis.totalIncome).dec}
+                </span>
+                <span className="ml-0.5 text-[11px] text-ink-muted">€</span>
+              </p>
+            </div>
+            <div className="glass-panel rounded-[12px] px-4 py-3">
+              <p className="eyebrow text-[9px]">Transazioni</p>
+              <p className="m-0 mt-1 font-mono-tabular text-[20px] font-medium text-ink-primary [letter-spacing:-0.02em]">
+                {kpis.count}
+              </p>
+            </div>
+          </div>
+
           {/* FILTERS BAR */}
           <div className="glass-panel mb-5 rounded-[16px] p-5">
             {/* Riga 1: search + period */}
@@ -314,7 +362,7 @@ export function AttivitaView({
                 )}
               </div>
 
-              <div className="flex gap-1.5">
+              <div className="flex flex-wrap gap-1.5">
                 {(Object.keys(PERIOD_LABELS) as Period[]).map((p) => (
                   <button
                     key={p}
@@ -330,6 +378,28 @@ export function AttivitaView({
                   </button>
                 ))}
               </div>
+              {period === "custom" && (
+                <div className="mt-3 flex items-center gap-2">
+                  <div className="flex flex-1 items-center gap-2">
+                    <label className="eyebrow shrink-0 text-[9px]">Da</label>
+                    <input
+                      type="date"
+                      value={customFrom}
+                      onChange={(e) => setCustomFrom(e.target.value)}
+                      className="flex-1 rounded-[10px] border border-white/[0.08] bg-white/[0.03] px-3 py-2 text-[12px] text-ink-primary transition-colors focus:border-iri-violet/40 focus:bg-white/[0.05] focus:outline-none [color-scheme:dark]"
+                    />
+                  </div>
+                  <div className="flex flex-1 items-center gap-2">
+                    <label className="eyebrow shrink-0 text-[9px]">A</label>
+                    <input
+                      type="date"
+                      value={customTo}
+                      onChange={(e) => setCustomTo(e.target.value)}
+                      className="flex-1 rounded-[10px] border border-white/[0.08] bg-white/[0.03] px-3 py-2 text-[12px] text-ink-primary transition-colors focus:border-iri-violet/40 focus:bg-white/[0.05] focus:outline-none [color-scheme:dark]"
+                    />
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Riga 2: type toggle + categorie */}
@@ -385,6 +455,34 @@ export function AttivitaView({
               )}
             </div>
           </div>
+
+          {/* PIANO FREE — BANNER LIMITE */}
+          {(profile.plan || "free") === "free" && monthlyCount >= 40 && (
+            <div
+              className={`mb-5 flex items-center justify-between gap-3 rounded-[14px] border px-4 py-3 ${
+                monthlyCount >= 45
+                  ? "border-red-400/30 bg-red-500/[0.06]"
+                  : "border-amber-400/30 bg-amber-500/[0.06]"
+              }`}
+            >
+              <p className={`text-[13px] ${monthlyCount >= 45 ? "text-red-300" : "text-amber-300"}`}>
+                Sei a{" "}
+                <span className="font-mono-tabular font-medium">
+                  {monthlyCount}/50
+                </span>{" "}
+                transazioni del piano gratuito.{" "}
+                {monthlyCount >= 45
+                  ? "Stai per raggiungere il limite mensile."
+                  : "Passa a Premium per transazioni illimitate."}
+              </p>
+              <Link
+                href="/pricing"
+                className="shrink-0 rounded-full border border-iri-violet/40 bg-iri-violet/[0.1] px-3 py-1.5 text-[11px] font-medium text-iri-pale transition-all hover:border-iri-violet/60 hover:bg-iri-violet/[0.18]"
+              >
+                Upgrade
+              </Link>
+            </div>
+          )}
 
           {/* KPI SUMMARY */}
           <div className="mb-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
@@ -577,11 +675,25 @@ function DayGroup({
 
   return (
     <div>
-      <div className="mb-2 flex items-baseline justify-between px-1">
-        <p className="eyebrow-accent text-[10px]">
+      <div
+        className="mb-2 flex items-center justify-between"
+        style={{
+          background: "rgba(168,139,250,0.04)",
+          borderBottom: "1px solid rgba(168,139,250,0.08)",
+          padding: "8px 20px",
+          borderRadius: "10px 10px 0 0",
+        }}
+      >
+        <p
+          className="m-0 font-serif text-[14px] italic"
+          style={{ color: "#A88BFA" }}
+        >
           {formatDayHeader(date)}
         </p>
-        <p className="m-0 font-mono-tabular text-[11px] text-ink-secondary">
+        <p
+          className="m-0 font-mono-tabular text-[13px] font-medium"
+          style={{ color: dayTotal >= 0 ? "#86EFAC" : "#FCA5A5" }}
+        >
           {dayTotal !== 0 && (
             <>
               {dayTotal > 0 ? "+" : "−"}

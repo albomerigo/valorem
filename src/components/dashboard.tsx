@@ -18,6 +18,7 @@ import { SpendingChart } from "./spending-chart";
 import { UpgradeBanner } from "./upgrade-banner";
 import { OnboardingChecklist } from "./onboarding-checklist";
 import { NewTransactionModal } from "./new-transaction-modal";
+import { MonthlyChallengeCard } from "./monthly-challenge";
 import { getCustomCategories } from "@/app/settings/categories-actions";
 import type { CustomCategory } from "@/app/settings/categories-actions";
 
@@ -146,6 +147,7 @@ export function Dashboard({
             <HeroCard stats={data.stats} />
             <UpgradeBanner plan={plan} />
             <KPIRow stats={data.stats} />
+            <MonthlyChallengeCard transactions={data.transactions} />
             <CoachBanner stats={data.stats} transactions={data.transactions} />
             <SpendingChart data={dailyData} dailyBudgetBase={data.stats.dailyBudgetBase} />
             <CoachStripe coachMessage={data.stats.coachMessage} stats={data.stats} />

@@ -12,6 +12,7 @@ export function ProfiloView({
   email,
   memberSince,
   stats,
+  monthlySpending,
 }: {
   profile: UserProfile;
   email: string;
@@ -22,6 +23,7 @@ export function ProfiloView({
     totalSpent: number;
     totalImpulsiResistiti: number;
   };
+  monthlySpending: { month: string; label: string; amount: number }[];
 }) {
   const initials = (profile.name || email || "V")
     .split(" ")
@@ -140,6 +142,14 @@ export function ProfiloView({
             </p>
           </div>
 
+          {/* Sparkline spese ultimi 6 mesi */}
+          {monthlySpending.length > 0 && (
+            <div className="glass-panel mt-6 rounded-[16px] px-5 py-4">
+              <p className="eyebrow mb-4">Andamento spese</p>
+              <SparklineChart data={monthlySpending} />
+            </div>
+          )}
+
           {/* Piano */}
           <div className="glass-panel mt-4 rounded-[16px] px-5 py-4">
             <div className="flex items-center justify-between gap-4">
@@ -193,6 +203,81 @@ function StatCard({
       <p className="m-0 mt-1 font-mono-tabular text-[20px] font-medium text-ink-primary">
         {value}
       </p>
+    </div>
+  );
+}
+
+function SparklineChart({
+  data,
+}: {
+  data: { month: string; label: string; amount: number }[];
+}) {
+  const W = 400;
+  const H = 60;
+  const PAD = { left: 4, right: 4, top: 8, bottom: 4 };
+  const max = Math.max(...data.map((d) => d.amount), 1);
+  const n = data.length;
+
+  const toX = (i: number) =>
+    PAD.left + (i / (n - 1)) * (W - PAD.left - PAD.right);
+  const toY = (v: number) =>
+    PAD.top + (1 - v / max) * (H - PAD.top - PAD.bottom);
+
+  const pts = data.map((d, i) => ({ x: toX(i), y: toY(d.amount), ...d }));
+
+  // Build smooth path
+  let linePath = `M ${pts[0].x} ${pts[0].y}`;
+  for (let i = 1; i < pts.length; i++) {
+    const cpx = (pts[i - 1].x + pts[i].x) / 2;
+    linePath += ` C ${cpx} ${pts[i - 1].y}, ${cpx} ${pts[i].y}, ${pts[i].x} ${pts[i].y}`;
+  }
+
+  // Build area path (close below)
+  const areaPath =
+    linePath +
+    ` L ${pts[n - 1].x} ${H} L ${pts[0].x} ${H} Z`;
+
+  return (
+    <div className="w-full">
+      <svg
+        viewBox={`0 0 ${W} ${H}`}
+        className="w-full overflow-visible"
+        style={{ height: 60 }}
+        preserveAspectRatio="none"
+      >
+        <defs>
+          <linearGradient id="sparkGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#A88BFA" stopOpacity="0.25" />
+            <stop offset="100%" stopColor="#A88BFA" stopOpacity="0.01" />
+          </linearGradient>
+        </defs>
+        {/* Area fill */}
+        <path d={areaPath} fill="url(#sparkGrad)" />
+        {/* Line */}
+        <path
+          d={linePath}
+          fill="none"
+          stroke="#A88BFA"
+          strokeWidth="1.5"
+          strokeLinejoin="round"
+          strokeLinecap="round"
+        />
+        {/* Dots */}
+        {pts.map((p) => (
+          <circle key={p.month} cx={p.x} cy={p.y} r="3" fill="#A88BFA" />
+        ))}
+      </svg>
+      {/* Labels */}
+      <div
+        className="mt-1.5 flex justify-between"
+        style={{ padding: `0 ${PAD.left}px` }}
+      >
+        {data.map((d) => (
+          <span key={d.month} className="text-[9px] capitalize text-ink-muted">
+            {d.label}
+          </span>
+        ))}
+      </div>
     </div>
   );
 }
