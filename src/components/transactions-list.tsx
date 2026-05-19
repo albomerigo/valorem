@@ -19,6 +19,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { EmptyTransactionsList } from "./empty-states";
+import { SkeletonTransactionRow } from "./skeleton";
 import type { Transaction, DashboardStats } from "@/lib/finance";
 import { amountToTimeLabel } from "@/lib/finance";
 import { splitCurrency } from "@/lib/utils";
@@ -36,7 +37,13 @@ export function TransactionsList({
 }) {
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const [deletingTransactionId, setDeletingTransactionId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
+
+  useEffect(() => {
+    const t = setTimeout(() => setIsLoading(false), 400);
+    return () => clearTimeout(t);
+  }, []);
 
   const handleDelete = async (id: string) => {
     const result = await deleteTransaction(id);
@@ -61,7 +68,13 @@ export function TransactionsList({
           </Link>
         </div>
 
-        {transactions.length === 0 ? (
+        {isLoading ? (
+          <div className="glass-panel overflow-hidden rounded-[18px]">
+            <SkeletonTransactionRow />
+            <SkeletonTransactionRow />
+            <SkeletonTransactionRow isLast />
+          </div>
+        ) : transactions.length === 0 ? (
           <EmptyTransactionsList onAddTransaction={onAddTransaction} />
         ) : (
           <div className="glass-panel overflow-hidden rounded-[18px]">

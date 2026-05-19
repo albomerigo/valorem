@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect, useRef } from "react";
 import {
   Target,
   Plus,
@@ -25,6 +25,38 @@ import { deleteGoal } from "@/app/actions/goals";
 import { splitCurrency } from "@/lib/utils";
 import { HelpTooltip } from "@/components/help-tooltip";
 
+function Toast({ message, onDone }: { message: string; onDone: () => void }) {
+  useEffect(() => {
+    const t = setTimeout(onDone, 2500);
+    return () => clearTimeout(t);
+  }, [onDone]);
+
+  const isSuccess = message.includes("🎯") || message.includes("✓");
+  return (
+    <div
+      className="fixed bottom-24 left-1/2 z-[9999] -translate-x-1/2"
+      style={{ animation: "toastSlideUp 0.25s ease-out" }}
+    >
+      <style>{`
+        @keyframes toastSlideUp {
+          from { opacity: 0; transform: translateX(-50%) translateY(12px); }
+          to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+      `}</style>
+      <div
+        className={`flex items-center gap-2 rounded-[12px] border px-4 py-3 text-[13px] shadow-[0_8px_32px_-8px_rgba(0,0,0,0.4)] ${
+          isSuccess
+            ? "border-emerald-400/40 bg-[#0D0A1E] text-emerald-300"
+            : "border-iri-violet/40 bg-[#0D0A1E] text-iri-pale"
+        }`}
+      >
+        <span className={`h-1.5 w-1.5 rounded-full ${isSuccess ? "bg-emerald-400" : "bg-iri-violet"}`} />
+        {message}
+      </div>
+    </div>
+  );
+}
+
 export function ObiettiviView({
   profile,
   goals,
@@ -38,6 +70,7 @@ export function ObiettiviView({
 }) {
   const [newOpen, setNewOpen] = useState(false);
   const [depositGoal, setDepositGoal] = useState<Goal | null>(null);
+  const [toast, setToast] = useState<string | null>(null);
 
   const activeGoals = goals.filter((g) => g.status === "active");
   const completedGoals = goals.filter((g) => g.status === "completed");
@@ -116,6 +149,7 @@ export function ObiettiviView({
                     monthlySavings={monthlySavings}
                     stats={stats}
                     onDeposit={() => setDepositGoal(g)}
+                    onDeleted={() => setToast("Obiettivo eliminato")}
                   />
                 ))}
               </div>
@@ -135,15 +169,21 @@ export function ObiettiviView({
         </div>
       </div>
 
-      <NewGoalModal open={newOpen} onClose={() => setNewOpen(false)} />
+      <NewGoalModal
+        open={newOpen}
+        onClose={() => setNewOpen(false)}
+        onSuccess={() => setToast("Obiettivo creato 🎯")}
+      />
       <DepositGoalModal
         open={depositGoal !== null}
         onClose={() => setDepositGoal(null)}
         goal={depositGoal}
+        onSuccess={() => setToast("Deposito aggiunto ✓")}
       />
 
       <FabButton />
       <BottomBar activeRoute="goals" />
+      {toast && <Toast message={toast} onDone={() => setToast(null)} />}
     </div>
   );
 }
@@ -152,16 +192,30 @@ function GoalCard({
   monthlySavings,
   stats,
   onDeposit,
+  onDeleted,
 }: {
   goal: Goal;
   monthlySavings: number;
   stats: DashboardStats;
   onDeposit: () => void;
+  onDeleted?: () => void;
 }) {
   const [isPending, startTransition] = useTransition();
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
 
   const progress = getGoalProgress(goal);
+  const isCompleted = progress >= 100;
+  const prevProgressRef = useRef(progress);
+
+  useEffect(() => {
+    if (prevProgressRef.current < 100 && progress >= 100) {
+      setShowConfetti(true);
+      const t = setTimeout(() => setShowConfetti(false), 1800);
+      return () => clearTimeout(t);
+    }
+    prevProgressRef.current = progress;
+  }, [progress]);
   const { daysToGo, targetDate, months } = estimateGoalReachDate(
     goal,
     monthlySavings
@@ -209,6 +263,7 @@ function GoalCard({
   function handleDelete() {
     startTransition(async () => {
       await deleteGoal(goal.id);
+      onDeleted?.();
     });
   }
 
@@ -216,8 +271,33 @@ function GoalCard({
     <div
       className={`glass-panel relative overflow-hidden rounded-[20px] p-6 transition-all duration-[400ms] hover:-translate-y-0.5 hover:shadow-[0_20px_40px_-12px_rgba(168,139,250,0.2)] ${
         isPending ? "opacity-50" : ""
-      }`}
+      } ${isCompleted ? "ring-2 ring-offset-0" : ""}`}
+      style={isCompleted ? { boxShadow: "0 0 0 2px rgba(168,139,250,0.6), 0 20px 40px -12px rgba(168,139,250,0.3)" } : undefined}
     >
+      {/* Confetti */}
+      {showConfetti && (
+        <>
+          <style>{`
+            @keyframes confettiFall {
+              0%   { opacity: 1; transform: translateY(-20px) rotate(0deg); }
+              100% { opacity: 0; transform: translateY(60px) rotate(180deg); }
+            }
+          `}</style>
+          {["🎊", "✨", "⭐", "💜", "🎊", "✨", "⭐", "💜", "🎊", "✨"].map((e, i) => (
+            <span
+              key={i}
+              className="pointer-events-none absolute text-[18px]"
+              style={{
+                left: `${10 + i * 9}%`,
+                top: "10%",
+                animation: `confettiFall 1.5s ease-in ${i * 0.1}s forwards`,
+              }}
+            >
+              {e}
+            </span>
+          ))}
+        </>
+      )}
       {/* Header: emoji + titolo + azioni */}
       <div className="mb-5 flex items-start justify-between gap-3">
         <div className="flex items-center gap-3">
@@ -249,18 +329,24 @@ function GoalCard({
 
       {/* Progress bar */}
       <div className="mb-5">
-        <div className="mb-2 flex items-baseline justify-between">
+        <div className="mb-2 flex items-center justify-between">
           <span className="iri-text font-mono-tabular text-[28px] font-medium [letter-spacing:-0.02em]">
             {progress}%
           </span>
-          <span className="font-mono-tabular text-[11px] text-ink-secondary">
-            mancano {remainingSplit.int},{remainingSplit.dec}€
-          </span>
+          {isCompleted ? (
+            <span className="flex items-center gap-1.5 rounded-full border border-emerald-400/30 bg-emerald-400/[0.1] px-3 py-1 text-[11px] font-medium text-emerald-300 animate-pulse">
+              🎉 Completato!
+            </span>
+          ) : (
+            <span className="font-mono-tabular text-[11px] text-ink-secondary">
+              mancano {remainingSplit.int},{remainingSplit.dec}€
+            </span>
+          )}
         </div>
         <div className="relative h-2 overflow-hidden rounded-full bg-white/[0.05]">
           <div
             className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-iri-violet via-iri-magenta to-iri-blue shadow-[0_0_12px_rgba(168,139,250,0.5)] transition-all duration-[600ms] [transition-timing-function:cubic-bezier(0.2,0.8,0.2,1)]"
-            style={{ width: `${progress}%` }}
+            style={{ width: `${Math.min(progress, 100)}%` }}
           />
         </div>
       </div>

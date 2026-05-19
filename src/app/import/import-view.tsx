@@ -10,6 +10,7 @@ import {
   ArrowRight,
   RotateCcw,
   X,
+  Download,
 } from "lucide-react";
 import { Sidebar } from "@/components/sidebar";
 import { BottomBar } from "@/components/bottom-bar";
@@ -386,6 +387,18 @@ function UploadZone({
         />
       </div>
 
+      {/* Template download */}
+      <div className="mt-4 flex justify-center">
+        <button
+          type="button"
+          onClick={downloadTemplate}
+          className="flex items-center gap-2 rounded-[10px] border border-iri-violet/25 bg-iri-violet/[0.06] px-4 py-2 text-[12px] font-medium text-iri-pale transition-all hover:border-iri-violet/45 hover:bg-iri-violet/[0.12]"
+        >
+          <Download className="h-3.5 w-3.5" strokeWidth={1.8} />
+          Scarica template CSV
+        </button>
+      </div>
+
       <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
         {[
           { title: "CSV", desc: "Qualsiasi file .csv con intestazioni" },
@@ -404,6 +417,23 @@ function UploadZone({
       </div>
     </div>
   );
+}
+
+function downloadTemplate() {
+  const csv = [
+    "Data,Descrizione,Categoria,Tipo,Importo,Ricorrente,Note",
+    "2026-01-15,Caffè Centrale,Ristorazione,expense,2.50,No,Colazione di lavoro",
+    "2026-01-16,Stipendio,Altro,income,1800.00,Si,Stipendio gennaio",
+    "2026-01-20,Esselunga,Alimentari,expense,45.30,No,",
+  ].join("\n");
+
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "valorem-template.csv";
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 // ─── Map Step ─────────────────────────────────────────────────────────────────

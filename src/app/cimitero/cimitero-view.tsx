@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useTransition } from "react";
+import { useState, useMemo, useTransition, useEffect } from "react";
 import {
   Ghost,
   TrendingDown,
@@ -34,6 +34,31 @@ import { HelpTooltip } from "@/components/help-tooltip";
 
 type Scope = "month" | "all";
 
+function Toast({ message, onDone }: { message: string; onDone: () => void }) {
+  useEffect(() => {
+    const t = setTimeout(onDone, 2500);
+    return () => clearTimeout(t);
+  }, [onDone]);
+
+  return (
+    <div
+      className="fixed bottom-24 left-1/2 z-[9999] -translate-x-1/2"
+      style={{ animation: "toastSlideUp 0.25s ease-out" }}
+    >
+      <style>{`
+        @keyframes toastSlideUp {
+          from { opacity: 0; transform: translateX(-50%) translateY(12px); }
+          to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+      `}</style>
+      <div className="flex items-center gap-2 rounded-[12px] border border-iri-violet/40 bg-[#0D0A1E] px-4 py-3 text-[13px] text-iri-pale shadow-[0_8px_32px_-8px_rgba(168,139,250,0.5)]">
+        <span className="h-1.5 w-1.5 rounded-full bg-iri-violet" />
+        {message}
+      </div>
+    </div>
+  );
+}
+
 export function CimiteroView({
   profile,
   declined,
@@ -44,6 +69,7 @@ export function CimiteroView({
   stats: DashboardStats;
 }) {
   const [scope, setScope] = useState<Scope>("month");
+  const [toast, setToast] = useState<string | null>(null);
 
   const filtered = useMemo(() => {
     if (scope === "all") return declined;
@@ -138,6 +164,7 @@ export function CimiteroView({
                     item={item}
                     stats={stats}
                     isLast={i === filtered.length - 1}
+                    onRemoved={() => setToast("Impulso rimosso")}
                   />
                 ))}
               </div>
@@ -148,6 +175,7 @@ export function CimiteroView({
 
       <FabButton />
       <BottomBar activeRoute="cimitero" />
+      {toast && <Toast message={toast} onDone={() => setToast(null)} />}
     </div>
   );
 }
@@ -276,10 +304,12 @@ function ImpulseRow({
   item,
   stats,
   isLast,
+  onRemoved,
 }: {
   item: DeclinedSimulation;
   stats: DashboardStats;
   isLast: boolean;
+  onRemoved?: () => void;
 }) {
   const [isPending, startTransition] = useTransition();
   const amount = Number(item.amount);
@@ -291,6 +321,7 @@ function ImpulseRow({
   function remove() {
     startTransition(async () => {
       await deleteDeclinedSimulation(item.id);
+      onRemoved?.();
     });
   }
 

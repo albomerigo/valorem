@@ -18,9 +18,11 @@ const EMOJI_OPTIONS = [
 export function NewGoalModal({
   open,
   onClose,
+  onSuccess,
 }: {
   open: boolean;
   onClose: () => void;
+  onSuccess?: () => void;
 }) {
   const [title, setTitle] = useState("");
   const [targetAmount, setTargetAmount] = useState(0);
@@ -52,6 +54,7 @@ export function NewGoalModal({
       }
       resetForm();
       onClose();
+      onSuccess?.();
     });
   }
 

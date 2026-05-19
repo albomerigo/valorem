@@ -3,6 +3,7 @@ import { Inter, Fraunces } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import { SwRegister } from "@/components/sw-register";
 import { PaddleProvider } from "@/components/paddle-provider";
+import { PageTransition } from "@/components/page-transition";
 import "./globals.css";
 
 const inter = Inter({
@@ -67,8 +68,9 @@ export default function RootLayout({
         >
           <PaddleProvider>
             <SwRegister />
+            <PageTransition />
             <div className="ambient-bg" />
-            {children}
+            <div id="page-content">{children}</div>
           </PaddleProvider>
         </ThemeProvider>
       </body>

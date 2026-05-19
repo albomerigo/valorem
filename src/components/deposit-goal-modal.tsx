@@ -11,10 +11,12 @@ export function DepositGoalModal({
   open,
   onClose,
   goal,
+  onSuccess,
 }: {
   open: boolean;
   onClose: () => void;
   goal: Goal | null;
+  onSuccess?: () => void;
 }) {
   const [deposit, setDeposit] = useState(0);
   const [error, setError] = useState<string | null>(null);
@@ -50,6 +52,7 @@ export function DepositGoalModal({
       }
       setDeposit(0);
       onClose();
+      onSuccess?.();
     });
   }
 

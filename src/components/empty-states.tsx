@@ -260,12 +260,56 @@ export function EmptyActivityFiltered({ onReset }: { onReset: () => void }) {
  */
 export function EmptyCimitero() {
   return (
-    <EmptyShell
-      illustration={<GhostIllustration />}
-      eyebrow="Capitale invisibile"
-      title="Qui riposerà la tua disciplina"
-      description="Ogni volta che rifiuterai un acquisto dal simulatore, quell'importo diventerà tempo di libertà futura. Il Cimitero celebra ciò che NON hai speso."
-    />
+    <div className="glass-panel-subtle relative overflow-hidden rounded-[20px] px-6 py-12 text-center">
+      <div
+        className="pointer-events-none absolute inset-0 opacity-30"
+        style={{
+          background:
+            "radial-gradient(circle at 50% 20%, rgba(168, 139, 250, 0.18), transparent 60%)",
+        }}
+      />
+      <div className="relative z-10 mx-auto flex max-w-[420px] flex-col items-center">
+        {/* Icona Ghost grande */}
+        <div
+          className="mb-6 flex h-[72px] w-[72px] items-center justify-center rounded-[16px] shadow-[0_12px_32px_-8px_rgba(168,139,250,0.5)]"
+          style={{
+            background: "linear-gradient(135deg, #A88BFA, #E879F9)",
+          }}
+        >
+          <Ghost className="h-8 w-8 text-white" strokeWidth={1.6} />
+        </div>
+
+        <p className="eyebrow-accent mb-2 text-[10px]">Capitale invisibile</p>
+        <h3 className="m-0 font-serif text-[22px] font-normal italic leading-[1.2] text-ink-primary">
+          Nessun impulso ancora
+        </h3>
+        <p className="mt-3 max-w-[340px] text-[13px] leading-[1.6] text-ink-secondary">
+          Ogni volta che resisti a un acquisto impulsivo, aggiungilo qui. A fine mese vedrai quanto hai risparmiato.
+        </p>
+
+        {/* Skeleton preview — mostra come appariranno gli impulsi */}
+        <div className="mt-6 w-full space-y-2 rounded-[14px] border border-white/[0.06] bg-white/[0.02] p-3">
+          <p className="mb-2 text-left text-[9px] uppercase tracking-wider text-ink-muted">Esempio</p>
+          {[
+            { label: "Scarpe da ginnastica", amount: "89€", time: "3h 12min" },
+            { label: "Cena ristorante", amount: "45€", time: "1h 37min" },
+            { label: "Gadget Amazon", amount: "32€", time: "1h 9min" },
+          ].map((item, i) => (
+            <div
+              key={i}
+              className="flex items-center gap-3 rounded-[10px] border border-white/[0.04] bg-white/[0.015] px-3 py-2.5 opacity-50"
+            >
+              <div className="h-7 w-7 flex-shrink-0 rounded-[8px] bg-iri-violet/20" />
+              <div className="flex-1 text-left">
+                <p className="m-0 text-[12px] text-ink-secondary">{item.label}</p>
+                <p className="m-0 text-[10px] text-ink-muted">≡ {item.time} di libertà</p>
+              </div>
+              <p className="m-0 font-mono-tabular text-[13px] text-iri-pale">+{item.amount}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -274,12 +318,15 @@ export function EmptyCimitero() {
  */
 export function EmptyCimiteroMonth() {
   return (
-    <EmptyShell
-      illustration={<GhostIllustration />}
-      eyebrow="Mese corrente"
-      title="Mese ancora giovane"
-      description="Non hai rifiutato nessun impulso questo mese. Quando userai il simulatore e sceglierai di rinunciare, ogni rifiuto troverà casa qui."
-    />
+    <div className="rounded-[16px] border border-white/[0.06] bg-white/[0.02] px-6 py-8 text-center">
+      <Ghost className="mx-auto mb-3 h-7 w-7 text-ink-muted" strokeWidth={1.3} />
+      <p className="m-0 text-[14px] font-medium text-ink-secondary">
+        Nessun impulso rifiutato questo mese — ancora.
+      </p>
+      <p className="mt-1.5 text-[12px] leading-[1.6] text-ink-muted">
+        Ogni volta che resisti a un acquisto, registralo qui.
+      </p>
+    </div>
   );
 }
 
