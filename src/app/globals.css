@@ -52,6 +52,22 @@ html.dark {
   color-scheme: dark;
 }
 
+/* ═══════════════════════════════════════════════════════════
+   TEMA TEMPORALE — ora del giorno
+   ═══════════════════════════════════════════════════════════ */
+
+html.dark body.evening {
+  --color-surface-0: #08061A;
+  --color-surface-1: #0c0a1a;
+  --color-surface-2: #100e20;
+}
+
+html.dark body.night {
+  --color-surface-0: #050312;
+  --color-surface-1: #080618;
+  --color-surface-2: #0b091e;
+}
+
 body {
   background: var(--color-surface-0);
   color: var(--color-ink-primary);

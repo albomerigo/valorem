@@ -26,6 +26,7 @@ export type RecapData = {
   daysActive: number;
   avgPerDay: number;
   trendVsPrevMonth: number | null;
+  prevMonthData: { spent: number; income: number; transactionCount: number } | null;
   goalsProgress: { goal: Goal; monthProgress: number; monthProgressPct: number }[];
   narrativeTitle: string;
   coachQuote: string;
@@ -159,6 +160,16 @@ export function buildRecapData(
     .reduce((s, t) => s + Number(t.amount), 0);
   const trendVsPrevMonth =
     prevSpent > 0 ? Math.round(((totalSpent - prevSpent) / prevSpent) * 100) : null;
+  const prevMonthData =
+    prevTxs.length > 0
+      ? {
+          spent: prevSpent,
+          income: prevTxs
+            .filter((t) => t.type === "income")
+            .reduce((s, t) => s + Number(t.amount), 0),
+          transactionCount: prevTxs.length,
+        }
+      : null;
 
   // Progressi obiettivi (semplificato: progress totale attuale - nessuna storicizzazione)
   const goalsProgress = goals
@@ -207,6 +218,7 @@ export function buildRecapData(
     daysActive,
     avgPerDay,
     trendVsPrevMonth,
+    prevMonthData,
     goalsProgress,
     narrativeTitle,
     coachQuote,

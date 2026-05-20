@@ -4,6 +4,7 @@ import { ThemeProvider } from "next-themes";
 import { SwRegister } from "@/components/sw-register";
 import { PaddleProvider } from "@/components/paddle-provider";
 import { PageTransition } from "@/components/page-transition";
+import { TimeTheme } from "@/components/time-theme";
 import "./globals.css";
 
 const inter = Inter({
@@ -69,6 +70,7 @@ export default function RootLayout({
           <PaddleProvider>
             <SwRegister />
             <PageTransition />
+            <TimeTheme />
             <div className="ambient-bg" />
             <div id="page-content">{children}</div>
           </PaddleProvider>

@@ -44,6 +44,46 @@ import type { CustomCategory } from "@/app/settings/categories-actions";
 type Period = "month" | "30days" | "3months" | "all" | "custom";
 type TypeFilter = "all" | "expense" | "income";
 
+const CAT_COLORS: Record<string, string> = {
+  Alimentari: "#A88BFA",
+  Ristorazione: "#FDA4AF",
+  Trasporti: "#FCD34D",
+  Abbonamento: "#93C5FD",
+  Svago: "#F0ABFC",
+  Salute: "#7DD3FC",
+  Casa: "#C4B5FD",
+  Shopping: "#E879F9",
+  Investimenti: "#10B981",
+  Altro: "#9CA3AF",
+};
+
+function polarToCartesian(cx: number, cy: number, r: number, angleDeg: number) {
+  const angle = ((angleDeg - 90) * Math.PI) / 180;
+  return { x: cx + r * Math.cos(angle), y: cy + r * Math.sin(angle) };
+}
+
+function donutArc(
+  cx: number,
+  cy: number,
+  outerR: number,
+  innerR: number,
+  startDeg: number,
+  endDeg: number
+): string {
+  const o1 = polarToCartesian(cx, cy, outerR, startDeg);
+  const o2 = polarToCartesian(cx, cy, outerR, endDeg);
+  const i1 = polarToCartesian(cx, cy, innerR, endDeg);
+  const i2 = polarToCartesian(cx, cy, innerR, startDeg);
+  const large = endDeg - startDeg > 180 ? 1 : 0;
+  return [
+    `M ${o1.x.toFixed(2)} ${o1.y.toFixed(2)}`,
+    `A ${outerR} ${outerR} 0 ${large} 1 ${o2.x.toFixed(2)} ${o2.y.toFixed(2)}`,
+    `L ${i1.x.toFixed(2)} ${i1.y.toFixed(2)}`,
+    `A ${innerR} ${innerR} 0 ${large} 0 ${i2.x.toFixed(2)} ${i2.y.toFixed(2)}`,
+    "Z",
+  ].join(" ");
+}
+
 const CATEGORIES = [
   "Alimentari",
   "Ristorazione",
@@ -338,6 +378,8 @@ export function AttivitaView({
             </div>
           </div>
 
+          <CategoryDonut filtered={filtered} />
+
           {/* FILTERS BAR */}
           <div className="glass-panel mb-5 rounded-[16px] p-5">
             {/* Riga 1: search + period */}
@@ -562,6 +604,113 @@ export function AttivitaView({
 
       <FabButton />
       <BottomBar activeRoute="activity" />
+    </div>
+  );
+}
+
+function CategoryDonut({ filtered }: { filtered: Transaction[] }) {
+  const expenses = filtered.filter(
+    (t) => t.type === "expense" && !isInvestment(t.category)
+  );
+
+  const catMap: Record<string, number> = {};
+  for (const t of expenses) {
+    const c = t.category || "Altro";
+    catMap[c] = (catMap[c] || 0) + Number(t.amount);
+  }
+
+  const sorted = Object.entries(catMap).sort((a, b) => b[1] - a[1]);
+  if (sorted.length < 2) return null;
+
+  const total = sorted.reduce((s, [, v]) => s + v, 0);
+  if (total <= 0) return null;
+
+  const top5 = sorted.slice(0, 5);
+  const rest = sorted.slice(5);
+  const restTotal = rest.reduce((s, [, v]) => s + v, 0);
+
+  const segments = [
+    ...top5.map(([name, amount]) => ({ name, amount, pct: amount / total })),
+    ...(restTotal > 0
+      ? [{ name: "Altro", amount: restTotal, pct: restTotal / total }]
+      : []),
+  ];
+
+  const cx = 80;
+  const cy = 80;
+  const outerR = 68;
+  const innerR = 46;
+  const GAP_DEG = 2;
+
+  let currentDeg = 0;
+  const arcs = segments.map((seg) => {
+    const start = currentDeg;
+    const sweep = seg.pct * 360 - GAP_DEG;
+    currentDeg += seg.pct * 360;
+    return { ...seg, start, end: start + Math.max(sweep, 0.1) };
+  });
+
+  const { int, dec } = splitCurrency(total);
+
+  return (
+    <div className="glass-panel mb-4 rounded-[16px] px-5 py-4">
+      <p className="eyebrow mb-3 text-[9px]">Distribuzione spese</p>
+      <div className="flex flex-col items-center gap-4 md:flex-row md:items-center md:gap-6">
+        {/* Donut SVG */}
+        <div className="w-[120px] shrink-0 md:w-[160px]">
+          <svg viewBox="0 0 160 160" className="w-full overflow-visible">
+            {arcs.map((arc) => (
+              <path
+                key={arc.name}
+                d={donutArc(cx, cy, outerR, innerR, arc.start, arc.end)}
+                fill={CAT_COLORS[arc.name] ?? "#9CA3AF"}
+              />
+            ))}
+            {/* Center label */}
+            <text
+              x={cx}
+              y={cy - 5}
+              textAnchor="middle"
+              style={{
+                fontSize: 18,
+                fontFamily: "var(--font-fraunces), Georgia, serif",
+                fontStyle: "italic",
+                fill: "var(--color-ink-primary)",
+              }}
+            >
+              {int}
+            </text>
+            <text
+              x={cx}
+              y={cy + 13}
+              textAnchor="middle"
+              style={{ fontSize: 11, fill: "var(--color-ink-muted)" }}
+            >
+              ,{dec}€
+            </text>
+          </svg>
+        </div>
+
+        {/* Legend */}
+        <div className="flex flex-1 flex-col gap-1.5">
+          {segments.map((seg) => (
+            <div key={seg.name} className="flex items-center justify-between gap-3">
+              <div className="flex min-w-0 items-center gap-2">
+                <span
+                  className="h-2 w-2 shrink-0 rounded-full"
+                  style={{ background: CAT_COLORS[seg.name] ?? "#9CA3AF" }}
+                />
+                <span className="truncate text-[11px] text-ink-secondary">
+                  {seg.name}
+                </span>
+              </div>
+              <span className="shrink-0 font-mono-tabular text-[11px] text-ink-primary">
+                {Math.round(seg.pct * 100)}%
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

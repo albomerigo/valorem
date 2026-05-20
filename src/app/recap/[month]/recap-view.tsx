@@ -64,6 +64,9 @@ export function RecapView({
           {/* TOTALE SPESA + NETTO */}
           <Overview recap={recap} />
 
+          {/* VS MESE SCORSO */}
+          <ComparisonSection recap={recap} />
+
           {/* CAPITALE INVESTITO */}
           <InvestedSection recap={recap} />
 
@@ -414,6 +417,137 @@ function StatCard({
         <span className="text-[13px] text-ink-primary/60">,{decPart}</span>
         <span className="ml-0.5 text-[11px] text-ink-muted">{suffix}</span>
       </p>
+    </div>
+  );
+}
+
+function ComparisonSection({ recap }: { recap: RecapData }) {
+  if (!recap.prevMonthData) {
+    return (
+      <div
+        className="glass-panel mb-8 rounded-[16px] px-5 py-4 animate-slide-up [animation-delay:0.12s]"
+        style={{ animationFillMode: "both" }}
+      >
+        <div className="flex items-center gap-3">
+          <div className="flex h-9 w-9 items-center justify-center rounded-[10px] border border-iri-violet/25 bg-iri-violet/[0.08]">
+            <BarChart2 className="h-4 w-4 text-iri-pale" strokeWidth={1.8} />
+          </div>
+          <div>
+            <p className="eyebrow-accent text-[10px]">Confronto mensile</p>
+            <p className="m-0 mt-0.5 font-serif text-[14px] italic text-ink-primary">
+              Primo mese tracciato — baseline stabilita 🌱
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const prev = recap.prevMonthData;
+  const spendTrend = recap.trendVsPrevMonth;
+  const incomeTrend =
+    prev.income > 0
+      ? Math.round(((recap.totalIncome - prev.income) / prev.income) * 100)
+      : null;
+  const txDelta = recap.transactionCount - prev.transactionCount;
+
+  return (
+    <div
+      className="glass-panel mb-8 rounded-[20px] p-6 animate-slide-up [animation-delay:0.12s]"
+      style={{ animationFillMode: "both" }}
+    >
+      <div className="mb-5 flex items-center gap-3">
+        <div className="flex h-9 w-9 items-center justify-center rounded-[10px] border border-iri-violet/25 bg-iri-violet/[0.08] text-iri-pale">
+          <BarChart2 className="h-4 w-4" strokeWidth={1.8} />
+        </div>
+        <div>
+          <p className="eyebrow-accent text-[10px]">Rispetto al mese scorso</p>
+          <p className="m-0 mt-0.5 text-[13px] text-ink-secondary">
+            Come sei andato a confronto
+          </p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-3 gap-3">
+        {/* Spese */}
+        <div className="rounded-[14px] border border-white/[0.06] bg-white/[0.02] p-4 text-center">
+          <p className="eyebrow mb-2 text-[9px]">Spese</p>
+          {spendTrend !== null ? (
+            <>
+              <div className="flex items-center justify-center gap-1">
+                {spendTrend > 0 ? (
+                  <TrendingUp className="h-4 w-4 text-red-300" strokeWidth={2} />
+                ) : (
+                  <TrendingDown className="h-4 w-4 text-emerald-300" strokeWidth={2} />
+                )}
+                <span
+                  className={`font-mono-tabular text-[20px] font-medium [letter-spacing:-0.02em] ${
+                    spendTrend > 0 ? "text-red-300" : "text-emerald-300"
+                  }`}
+                >
+                  {spendTrend > 0 ? "+" : ""}
+                  {spendTrend}%
+                </span>
+              </div>
+              <p className="mt-1 text-[10px] text-ink-muted">
+                {spendTrend > 0 ? "di più rispetto a prima" : "in meno — ottimo!"}
+              </p>
+            </>
+          ) : (
+            <span className="text-[12px] text-ink-muted">N/D</span>
+          )}
+        </div>
+
+        {/* Entrate */}
+        <div className="rounded-[14px] border border-white/[0.06] bg-white/[0.02] p-4 text-center">
+          <p className="eyebrow mb-2 text-[9px]">Entrate</p>
+          {incomeTrend !== null ? (
+            <>
+              <div className="flex items-center justify-center gap-1">
+                {incomeTrend >= 0 ? (
+                  <TrendingUp className="h-4 w-4 text-emerald-300" strokeWidth={2} />
+                ) : (
+                  <TrendingDown className="h-4 w-4 text-amber-300" strokeWidth={2} />
+                )}
+                <span
+                  className={`font-mono-tabular text-[20px] font-medium [letter-spacing:-0.02em] ${
+                    incomeTrend >= 0 ? "text-emerald-300" : "text-amber-300"
+                  }`}
+                >
+                  {incomeTrend > 0 ? "+" : ""}
+                  {incomeTrend}%
+                </span>
+              </div>
+              <p className="mt-1 text-[10px] text-ink-muted">
+                {incomeTrend >= 0 ? "entrate in crescita" : "entrate calate"}
+              </p>
+            </>
+          ) : (
+            <span className="text-[12px] text-ink-muted">N/D</span>
+          )}
+        </div>
+
+        {/* Transazioni */}
+        <div className="rounded-[14px] border border-white/[0.06] bg-white/[0.02] p-4 text-center">
+          <p className="eyebrow mb-2 text-[9px]">Transazioni</p>
+          <div className="flex items-center justify-center gap-1">
+            {txDelta !== 0 && (
+              txDelta > 0 ? (
+                <TrendingUp className="h-4 w-4 text-ink-muted" strokeWidth={2} />
+              ) : (
+                <TrendingDown className="h-4 w-4 text-ink-muted" strokeWidth={2} />
+              )
+            )}
+            <span className="font-mono-tabular text-[20px] font-medium text-ink-primary [letter-spacing:-0.02em]">
+              {txDelta > 0 ? "+" : ""}
+              {txDelta}
+            </span>
+          </div>
+          <p className="mt-1 text-[10px] text-ink-muted">
+            {recap.transactionCount} questo mese
+          </p>
+        </div>
+      </div>
     </div>
   );
 }

@@ -180,7 +180,7 @@ export function ProfiloView({
         </div>
       </div>
 
-      <BottomBar activeRoute="settings" />
+      <BottomBar activeRoute="profilo" />
     </div>
   );
 }

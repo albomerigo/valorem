@@ -12,6 +12,7 @@ import {
   Sparkles,
   History,
   Upload,
+  BookOpen,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
@@ -36,6 +37,7 @@ const navItems: { icon: typeof Home; label: string; route: Route; href: string }
   { icon: Ghost, label: "Cimitero", route: "cimitero", href: "/cimitero" },
   { icon: Target, label: "Obiettivi", route: "goals", href: "/obiettivi" },
   { icon: History, label: "Storico", route: "storico", href: "/storico" },
+  { icon: BookOpen, label: "Recap", route: "storico", href: "/storico" },
   { icon: Upload, label: "Importa", route: "import", href: "/import" },
 ];
 
@@ -100,7 +102,7 @@ useEffect(() => {
 
         {/* Nav items */}
         {navItems.map((item) => (
-          <NavLink key={item.route} {...item} active={item.route === activeRoute} />
+          <NavLink key={item.label} {...item} active={item.route === activeRoute} />
         ))}
 
         <div className="flex-1" />

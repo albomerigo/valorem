@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Calendar, ChevronRight } from "lucide-react";
-import type { DashboardData, Goal } from "@/lib/finance";
+import { Calendar, ChevronRight, X } from "lucide-react";
+import type { DashboardData, Goal, FixedCost } from "@/lib/finance";
+import { splitCurrency } from "@/lib/utils";
 import { Sidebar } from "./sidebar";
 import { BottomBar } from "./bottom-bar";
 import { FabButton } from "./fab-button";
@@ -18,7 +19,6 @@ import { SpendingChart } from "./spending-chart";
 import { UpgradeBanner } from "./upgrade-banner";
 import { OnboardingChecklist } from "./onboarding-checklist";
 import { NewTransactionModal } from "./new-transaction-modal";
-import { MonthlyChallengeCard } from "./monthly-challenge";
 import { getCustomCategories } from "@/app/settings/categories-actions";
 import type { CustomCategory } from "@/app/settings/categories-actions";
 
@@ -101,6 +101,112 @@ function PlanPill({ plan }: { plan: string }) {
   );
 }
 
+function EveningCheck({
+  name,
+  safeToSpendToday,
+}: {
+  name: string;
+  safeToSpendToday: number;
+}) {
+  const [dismissed, setDismissed] = useState(true);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    const hour = new Date().getHours();
+    if (hour < 18) {
+      setMounted(true);
+      return;
+    }
+    const today = new Date().toISOString().split("T")[0];
+    const key = `valorem_evening_dismissed_${today}`;
+    setDismissed(localStorage.getItem(key) === "true");
+    setMounted(true);
+  }, []);
+
+  if (!mounted || dismissed || new Date().getHours() < 18) return null;
+
+  const isPositive = safeToSpendToday > 0;
+  const firstName = name ? name.split(" ")[0] : "";
+
+  function handleDismiss() {
+    const today = new Date().toISOString().split("T")[0];
+    localStorage.setItem(`valorem_evening_dismissed_${today}`, "true");
+    setDismissed(true);
+  }
+
+  return (
+    <div
+      className="relative overflow-hidden rounded-[16px] border border-iri-violet/20 px-5 py-4"
+      style={{
+        background:
+          "linear-gradient(135deg, #12082a 0%, #0a0618 100%)",
+      }}
+    >
+      <button
+        type="button"
+        onClick={handleDismiss}
+        title="Chiudi"
+        className="absolute right-3 top-3 flex h-6 w-6 items-center justify-center rounded-lg text-ink-muted transition-colors hover:text-ink-primary"
+      >
+        <X className="h-3.5 w-3.5" />
+      </button>
+      <div className="flex items-start gap-3 pr-6">
+        <span className="mt-0.5 text-[22px]">🌙</span>
+        <div>
+          <p className="m-0 text-[13px] font-medium text-ink-primary">
+            Buonasera{firstName ? ` ${firstName}` : ""}
+          </p>
+          <p
+            className="m-0 mt-1 text-[12px] leading-[1.5]"
+            style={{ color: isPositive ? "#86EFAC" : "#FDA4AF" }}
+          >
+            {isPositive
+              ? `Come è andata oggi? Hai ancora ${safeToSpendToday.toFixed(0)}€ disponibili.`
+              : "Oggi hai superato il budget. Domani è un nuovo giorno. 💙"}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function UpcomingFixedCosts({ fixedCosts }: { fixedCosts: FixedCost[] }) {
+  if (fixedCosts.length === 0) return null;
+
+  const total = fixedCosts.reduce((s, c) => s + Number(c.amount), 0);
+  const { int: tInt, dec: tDec } = splitCurrency(total);
+
+  return (
+    <div className="glass-panel-subtle rounded-[16px] px-5 py-4">
+      <p className="eyebrow mb-3">Costi fissi mensili</p>
+      <div className="flex flex-col gap-2">
+        {fixedCosts.map((cost) => {
+          const { int, dec } = splitCurrency(Number(cost.amount));
+          return (
+            <div key={cost.id} className="flex items-center justify-between gap-3">
+              <div className="flex min-w-0 items-center gap-2">
+                <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-iri-violet" />
+                <span className="truncate text-[13px] text-ink-secondary">
+                  {cost.name}
+                </span>
+              </div>
+              <span className="shrink-0 font-mono-tabular text-[13px] text-red-300">
+                −{int},{dec}€
+              </span>
+            </div>
+          );
+        })}
+        <div className="mt-2 flex items-center justify-between border-t border-white/[0.04] pt-2">
+          <span className="text-[11px] text-ink-muted">Totale mensile</span>
+          <span className="font-mono-tabular text-[12px] font-medium text-red-200">
+            −{tInt},{tDec}€
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function Dashboard({
   data,
   dailyData,
@@ -136,6 +242,10 @@ export function Dashboard({
           />
           <div className="mt-5 flex flex-col gap-4 md:mt-6 md:gap-5">
             <RecapBanner />
+            <EveningCheck
+              name={data.profile?.name || ""}
+              safeToSpendToday={data.stats.safeToSpendToday}
+            />
             <CurrentMonthRecapLink />
             <OnboardingChecklist
               transactions={data.transactions.length}
@@ -147,9 +257,9 @@ export function Dashboard({
             <HeroCard stats={data.stats} />
             <UpgradeBanner plan={plan} />
             <KPIRow stats={data.stats} />
-            <MonthlyChallengeCard transactions={data.transactions} />
             <CoachBanner stats={data.stats} transactions={data.transactions} />
             <SpendingChart data={dailyData} dailyBudgetBase={data.stats.dailyBudgetBase} />
+            <UpcomingFixedCosts fixedCosts={data.fixedCosts} />
             <CoachStripe coachMessage={data.stats.coachMessage} stats={data.stats} />
             <TransactionsList
               transactions={data.transactions}
