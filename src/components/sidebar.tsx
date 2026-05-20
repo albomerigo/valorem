@@ -37,7 +37,6 @@ const navItems: { icon: typeof Home; label: string; route: Route; href: string }
   { icon: Ghost, label: "Cimitero", route: "cimitero", href: "/cimitero" },
   { icon: Target, label: "Obiettivi", route: "goals", href: "/obiettivi" },
   { icon: History, label: "Storico", route: "storico", href: "/storico" },
-  { icon: BookOpen, label: "Recap", route: "storico", href: "/storico" },
   { icon: Upload, label: "Importa", route: "import", href: "/import" },
 ];
 
