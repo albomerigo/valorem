@@ -27,10 +27,10 @@ const plans = [
     annualPrice: 0,
     tagline: "Per iniziare il tuo percorso",
     features: [
-      "Fino a 50 transazioni/mese",
-      "1 obiettivo di risparmio",
+      "Fino a 15 transazioni/mese",
+      "1 obiettivo attivo",
+      "Solo mese corrente nello storico",
       "Dashboard con Safe-to-Spend",
-      "Accesso web e PWA",
       "Cimitero degli impulsi",
     ],
     gradient: "rgba(255,255,255,0.03)",
@@ -49,10 +49,12 @@ const plans = [
       "Transazioni illimitate",
       "Obiettivi illimitati",
       "Storico completo a vita",
-      "Export dati CSV/Excel",
+      "Export CSV/Excel",
       "Categorie personalizzate",
+      "Bulk import transazioni",
+      "Recap mensile completo",
+      "Ricerca globale avanzata",
       "Notifiche proattive",
-      "Recap mensile avanzato",
     ],
     gradient: "linear-gradient(135deg, rgba(168,139,250,0.14), rgba(232,121,249,0.07))",
     border: "rgba(168,139,250,0.4)",
@@ -64,23 +66,23 @@ const plans = [
     key: "pro",
     name: "Pro",
     icon: Crown,
-    monthlyPrice: 9.99,
-    annualPrice: 7.99,
-    tagline: "Con l'intelligenza artificiale",
+    monthlyPrice: 8.99,
+    annualPrice: 6.99,
+    tagline: "Con intelligenza artificiale · In arrivo",
     features: [
       "Tutto di Premium",
-      "AI Coach personalizzato",
+      "AI Coach con Claude API",
       "Modalità coppia 💑",
+      "Report mensile via email",
       "Confronto con coetanei",
-      "Previsioni fine mese",
-      "Sync bancario (presto)",
+      "Sync bancario",
       "Supporto prioritario",
-      "Accesso beta feature",
     ],
-    gradient: "linear-gradient(135deg, rgba(96,165,250,0.12), rgba(103,232,249,0.06))",
+    gradient: "linear-gradient(135deg, rgba(96,165,250,0.1), rgba(103,232,249,0.05))",
     border: "rgba(96,165,250,0.35)",
     accent: "#60A5FA",
     glow: "rgba(96,165,250,0.2)",
+    comingSoon: true,
   },
 ];
 
@@ -90,6 +92,9 @@ export default function PricingPage() {
   const [annual, setAnnual] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [hoveredPlan, setHoveredPlan] = useState<string | null>(null);
+  const [waitlistEmail, setWaitlistEmail] = useState("");
+  const [waitlistSubmitted, setWaitlistSubmitted] = useState(false);
+  const waitlistRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animRef = useRef<number>(0);
 
@@ -186,6 +191,17 @@ export default function PricingPage() {
       items: [{ priceId, quantity: 1 }],
       customData: userId ? { user_id: userId } : undefined,
     });
+  }
+
+  function scrollToWaitlist() {
+    waitlistRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+
+  function handleWaitlistSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!waitlistEmail.trim()) return;
+    localStorage.setItem("valorem_pro_waitlist_email", waitlistEmail.trim());
+    setWaitlistSubmitted(true);
   }
 
   return (
@@ -285,11 +301,12 @@ export default function PricingPage() {
 
         {/* Piani */}
         <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
-          {plans.map((plan, idx) => {
+          {plans.map((plan) => {
             const Icon = plan.icon;
             const price = annual ? plan.annualPrice : plan.monthlyPrice;
             const isCurrent = currentPlan === plan.key;
             const isHovered = hoveredPlan === plan.key;
+            const isComingSoon = "comingSoon" in plan && plan.comingSoon;
 
             return (
               <div
@@ -307,7 +324,7 @@ export default function PricingPage() {
                     ? `0 16px 40px -8px ${plan.glow}`
                     : "none",
                   transform: isHovered ? "translateY(-6px) scale(1.01)" : "none",
-                  padding: plan.popular ? "2px" : "0",
+                  padding: plan.popular || isComingSoon ? "2px" : "0",
                 }}
               >
                 {/* Animated border for premium */}
@@ -323,11 +340,26 @@ export default function PricingPage() {
                   />
                 )}
 
+                {/* Animated border for Pro (coming soon) */}
+                {isComingSoon && (
+                  <div
+                    className="absolute inset-0 rounded-2xl"
+                    style={{
+                      background: "linear-gradient(135deg, #60A5FA, #67E8F9, #A88BFA, #60A5FA, #67E8F9)",
+                      backgroundSize: "300% 300%",
+                      animation: "borderRotate 6s linear infinite",
+                      zIndex: -1,
+                    }}
+                  />
+                )}
+
                 <div
                   className="relative flex h-full flex-col rounded-2xl p-6"
                   style={{
                     background: plan.popular
                       ? "linear-gradient(135deg, rgba(26,20,40,0.95), rgba(36,27,58,0.95))"
+                      : isComingSoon
+                      ? "linear-gradient(135deg, rgba(13,20,40,0.97), rgba(10,20,36,0.97))"
                       : "transparent",
                   }}
                 >
@@ -342,6 +374,20 @@ export default function PricingPage() {
                       }}
                     >
                       ✦ Più popolare
+                    </div>
+                  )}
+
+                  {/* Badge prossimamente */}
+                  {isComingSoon && (
+                    <div
+                      className="absolute -top-3.5 left-1/2 -translate-x-1/2 rounded-full px-4 py-1 text-[11px] font-bold uppercase tracking-[0.08em]"
+                      style={{
+                        background: "linear-gradient(135deg, #60A5FA, #67E8F9)",
+                        color: "#0D0A1E",
+                        boxShadow: "0 4px 16px rgba(96,165,250,0.4)",
+                      }}
+                    >
+                      🚀 Prossimamente
                     </div>
                   )}
 
@@ -386,6 +432,7 @@ export default function PricingPage() {
                             style={{
                               color: plan.accent,
                               textShadow: isHovered ? `0 0 30px ${plan.accent}60` : "none",
+                              opacity: isComingSoon ? 0.6 : 1,
                             }}
                           >
                             €{price.toFixed(2).replace(".", ",")}
@@ -406,6 +453,20 @@ export default function PricingPage() {
                       </div>
                     )}
                   </div>
+
+                  {/* Early adopter banner — Pro only */}
+                  {isComingSoon && (
+                    <div
+                      className="mb-5 rounded-xl px-3.5 py-3 text-[12px] leading-relaxed"
+                      style={{
+                        background: "rgba(96,165,250,0.08)",
+                        border: "1px solid rgba(96,165,250,0.25)",
+                        color: "#93C5FD",
+                      }}
+                    >
+                      🎁 <span style={{ fontWeight: 600 }}>Early adopter:</span> i primi 100 iscritti ricevono 2 mesi gratis + 30% di sconto permanente
+                    </div>
+                  )}
 
                   {/* Separatore */}
                   <div
@@ -463,6 +524,19 @@ export default function PricingPage() {
                     >
                       Continua gratis
                     </Link>
+                  ) : isComingSoon ? (
+                    <button
+                      onClick={scrollToWaitlist}
+                      className="relative w-full overflow-hidden rounded-xl py-3.5 text-[13px] font-semibold transition-all duration-300 hover:-translate-y-0.5"
+                      style={{
+                        background: "linear-gradient(135deg, rgba(96,165,250,0.2), rgba(103,232,249,0.12))",
+                        border: "1px solid rgba(96,165,250,0.4)",
+                        color: "#93C5FD",
+                        boxShadow: isHovered ? "0 8px 24px -4px rgba(96,165,250,0.4)" : "none",
+                      }}
+                    >
+                      Entra in lista →
+                    </button>
                   ) : (
                     <button
                       onClick={() => openCheckout(plan.key as "premium" | "pro")}
@@ -498,6 +572,100 @@ export default function PricingPage() {
               </div>
             );
           })}
+        </div>
+
+        {/* Waitlist Pro */}
+        <div
+          ref={waitlistRef}
+          className="mx-auto mt-12 max-w-[600px] rounded-[24px] p-10 text-center"
+          style={{
+            background: "linear-gradient(135deg, rgba(96,165,250,0.08), rgba(103,232,249,0.05))",
+            border: "1px solid rgba(96,165,250,0.3)",
+          }}
+        >
+          {/* Badge */}
+          <div
+            className="mb-5 inline-flex items-center gap-2 rounded-full px-4 py-1.5"
+            style={{
+              background: "rgba(96,165,250,0.1)",
+              border: "1px solid rgba(96,165,250,0.25)",
+            }}
+          >
+            <span className="h-1.5 w-1.5 animate-pulse rounded-full" style={{ background: "#60A5FA" }} />
+            <span className="text-[11px] font-semibold uppercase tracking-[0.12em]" style={{ color: "#60A5FA" }}>
+              Early Adopter
+            </span>
+          </div>
+
+          <h2
+            className="mt-2 font-serif text-[28px] font-normal italic leading-tight"
+            style={{ color: "#F0EEFF" }}
+          >
+            Sii tra i primi a provare<br />Valorem Pro
+          </h2>
+
+          <p className="mt-4 text-[14px] leading-relaxed" style={{ color: "rgba(255,255,255,0.5)" }}>
+            L&apos;AI Coach personalizzato, la modalità coppia e i report mensili automatici sono in sviluppo.
+            Iscriviti adesso e ricevi <span style={{ color: "#93C5FD", fontWeight: 500 }}>2 mesi gratis + 30% di sconto permanente</span> quando uscirà.
+          </p>
+
+          {/* Contatore */}
+          <div
+            className="mt-5 inline-flex items-center gap-2 rounded-full px-4 py-2 text-[13px] font-medium"
+            style={{
+              background: "rgba(96,165,250,0.07)",
+              border: "1px solid rgba(96,165,250,0.18)",
+              color: "#93C5FD",
+            }}
+          >
+            🔥 23 persone già in lista
+          </div>
+
+          {/* Form */}
+          <div className="mt-7">
+            {waitlistSubmitted ? (
+              <div
+                className="flex items-center justify-center gap-2 rounded-xl px-6 py-4 text-[14px] font-medium"
+                style={{
+                  background: "rgba(16,185,129,0.08)",
+                  border: "1px solid rgba(16,185,129,0.2)",
+                  color: "#6EE7B7",
+                }}
+              >
+                ✓ Sei in lista! Ti avvisiamo per primi.
+              </div>
+            ) : (
+              <form onSubmit={handleWaitlistSubmit} className="flex flex-col gap-3 sm:flex-row">
+                <input
+                  type="email"
+                  required
+                  placeholder="la.tua@email.it"
+                  value={waitlistEmail}
+                  onChange={(e) => setWaitlistEmail(e.target.value)}
+                  className="flex-1 rounded-[14px] px-4 py-3.5 text-[14px] text-white outline-none transition-colors"
+                  style={{
+                    background: "rgba(255,255,255,0.05)",
+                    border: "1px solid rgba(96,165,250,0.25)",
+                  }}
+                />
+                <button
+                  type="submit"
+                  className="rounded-[14px] px-5 py-3.5 text-[14px] font-semibold text-white transition-all hover:-translate-y-0.5"
+                  style={{
+                    background: "linear-gradient(135deg, #60A5FA, #67E8F9)",
+                    color: "#0D0A1E",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  Voglio l&apos;accesso anticipato →
+                </button>
+              </form>
+            )}
+          </div>
+
+          <p className="mt-4 text-[12px]" style={{ color: "rgba(255,255,255,0.25)" }}>
+            Zero spam. Solo una email quando Pro è disponibile.
+          </p>
         </div>
 
         {/* Garanzia */}

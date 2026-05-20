@@ -10,6 +10,7 @@ import {
   ChevronRight,
   Sparkles,
   Star,
+  Lock,
 } from "lucide-react";
 import {
   ComposedChart,
@@ -23,6 +24,7 @@ import {
   ResponsiveContainer,
   Cell,
 } from "recharts";
+import Link from "next/link";
 import { Sidebar } from "@/components/sidebar";
 import { BottomBar } from "@/components/bottom-bar";
 import { FabButton } from "@/components/fab-button";
@@ -56,19 +58,27 @@ export function StoricoView({
   recaps: MonthEntry[];
 }) {
   const router = useRouter();
+  const isFree = (profile.plan || "free") === "free";
+
+  // Free plan: show only current month
+  const now = new Date();
+  const currentSlug = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+  const visibleRecaps = isFree
+    ? recaps.filter((e) => e.slug === currentSlug)
+    : recaps;
 
   const agg = useMemo(() => {
-    if (recaps.length === 0) return null;
+    if (visibleRecaps.length === 0) return null;
 
-    const totalSpent = recaps.reduce((s, e) => s + e.recap.totalSpent, 0);
-    const totalTransactions = recaps.reduce((s, e) => s + e.recap.transactionCount, 0);
-    const totalImpulsesSaved = recaps.reduce((s, e) => s + e.recap.savedFromImpulses, 0);
-    const totalInvested = recaps.reduce((s, e) => s + e.recap.capitalInvested, 0);
-    const avgMonthlySpent = totalSpent / recaps.length;
+    const totalSpent = visibleRecaps.reduce((s, e) => s + e.recap.totalSpent, 0);
+    const totalTransactions = visibleRecaps.reduce((s, e) => s + e.recap.transactionCount, 0);
+    const totalImpulsesSaved = visibleRecaps.reduce((s, e) => s + e.recap.savedFromImpulses, 0);
+    const totalInvested = visibleRecaps.reduce((s, e) => s + e.recap.capitalInvested, 0);
+    const avgMonthlySpent = totalSpent / visibleRecaps.length;
 
-    const bestEntry = [...recaps].sort((a, b) => b.recap.netValue - a.recap.netValue)[0];
+    const bestEntry = [...visibleRecaps].sort((a, b) => b.recap.netValue - a.recap.netValue)[0];
 
-    const sortedAsc = [...recaps].reverse();
+    const sortedAsc = [...visibleRecaps].reverse();
     const firstRecap = sortedAsc[0].recap;
     const lastRecap = sortedAsc[sortedAsc.length - 1].recap;
     const generalTrend =
@@ -77,7 +87,7 @@ export function StoricoView({
         : null;
 
     const catTotals: Record<string, number> = {};
-    for (const { recap } of recaps) {
+    for (const { recap } of visibleRecaps) {
       for (const cat of recap.categoryBreakdown) {
         catTotals[cat.name] = (catTotals[cat.name] || 0) + cat.amount;
       }
@@ -97,11 +107,12 @@ export function StoricoView({
       topCatEntry,
       sortedAsc,
     };
-  }, [recaps]);
+  }, [visibleRecaps]);
 
   const headerSubtitle = agg
     ? `${agg.totalTransactions} transazion${agg.totalTransactions === 1 ? "e" : "i"} tracciate · ${splitCurrency(agg.totalImpulsesSaved).int}€ salvati dagli impulsi · ${splitCurrency(agg.totalInvested).int}€ investiti`
     : "Nessuna transazione ancora";
+
 
   return (
     <div className="relative min-h-screen">
@@ -116,34 +127,52 @@ export function StoricoView({
           <header className="mb-10 mt-8">
             <p className="eyebrow-accent mb-2 text-[10px]">La tua storia finanziaria</p>
             <h1 className="m-0 font-serif text-[36px] font-normal italic leading-tight text-ink-primary md:text-[44px]">
-              {recaps.length} {recaps.length === 1 ? "mese" : "mesi"} di crescita
+              {visibleRecaps.length} {visibleRecaps.length === 1 ? "mese" : "mesi"} di crescita
             </h1>
             <p className="mt-3 text-[14px] leading-[1.6] text-ink-secondary">
               {headerSubtitle}
             </p>
-            {recaps.length > 3 && (
+            {visibleRecaps.length > 3 && (
               <p className="mt-3 font-serif text-[15px] italic leading-[1.5] text-iri-pale/80">
                 Ogni mese che passa, la tua consapevolezza cresce.
               </p>
             )}
           </header>
 
-          {recaps.length === 0 ? (
+          {/* FREE PLAN BANNER */}
+          {isFree && (
+            <div className="mb-6 flex items-start gap-3 rounded-[14px] border border-iri-violet/20 bg-iri-violet/[0.05] px-4 py-3.5">
+              <Lock className="mt-0.5 h-4 w-4 flex-shrink-0 text-iri-pale" strokeWidth={1.6} />
+              <div className="flex-1 min-w-0">
+                <p className="text-[13px] text-ink-secondary">
+                  Con il piano gratuito vedi solo il mese corrente. Passa a Premium per lo storico completo.
+                </p>
+              </div>
+              <Link
+                href="/pricing"
+                className="shrink-0 rounded-full border border-iri-violet/40 bg-iri-violet/[0.1] px-3 py-1.5 text-[11px] font-medium text-iri-pale transition-all hover:border-iri-violet/60 hover:bg-iri-violet/[0.18]"
+              >
+                Premium →
+              </Link>
+            </div>
+          )}
+
+          {visibleRecaps.length === 0 ? (
             <EmptyStorico />
           ) : (
             <>
               {agg && (
                 <section className="mb-10">
                   <p className="eyebrow mb-5 text-[10px]">La tua crescita</p>
-                  <AggregateKPIs agg={agg} recaps={recaps} />
-                  {recaps.length > 1 && (
+                  <AggregateKPIs agg={agg} recaps={visibleRecaps} />
+                  {visibleRecaps.length > 1 && (
                     <div className="mt-5">
-                      <TrendChart recaps={recaps} avgMonthlySpent={agg.avgMonthlySpent} />
+                      <TrendChart recaps={visibleRecaps} avgMonthlySpent={agg.avgMonthlySpent} />
                     </div>
                   )}
-                  {recaps.length > 1 && (
+                  {visibleRecaps.length > 1 && (
                     <div className="mt-5">
-                      <CoachAnalysis agg={agg} recaps={recaps} />
+                      <CoachAnalysis agg={agg} recaps={visibleRecaps} />
                     </div>
                   )}
                 </section>
@@ -151,11 +180,11 @@ export function StoricoView({
 
               <p className="eyebrow mb-5 text-[10px]">Mesi</p>
               <div className="flex flex-col gap-4">
-                {recaps.map((entry, i) => (
+                {visibleRecaps.map((entry, i) => (
                   <MonthCard
                     key={entry.slug}
                     entry={entry}
-                    isBestMonth={agg?.bestEntry?.slug === entry.slug && recaps.length > 1}
+                    isBestMonth={agg?.bestEntry?.slug === entry.slug && visibleRecaps.length > 1}
                     onClick={() => router.push(`/recap/${entry.slug}`)}
                     index={i}
                   />

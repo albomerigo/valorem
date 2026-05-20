@@ -681,14 +681,14 @@ section,div[id]{position:relative;z-index:2}
         <div class="price-note" id="n-free"></div>
         <p class="price-desc">Per iniziare senza impegno economico.</p>
         <ul class="price-feats">
-          <li class="on"><span class="ck">✓</span>50 transazioni/mese</li>
+          <li class="on"><span class="ck">✓</span>15 transazioni/mese</li>
           <li class="on"><span class="ck">✓</span>1 obiettivo attivo</li>
-          <li class="on"><span class="ck">✓</span>3 mesi di storico</li>
+          <li class="on"><span class="ck">✓</span>Solo mese corrente</li>
           <li class="on"><span class="ck">✓</span>Dashboard e KPI</li>
           <li class="on"><span class="ck">✓</span>Cimitero degli impulsi</li>
+          <li><span class="cx">✗</span>Storico completo</li>
           <li><span class="cx">✗</span>Export dati</li>
           <li><span class="cx">✗</span>Categorie personalizzate</li>
-          <li><span class="cx">✗</span>AI Coach</li>
         </ul>
         <a href="https://valorem-albomerigo-2081s-projects.vercel.app" class="price-btn out">Inizia gratis</a>
       </div>
@@ -702,32 +702,57 @@ section,div[id]{position:relative;z-index:2}
           <li class="on"><span class="ck">✓</span>Transazioni illimitate</li>
           <li class="on"><span class="ck">✓</span>Obiettivi illimitati</li>
           <li class="on"><span class="ck">✓</span>Storico completo a vita</li>
-          <li class="on"><span class="ck">✓</span>Export CSV/Excel/JSON</li>
+          <li class="on"><span class="ck">✓</span>Export CSV/Excel</li>
           <li class="on"><span class="ck">✓</span>Categorie personalizzate</li>
+          <li class="on"><span class="ck">✓</span>Bulk import transazioni</li>
+          <li class="on"><span class="ck">✓</span>Ricerca globale avanzata</li>
           <li class="on"><span class="ck">✓</span>Notifiche proattive</li>
-          <li class="on"><span class="ck">✓</span>Recap avanzati</li>
-          <li><span class="cx">✗</span>AI Coach personalizzato</li>
         </ul>
         <a href="https://valorem-albomerigo-2081s-projects.vercel.app" class="price-btn fill">Inizia Premium →</a>
       </div>
-      <div class="price-card glass reveal-scale d2">
+      <div class="price-card glass reveal-scale d2" style="border:1px solid rgba(96,165,250,0.25);">
+        <div class="price-badge" style="background:linear-gradient(135deg,#60A5FA,#67E8F9);color:#0D0A1E;">🚀 Prossimamente</div>
         <div class="price-name">Pro</div>
-        <div class="price-amount" id="p-pro">9,99€<span>/mese</span></div>
+        <div class="price-amount" id="p-pro" style="opacity:0.6;">8,99€<span>/mese</span></div>
         <div class="price-note" id="n-pro"></div>
         <p class="price-desc">Intelligenza artificiale per le tue finanze.</p>
+        <div style="background:rgba(96,165,250,0.07);border:1px solid rgba(96,165,250,0.2);border-radius:10px;padding:10px 12px;margin-bottom:12px;font-size:.78rem;color:#93C5FD;line-height:1.5;">
+          🎁 <strong>Early adopter:</strong> i primi 100 iscritti ricevono 2 mesi gratis + 30% di sconto permanente
+        </div>
         <ul class="price-feats">
           <li class="on"><span class="ck">✓</span>Tutto di Premium</li>
-          <li class="on"><span class="ck">✓</span>AI Coach personalizzato</li>
+          <li class="on"><span class="ck">✓</span>AI Coach con Claude API</li>
           <li class="on"><span class="ck">✓</span>Modalità coppia 💑</li>
-          <li class="on"><span class="ck">✓</span>Confronto coetanei</li>
-          <li class="on"><span class="ck">✓</span>Previsioni fine mese</li>
-          <li class="on"><span class="ck">✓</span>Sync bancario (presto)</li>
+          <li class="on"><span class="ck">✓</span>Report mensile via email</li>
+          <li class="on"><span class="ck">✓</span>Confronto con coetanei</li>
+          <li class="on"><span class="ck">✓</span>Sync bancario</li>
           <li class="on"><span class="ck">✓</span>Supporto prioritario</li>
-          <li class="on"><span class="ck">✓</span>Accesso beta feature</li>
         </ul>
-        <a href="https://valorem-albomerigo-2081s-projects.vercel.app" class="price-btn out">Inizia Pro</a>
+        <a href="#waitlist-pro" class="price-btn out" style="border-color:rgba(96,165,250,0.4);color:#60A5FA;" onclick="document.getElementById('waitlist-pro').scrollIntoView({behavior:'smooth'});return false;">Entra in lista →</a>
       </div>
     </div>
+  </div>
+</section>
+
+<!-- WAITLIST PRO -->
+<section id="waitlist-pro" style="padding:5rem 2rem;text-align:center;">
+  <div style="max-width:600px;margin:0 auto;background:linear-gradient(135deg,rgba(96,165,250,0.08),rgba(103,232,249,0.05));border:1px solid rgba(96,165,250,0.3);border-radius:24px;padding:40px;position:relative;overflow:hidden;">
+    <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(96,165,250,0.1);border:1px solid rgba(96,165,250,0.25);border-radius:999px;padding:5px 16px;margin-bottom:20px;">
+      <span style="width:6px;height:6px;background:#60A5FA;border-radius:50%;animation:pulse 2s ease-in-out infinite;"></span>
+      <span style="font-size:.68rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#60A5FA;">Early Adopter</span>
+    </div>
+    <h2 style="font-family:'Fraunces',serif;font-size:1.75rem;font-style:italic;font-weight:400;color:#F0EEFF;margin:0 0 1rem;">Sii tra i primi a provare<br><em>Valorem Pro</em></h2>
+    <p style="font-size:.9rem;color:rgba(255,255,255,0.5);line-height:1.7;max-width:460px;margin:0 auto 1.25rem;">L'AI Coach personalizzato, la modalità coppia e i report mensili automatici sono in sviluppo. Iscriviti adesso e ricevi <span style="color:#93C5FD;font-weight:500;">2 mesi gratis + 30% di sconto permanente</span> quando uscirà.</p>
+    <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(96,165,250,0.07);border:1px solid rgba(96,165,250,0.18);border-radius:999px;padding:8px 18px;font-size:.82rem;font-weight:500;color:#93C5FD;margin-bottom:1.75rem;">🔥 23 persone già in lista</div>
+    <div id="wl-pro-form" style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
+      <input type="email" id="wl-pro-email" placeholder="la.tua@email.it" class="wl-input" style="max-width:280px;border-color:rgba(96,165,250,0.25);" />
+      <button class="wl-btn" style="background:linear-gradient(135deg,#60A5FA,#67E8F9);color:#0D0A1E;" onclick="joinProWaitlist()">Voglio l'accesso anticipato →</button>
+    </div>
+    <div id="wl-pro-ok" class="wl-ok" style="display:none;color:#60A5FA;background:rgba(96,165,250,0.08);border-color:rgba(96,165,250,0.2);">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+      ✓ Sei in lista! Ti avvisiamo per primi.
+    </div>
+    <p style="margin-top:1rem;font-size:.75rem;color:rgba(255,255,255,0.25);">Zero spam. Solo una email quando Pro è disponibile.</p>
   </div>
 </section>
 
@@ -1001,6 +1026,14 @@ function joinWaitlist(){
   document.getElementById('wl-form').style.display='none';
   document.getElementById('wl-ok').style.display='flex';
   console.log('Waitlist:',email);
+}
+function joinProWaitlist(){
+  const el=document.getElementById('wl-pro-email');
+  const email=el.value;
+  if(!email||!email.includes('@')){el.style.borderColor='rgba(248,113,113,.5)';return;}
+  try{localStorage.setItem('valorem_pro_waitlist_email',email);}catch(e){}
+  document.getElementById('wl-pro-form').style.display='none';
+  document.getElementById('wl-pro-ok').style.display='flex';
 }
 document.getElementById('wl-email').addEventListener('keydown',e=>{
   if(e.key==='Enter')joinWaitlist();

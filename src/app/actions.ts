@@ -72,7 +72,7 @@ export async function createTransaction(formData: FormData) {
     return { success: false, error: "Campi obbligatori mancanti" };
   }
 
-  // Feature gating: max 50 transactions/month for free plan
+  // Feature gating: max 15 transactions/month for free plan
   const { data: profileData } = await supabase
     .from("users_profiles")
     .select("plan")
@@ -91,7 +91,7 @@ export async function createTransaction(formData: FormData) {
       .eq("user_id", user.id)
       .gte("transaction_date", monthStart);
 
-    if ((count ?? 0) >= 50) {
+    if ((count ?? 0) >= 15) {
       return { success: false, error: "LIMIT_REACHED" };
     }
   }

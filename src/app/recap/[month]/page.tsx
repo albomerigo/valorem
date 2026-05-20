@@ -38,6 +38,16 @@ export default async function RecapPage({
   if (!dashboardData.profile) redirect("/signin");
   if (!dashboardData.profile.onboarded) redirect("/onboarding");
 
+  // Free plan gate: only current month accessible
+  const plan = dashboardData.profile.plan || "free";
+  if (plan === "free") {
+    const now = new Date();
+    const currentSlug = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+    if (slug !== currentSlug) {
+      redirect("/pricing");
+    }
+  }
+
   const recap = buildRecapData(
     parsed.year,
     parsed.month,
