@@ -632,7 +632,7 @@ export default function PricingPage() {
                   color: "#6EE7B7",
                 }}
               >
-                ✓ Sei in lista! Ti avvisiamo per primi.
+                ✓ Sei in lista! Ti avviseremo appena Pro sarà disponibile.
               </div>
             ) : (
               <form onSubmit={handleWaitlistSubmit} className="flex flex-col gap-3 sm:flex-row">
@@ -657,7 +657,7 @@ export default function PricingPage() {
                     whiteSpace: "nowrap",
                   }}
                 >
-                  Voglio l&apos;accesso anticipato →
+                  Desidero l&apos;accesso anticipato →
                 </button>
               </form>
             )}
