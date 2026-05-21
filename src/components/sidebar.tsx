@@ -5,18 +5,16 @@ import {
   Home,
   Target,
   Settings,
-  LogOut,
   Plus,
   Ghost,
   ListOrdered,
   Sparkles,
   History,
   Upload,
-  BookOpen,
+  User,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
-import { signOut } from "@/app/(auth)/actions";
 import { NewTransactionModal } from "./new-transaction-modal";
 import { usePlan } from "@/hooks/usePlan";
 import { getCustomCategories } from "@/app/settings/categories-actions";
@@ -29,7 +27,9 @@ export type Route =
   | "goals"
   | "settings"
   | "storico"
-  | "import";
+  | "import"
+  | "profilo"
+  | "rimborsi";
 
 const navItems: { icon: typeof Home; label: string; route: Route; href: string }[] = [
   { icon: Home, label: "Dashboard", route: "dashboard", href: "/" },
@@ -40,7 +40,7 @@ const navItems: { icon: typeof Home; label: string; route: Route; href: string }
   { icon: Upload, label: "Importa", route: "import", href: "/import" },
 ];
 
-export function Sidebar({ activeRoute = "dashboard" }: { activeRoute?: Route }) {
+export function Sidebar({ activeRoute = "dashboard", userName }: { activeRoute?: Route; userName?: string }) {
   const [modalOpen, setModalOpen] = useState(false);
   const { plan } = usePlan();
   const [customCategories, setCustomCategories] = useState<CustomCategory[]>([]);
@@ -74,13 +74,9 @@ useEffect(() => {
       */}
       <aside className="group fixed left-0 top-0 z-20 hidden h-screen w-[64px] overflow-hidden transition-all duration-300 hover:w-[220px] md:flex flex-col items-start gap-1 py-5 border-r border-white/[0.06]" style={{ background: "#0D0A1E", borderRight: "1px solid rgba(168,139,250,0.08)" }}>
         <div className="mb-2 flex h-10 w-full flex-shrink-0 items-center px-[13px]">
-          <Link
-            href="/profilo"
-            title="Profilo"
-            className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-[10px] bg-gradient-to-br from-iri-violet via-iri-magenta to-iri-blue font-serif italic text-base font-medium text-[#0A0812] shadow-[0_4px_20px_-4px_rgba(168,139,250,0.5)] [background-size:200%_200%] animate-gradient-shift transition-opacity hover:opacity-80"
-          >
+          <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-[10px] bg-gradient-to-br from-iri-violet via-iri-magenta to-iri-blue font-serif italic text-base font-medium text-[#0A0812] shadow-[0_4px_20px_-4px_rgba(168,139,250,0.5)] [background-size:200%_200%] animate-gradient-shift">
             v
-          </Link>
+          </div>
           <span className="ml-3 whitespace-nowrap font-serif italic text-[16px] text-ink-primary opacity-0 translate-x-[-6px] transition-all duration-200 delay-75 group-hover:opacity-100 group-hover:translate-x-0">
             valorem
           </span>
@@ -135,19 +131,28 @@ useEffect(() => {
           active={activeRoute === "settings"}
         />
 
-        {/* Logout */}
-        <form action={signOut} className="w-full flex-shrink-0">
-          <button
-            type="submit"
-            title="Esci"
-            className="flex h-9 w-full items-center rounded-[10px] px-[13px] text-ink-muted transition-all duration-[300ms] hover:bg-red-500/10 hover:text-red-300"
-          >
-            <LogOut className="h-4 w-4 flex-shrink-0" />
-            <span className="ml-3 whitespace-nowrap text-[12px] font-medium opacity-0 translate-x-[-6px] transition-all duration-200 delay-75 group-hover:opacity-100 group-hover:translate-x-0">
-              Esci
-            </span>
-          </button>
-        </form>
+        {/* Profilo */}
+        <Link
+          href="/profilo"
+          title={userName || "Profilo"}
+          className={cn(
+            "relative flex h-9 w-full flex-shrink-0 items-center rounded-[10px] px-[13px] transition-all duration-[300ms]",
+            activeRoute === "profilo"
+              ? "bg-gradient-to-br from-iri-violet/20 to-iri-blue/10 text-ink-primary"
+              : "text-ink-muted hover:bg-iri-violet/[0.12] hover:text-ink-primary"
+          )}
+        >
+          {activeRoute === "profilo" && (
+            <span className="absolute -left-[1px] top-1/2 h-5 w-[2px] -translate-y-1/2 rounded-r-sm bg-gradient-to-b from-iri-violet to-iri-magenta shadow-[0_0_12px_rgba(168,139,250,0.8)]" />
+          )}
+          <div className="relative flex-shrink-0">
+            <User className="h-4 w-4" />
+            <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.8)] animate-pulse" />
+          </div>
+          <span className="ml-3 whitespace-nowrap text-[12px] font-medium opacity-0 translate-x-[-6px] transition-all duration-200 delay-75 group-hover:opacity-100 group-hover:translate-x-0">
+            {userName || "Profilo"}
+          </span>
+        </Link>
       </aside>
 
       <NewTransactionModal isOpen={modalOpen} onClose={() => setModalOpen(false)} customCategories={customCategories} />

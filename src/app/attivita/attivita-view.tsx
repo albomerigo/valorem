@@ -295,7 +295,7 @@ export function AttivitaView({
 
       <div className="md:ml-[64px] min-h-screen pb-36 md:pb-0">
         <div className="mx-auto max-w-[1400px] px-4 py-5 md:px-8 md:py-7">
-          <Topbar userName={profile.name || "ospite"} section="Attività" />
+          <Topbar userName={profile.name || "ospite"} section="Attività" showBack />
 
           {/* HEADER */}
           <header className="mb-6 mt-8">

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 import { Sun, Moon } from "lucide-react";
 import { Search } from "./search";
+import { BackButton } from "./back-button";
 import type { Transaction, Goal } from "@/lib/finance";
 
 export function Topbar({
@@ -11,15 +12,18 @@ export function Topbar({
   section = "Dashboard",
   transactions = [],
   goals = [],
+  showBack = false,
 }: {
   userName: string;
   section?: string;
   transactions?: Transaction[];
   goals?: Goal[];
+  showBack?: boolean;
 }) {
   return (
     <div className="flex items-center justify-between gap-3 animate-slide-up">
-      <div className="flex items-baseline gap-3 min-w-0">
+      <div className="flex items-center gap-3 min-w-0">
+        {showBack && <BackButton />}
         <span className="font-serif italic text-[18px] md:text-[20px] font-normal text-ink-primary">
           Valorem
         </span>

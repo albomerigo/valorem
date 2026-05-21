@@ -122,7 +122,7 @@ export function StoricoView({
 
       <div className="md:ml-[64px] min-h-screen pb-36 md:pb-0">
         <div className="mx-auto max-w-[1400px] px-4 py-5 md:px-8 md:py-7">
-          <Topbar userName={profile.name || "ospite"} section="Storico" />
+          <Topbar userName={profile.name || "ospite"} section="Storico" showBack />
 
           <header className="mb-10 mt-8">
             <p className="eyebrow-accent mb-2 text-[10px]">La tua storia finanziaria</p>

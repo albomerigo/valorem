@@ -1,11 +1,12 @@
 "use client";
 
-import { BarChart2, Calendar, Ghost, Sparkles, Target } from "lucide-react";
+import { BarChart2, Calendar, Ghost, LogOut, Sparkles, Target } from "lucide-react";
 import { Sidebar } from "@/components/sidebar";
 import { BottomBar } from "@/components/bottom-bar";
 import { Topbar } from "@/components/topbar";
 import type { UserProfile } from "@/lib/finance";
 import { splitCurrency } from "@/lib/utils";
+import { signOut } from "@/app/(auth)/actions";
 
 type TopCategory = {
   name: string;
@@ -96,7 +97,7 @@ export function ProfiloView({
 
       <div className="md:ml-[64px] min-h-screen pb-36 md:pb-0">
         <div className="mx-auto max-w-[680px] px-4 py-5 md:px-8 md:py-7">
-          <Topbar userName={profile.name || "ospite"} section="Profilo" />
+          <Topbar userName={profile.name || "ospite"} section="Profilo" showBack />
 
           {/* Avatar + identità */}
           <div className="mt-8 flex flex-col items-center gap-3 text-center">
@@ -232,6 +233,19 @@ export function ProfiloView({
                 </a>
               )}
             </div>
+          </div>
+
+          {/* Logout */}
+          <div className="mt-8 border-t border-white/[0.04] pt-6">
+            <form action={signOut}>
+              <button
+                type="submit"
+                className="flex w-full items-center justify-center gap-2 rounded-[14px] border border-red-400/20 bg-red-400/[0.05] px-4 py-3 text-[13px] font-medium text-red-400 transition-all hover:bg-red-400/10"
+              >
+                <LogOut className="h-4 w-4" strokeWidth={1.8} />
+                Esci dall'account
+              </button>
+            </form>
           </div>
         </div>
       </div>

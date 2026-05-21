@@ -83,7 +83,7 @@ export function ObiettiviView({
 
       <div className="md:ml-[64px] min-h-screen pb-36 md:pb-0">
         <div className="mx-auto max-w-[1400px] px-4 py-5 md:px-8 md:py-7">
-          <Topbar userName={profile.name || "ospite"} section="Obiettivi" />
+          <Topbar userName={profile.name || "ospite"} section="Obiettivi" showBack />
 
           <header className="relative mb-8 mt-8 flex items-start justify-between gap-4">
             <HelpTooltip

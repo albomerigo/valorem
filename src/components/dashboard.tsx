@@ -231,7 +231,7 @@ export function Dashboard({
   return (
     <div className="relative min-h-screen">
       <div className="hidden md:block fixed left-0 top-0 z-20 h-screen w-[64px]">
-        <Sidebar />
+        <Sidebar userName={data.profile?.name || ""} />
       </div>
       <div className="md:ml-[64px] min-h-screen pb-36 md:pb-0">
         <div className="mx-auto max-w-[1400px] px-4 py-5 md:px-8 md:py-7">

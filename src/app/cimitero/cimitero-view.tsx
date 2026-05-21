@@ -96,6 +96,7 @@ export function CimiteroView({
           <Topbar
             userName={profile.name || "ospite"}
             section="Cimitero degli Impulsi"
+            showBack
           />
 
           {/* HEADER */}

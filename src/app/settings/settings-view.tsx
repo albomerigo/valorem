@@ -35,7 +35,7 @@ export function SettingsView({
 
       <div className="md:ml-[64px] min-h-screen pb-36 md:pb-0">
         <div className="mx-auto max-w-[1400px] px-4 py-5 md:px-8 md:py-7">
-          <Topbar userName={profile.name || "ospite"} section="Setup vitale" />
+          <Topbar userName={profile.name || "ospite"} section="Setup vitale" showBack />
 
           <div className="mt-8">
             <header className="mb-8">
