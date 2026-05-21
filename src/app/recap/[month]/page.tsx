@@ -38,6 +38,12 @@ export default async function RecapPage({
   if (!dashboardData.profile) redirect("/signin");
   if (!dashboardData.profile.onboarded) redirect("/onboarding");
 
+  // Detect if this is the current month
+  const nowDate = new Date();
+  const isCurrentMonth =
+    parsed.year === nowDate.getFullYear() &&
+    parsed.month === nowDate.getMonth() + 1;
+
   // Free plan gate: only current month accessible
   const plan = dashboardData.profile.plan || "free";
   if (plan === "free") {
@@ -61,6 +67,7 @@ export default async function RecapPage({
       profile={dashboardData.profile}
       recap={recap}
       stats={dashboardData.stats}
+      isCurrentMonth={isCurrentMonth}
     />
   );
 }

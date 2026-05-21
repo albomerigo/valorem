@@ -21,7 +21,7 @@ import {
   TrendingUp,
   Download,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 
 import { EmptyActivity, EmptyActivityFiltered } from "@/components/empty-states";
@@ -115,6 +115,7 @@ export function AttivitaView({
   stats: DashboardStats;
 }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [search, setSearch] = useState("");
   const [period, setPeriod] = useState<Period>("month");
   const [typeFilter, setTypeFilter] = useState<TypeFilter>("all");
@@ -131,6 +132,14 @@ export function AttivitaView({
   useEffect(() => {
     getCustomCategories().then(setCustomCategories);
   }, []);
+
+  // Read ?period= query param from URL and apply it on mount
+  useEffect(() => {
+    const p = searchParams.get("period");
+    if (p === "month" || p === "30days" || p === "3months" || p === "all" || p === "custom") {
+      setPeriod(p as Period);
+    }
+  }, [searchParams]);
 
   const monthlyCount = useMemo(() => {
     const now = new Date();
@@ -571,7 +580,7 @@ export function AttivitaView({
               <EmptyActivity />
             )
           ) : (
-            <div className="flex flex-col gap-5">
+            <div className="flex flex-col gap-5 pb-[96px] md:pb-0">
               {grouped.map(([date, txs]) => (
                 <DayGroup
                   key={date}

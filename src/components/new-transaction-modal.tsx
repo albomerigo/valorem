@@ -60,6 +60,7 @@ export function NewTransactionModal({
   const [notes, setNotes] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [limitReached, setLimitReached] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   // Precompila i campi se in modalità editing
   useEffect(() => {
@@ -92,6 +93,17 @@ export function NewTransactionModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Inline validation
+    const newErrors: Record<string, string> = {};
+    if (!amount || parseFloat(amount) <= 0) newErrors.amount = "Inserisci un importo valido";
+    if (!merchant.trim()) newErrors.merchant = "Inserisci una descrizione";
+    if (!date) newErrors.date = "Seleziona una data";
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+    setErrors({});
     setIsSubmitting(true);
 
     const formData = new FormData();
@@ -206,15 +218,15 @@ style={{ background: "#0D0A1E", border: "1px solid rgba(168,139,250,0.2)", boxSh
                 type="number"
                 step="0.01"
                 value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                required
-                className="w-full rounded-lg border border-white/[0.08] bg-white/[0.03] px-4 py-2.5 text-ink-primary placeholder-ink-muted/50 transition-colors focus:border-iri-violet/50 focus:outline-none focus:ring-2 focus:ring-iri-violet/20"
+                onChange={(e) => { setAmount(e.target.value); setErrors((prev) => ({ ...prev, amount: "" })); }}
+                className={`w-full rounded-lg border bg-white/[0.03] px-4 py-2.5 text-ink-primary placeholder-ink-muted/50 transition-colors focus:outline-none focus:ring-2 ${errors.amount ? "border-red-400/50 focus:border-red-400/60 focus:ring-red-400/20" : "border-white/[0.08] focus:border-iri-violet/50 focus:ring-iri-violet/20"}`}
                 placeholder="0.00"
               />
               <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-ink-muted">
                 €
               </span>
             </div>
+            {errors.amount && <p className="mt-1 text-[11px] text-red-400">{errors.amount}</p>}
           </div>
 
           {/* Descrizione */}
@@ -229,11 +241,11 @@ style={{ background: "#0D0A1E", border: "1px solid rgba(168,139,250,0.2)", boxSh
               id="merchant"
               type="text"
               value={merchant}
-              onChange={(e) => setMerchant(e.target.value)}
-              required
-              className="w-full rounded-lg border border-white/[0.08] bg-white/[0.03] px-4 py-2.5 text-ink-primary placeholder-ink-muted/50 transition-colors focus:border-iri-violet/50 focus:outline-none focus:ring-2 focus:ring-iri-violet/20"
+              onChange={(e) => { setMerchant(e.target.value); setErrors((prev) => ({ ...prev, merchant: "" })); }}
+              className={`w-full rounded-lg border bg-white/[0.03] px-4 py-2.5 text-ink-primary placeholder-ink-muted/50 transition-colors focus:outline-none focus:ring-2 ${errors.merchant ? "border-red-400/50 focus:border-red-400/60 focus:ring-red-400/20" : "border-white/[0.08] focus:border-iri-violet/50 focus:ring-iri-violet/20"}`}
               placeholder="Es. Spesa supermercato"
             />
+            {errors.merchant && <p className="mt-1 text-[11px] text-red-400">{errors.merchant}</p>}
           </div>
 
           {/* Categoria */}
@@ -301,10 +313,10 @@ style={{ background: "#0D0A1E", border: "1px solid rgba(168,139,250,0.2)", boxSh
               id="date"
               type="date"
               value={date}
-              onChange={(e) => setDate(e.target.value)}
-              required
-              className="w-full rounded-lg border border-white/[0.08] bg-white/[0.03] px-4 py-2.5 text-ink-primary transition-colors focus:border-iri-violet/50 focus:outline-none focus:ring-2 focus:ring-iri-violet/20"
+              onChange={(e) => { setDate(e.target.value); setErrors((prev) => ({ ...prev, date: "" })); }}
+              className={`w-full rounded-lg border bg-white/[0.03] px-4 py-2.5 text-ink-primary transition-colors focus:outline-none focus:ring-2 ${errors.date ? "border-red-400/50 focus:border-red-400/60 focus:ring-red-400/20" : "border-white/[0.08] focus:border-iri-violet/50 focus:ring-iri-violet/20"}`}
             />
+            {errors.date && <p className="mt-1 text-[11px] text-red-400">{errors.date}</p>}
           </div>
 
           {/* Ricorrente */}
@@ -346,7 +358,7 @@ style={{ background: "#0D0A1E", border: "1px solid rgba(168,139,250,0.2)", boxSh
           {limitReached && (
             <div className="rounded-xl border border-amber-400/25 bg-amber-500/[0.08] p-4">
               <p className="mb-3 text-[13px] text-amber-200">
-                Hai raggiunto il limite di 50 transazioni del piano gratuito.
+                Hai raggiunto il limite di 15 transazioni del piano gratuito.
               </p>
               <Link
                 href="/pricing"

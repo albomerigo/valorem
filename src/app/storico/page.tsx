@@ -53,5 +53,18 @@ export default async function StoricoPage() {
     recap: buildRecapData(year, month, allTransactions, declined, goals),
   }));
 
+  // Ensure current month is always shown at the top (even if no transactions yet)
+  const nowDate = new Date();
+  const currentYear = nowDate.getFullYear();
+  const currentMonth = nowDate.getMonth() + 1;
+  const currentSlug = formatMonthSlug(currentYear, currentMonth);
+  const hasCurrentMonth = recaps.some((r) => r.slug === currentSlug);
+  if (!hasCurrentMonth) {
+    recaps.unshift({
+      slug: currentSlug,
+      recap: buildRecapData(currentYear, currentMonth, allTransactions, declined, goals),
+    });
+  }
+
   return <StoricoView profile={dashboardData.profile} recaps={recaps} />;
 }

@@ -7,12 +7,33 @@ import { Topbar } from "@/components/topbar";
 import type { UserProfile } from "@/lib/finance";
 import { splitCurrency } from "@/lib/utils";
 
+type TopCategory = {
+  name: string;
+  amount: number;
+  percent: number;
+  top3: { name: string; amount: number; percent: number }[];
+} | null;
+
+const CAT_COLORS_PROFILO: Record<string, string> = {
+  Alimentari: "#A88BFA",
+  Ristorazione: "#FDA4AF",
+  Trasporti: "#FCD34D",
+  Abbonamento: "#93C5FD",
+  Svago: "#F0ABFC",
+  Salute: "#7DD3FC",
+  Casa: "#C4B5FD",
+  Shopping: "#E879F9",
+  Investimenti: "#10B981",
+  Altro: "#9CA3AF",
+};
+
 export function ProfiloView({
   profile,
   email,
   memberSince,
   stats,
   monthlySpending,
+  topCategory,
 }: {
   profile: UserProfile;
   email: string;
@@ -24,6 +45,7 @@ export function ProfiloView({
     totalImpulsiResistiti: number;
   };
   monthlySpending: { month: string; label: string; amount: number }[];
+  topCategory?: TopCategory;
 }) {
   const initials = (profile.name || email || "V")
     .split(" ")
@@ -147,6 +169,40 @@ export function ProfiloView({
             <div className="glass-panel mt-6 rounded-[16px] px-5 py-4">
               <p className="eyebrow mb-4">Andamento spese</p>
               <SparklineChart data={monthlySpending} />
+            </div>
+          )}
+
+          {/* Le tue abitudini */}
+          {topCategory && topCategory.top3.length > 0 && (
+            <div className="glass-panel mt-6 rounded-[16px] px-5 py-4">
+              <p className="eyebrow mb-1">Le tue abitudini</p>
+              <p className="mb-4 font-serif text-[14px] italic leading-[1.5] text-ink-secondary">
+                La tua categoria principale è{" "}
+                <span className="text-ink-primary">{topCategory.name}</span>{" "}
+                — {topCategory.percent}% delle tue spese negli ultimi 3 mesi.
+              </p>
+              <div className="flex flex-col gap-3">
+                {topCategory.top3.map((cat) => {
+                  const color = CAT_COLORS_PROFILO[cat.name] ?? "#A88BFA";
+                  const { int, dec } = splitCurrency(cat.amount);
+                  return (
+                    <div key={cat.name}>
+                      <div className="mb-1.5 flex items-center justify-between gap-2">
+                        <span className="text-[13px] text-ink-secondary">{cat.name}</span>
+                        <span className="font-mono-tabular text-[12px] text-ink-muted">
+                          {int},{dec}€ · {cat.percent}%
+                        </span>
+                      </div>
+                      <div className="relative h-[5px] overflow-hidden rounded-full bg-white/[0.05]">
+                        <div
+                          className="absolute inset-y-0 left-0 rounded-full transition-all duration-700"
+                          style={{ width: `${cat.percent}%`, background: color }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           )}
 

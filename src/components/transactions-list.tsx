@@ -58,12 +58,12 @@ export function TransactionsList({
   return (
     <>
       <div
-        className="animate-slide-up [animation-delay:0.4s]"
+        className="animate-slide-up pb-[96px] md:pb-0 [animation-delay:0.4s]"
         style={{ animationFillMode: "both" }}
       >
         <div className="mb-3 flex items-center justify-between px-1">
           <p className="eyebrow">Movimenti recenti</p>
-          <Link href="/attivita" className="text-[11px] font-medium text-ink-secondary transition-colors hover:text-iri-pale">
+          <Link href="/attivita?period=month" className="text-[11px] font-medium text-ink-secondary transition-colors hover:text-iri-pale">
             Vedi tutti →
           </Link>
         </div>

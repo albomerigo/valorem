@@ -24,6 +24,7 @@ import {
   Zap,
   ChevronDown,
   Share2,
+  AlertCircle,
 } from "lucide-react";
 import type { UserProfile, DashboardStats } from "@/lib/finance";
 import type { RecapData } from "@/lib/recap";
@@ -37,10 +38,12 @@ export function RecapView({
   profile,
   recap,
   stats,
+  isCurrentMonth,
 }: {
   profile: UserProfile;
   recap: RecapData;
   stats: DashboardStats;
+  isCurrentMonth?: boolean;
 }) {
   return (
     <div className="relative min-h-screen">
@@ -54,6 +57,19 @@ export function RecapView({
             userName={profile.name || "ospite"}
             section="Recap mensile"
           />
+
+          {/* BANNER DATI PARZIALI */}
+          {isCurrentMonth && (
+            <div
+              className="mt-4 flex items-center gap-3 rounded-[12px] border border-amber-400/25 bg-amber-500/[0.07] px-4 py-2.5"
+              style={{ backdropFilter: "blur(12px)" }}
+            >
+              <AlertCircle className="h-4 w-4 flex-shrink-0 text-amber-400" strokeWidth={1.8} />
+              <p className="text-[13px] leading-snug text-amber-200/90">
+                📊 Stai guardando il mese in corso — i dati sono ancora parziali e cambieranno fino alla fine del mese.
+              </p>
+            </div>
+          )}
 
           {/* HERO NARRATIVO */}
           <HeroRecap recap={recap} />

@@ -185,6 +185,7 @@ export function StoricoView({
                     key={entry.slug}
                     entry={entry}
                     isBestMonth={agg?.bestEntry?.slug === entry.slug && visibleRecaps.length > 1}
+                    isCurrentMonth={entry.slug === currentSlug}
                     onClick={() => router.push(`/recap/${entry.slug}`)}
                     index={i}
                   />
@@ -559,11 +560,13 @@ function CoachAnalysis({ agg, recaps }: { agg: AggData; recaps: MonthEntry[] }) 
 function MonthCard({
   entry,
   isBestMonth,
+  isCurrentMonth,
   onClick,
   index,
 }: {
   entry: MonthEntry;
   isBestMonth?: boolean;
+  isCurrentMonth?: boolean;
   onClick: () => void;
   index: number;
 }) {
@@ -613,8 +616,14 @@ function MonthCard({
       style={{ animationDelay: `${delay}ms`, animationFillMode: "both" }}
     >
       {/* Badges */}
-      {(narrativePill || improved || isBestMonth) && (
+      {(narrativePill || improved || isBestMonth || isCurrentMonth) && (
         <div className="mb-4 flex flex-wrap items-center gap-2">
+          {isCurrentMonth && (
+            <span className="inline-flex items-center gap-1 rounded-full border border-sky-400/30 bg-sky-500/[0.08] px-2.5 py-0.5 text-[10px] font-medium text-sky-300">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-sky-400" />
+              In corso
+            </span>
+          )}
           {narrativePill && (
             <span className="inline-flex items-center rounded-full border border-iri-violet/25 bg-iri-violet/[0.08] px-3 py-0.5 text-[10px] font-medium text-iri-pale">
               {narrativePill}
@@ -626,7 +635,7 @@ function MonthCard({
               Migliore mese
             </span>
           )}
-          {improved && (
+          {improved && !isCurrentMonth && (
             <span className="inline-flex animate-pulse items-center gap-1 rounded-full border border-emerald-400/25 bg-emerald-500/[0.08] px-2.5 py-0.5 text-[10px] font-medium text-emerald-300">
               <TrendingDown className="h-2.5 w-2.5" strokeWidth={2} />
               Migliorato
@@ -689,14 +698,18 @@ function MonthCard({
           <p className="mb-1.5 text-[9px] font-medium uppercase tracking-[0.08em] text-ink-muted">
             Trend
           </p>
-          <div className={`flex items-center gap-1 ${trendColor}`}>
-            <TrendIcon className="h-4 w-4" strokeWidth={2} />
-            {recap.trendVsPrevMonth !== null && (
-              <span className="font-mono-tabular text-[13px] font-medium">
-                {Math.abs(recap.trendVsPrevMonth).toFixed(0)}%
-              </span>
-            )}
-          </div>
+          {isCurrentMonth ? (
+            <span className="text-[12px] text-ink-muted">In corso</span>
+          ) : (
+            <div className={`flex items-center gap-1 ${trendColor}`}>
+              <TrendIcon className="h-4 w-4" strokeWidth={2} />
+              {recap.trendVsPrevMonth !== null && (
+                <span className="font-mono-tabular text-[13px] font-medium">
+                  {Math.abs(recap.trendVsPrevMonth).toFixed(0)}%
+                </span>
+              )}
+            </div>
+          )}
         </div>
         <div className="text-right">
           <p className="mb-1.5 text-[9px] font-medium uppercase tracking-[0.08em] text-ink-muted">

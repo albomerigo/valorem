@@ -16,17 +16,49 @@ export default async function ProfiloPage() {
   if (!profile?.onboarded) redirect("/onboarding");
 
   // Fetch stats in parallel
-  const [txResult, declinedResult] = await Promise.all([
+  const threeMonthsAgo = new Date();
+  threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+  const threeMonthsAgoStr = threeMonthsAgo.toISOString().split("T")[0];
+
+  const [txResult, declinedResult, catTxResult] = await Promise.all([
     supabase
       .from("transactions")
       .select("id, transaction_date, amount, type"),
     supabase
       .from("declined_simulations")
       .select("id", { count: "exact", head: true }),
+    supabase
+      .from("transactions")
+      .select("category, amount, type")
+      .eq("type", "expense")
+      .gte("transaction_date", threeMonthsAgoStr),
   ]);
 
   const transactions = txResult.data || [];
   const totalTransactions = transactions.length;
+
+  // Category distribution (last 3 months, expenses only)
+  const catTransactions = catTxResult.data || [];
+  const catTotals: Record<string, number> = {};
+  for (const t of catTransactions) {
+    const c = t.category || "Altro";
+    catTotals[c] = (catTotals[c] || 0) + Number(t.amount);
+  }
+  const catTotal = Object.values(catTotals).reduce((s, v) => s + v, 0);
+  const sortedCats = Object.entries(catTotals).sort((a, b) => b[1] - a[1]);
+  const topCategory =
+    sortedCats.length > 0 && catTotal > 0
+      ? {
+          name: sortedCats[0][0],
+          amount: sortedCats[0][1],
+          percent: Math.round((sortedCats[0][1] / catTotal) * 100),
+          top3: sortedCats.slice(0, 3).map(([name, amount]) => ({
+            name,
+            amount,
+            percent: Math.round((amount / catTotal) * 100),
+          })),
+        }
+      : null;
   const totalSpent = transactions
     .filter((t) => t.type === "expense")
     .reduce((s, t) => s + Number(t.amount), 0);
@@ -70,6 +102,7 @@ export default async function ProfiloPage() {
         totalImpulsiResistiti,
       }}
       monthlySpending={monthlySpending}
+      topCategory={topCategory}
     />
   );
 }
