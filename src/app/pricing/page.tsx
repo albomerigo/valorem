@@ -1,22 +1,11 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { Check, Sparkles, Zap, Crown, ArrowLeft } from "lucide-react";
-import { usePaddle } from "@/components/paddle-provider";
-import { createClient } from "@/lib/supabase/client";
 import { usePlan } from "@/hooks/usePlan";
-
-const PRICES = {
-  premium: {
-    monthly: "pri_01krdva8kjak6s2kszq70z5rg8",
-    annual: "pri_01krdv8fvn03vmvarp5n57wc0c",
-  },
-  pro: {
-    monthly: "pri_01krdveqzjax8z5pty0c92re7d",
-    annual: "pri_01krdvdhby1xgrkpf1ehfax1ss",
-  },
-};
+import { VARIANT_IDS } from "@/lib/lemonsqueezy";
 
 const plans = [
   {
@@ -86,24 +75,19 @@ const plans = [
   },
 ];
 
-export default function PricingPage() {
-  const paddle = usePaddle();
+function PricingContent() {
   const { plan: currentPlan } = usePlan();
   const [annual, setAnnual] = useState(false);
-  const [userId, setUserId] = useState<string | null>(null);
   const [hoveredPlan, setHoveredPlan] = useState<string | null>(null);
   const [waitlistEmail, setWaitlistEmail] = useState("");
   const [waitlistSubmitted, setWaitlistSubmitted] = useState(false);
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
   const waitlistRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animRef = useRef<number>(0);
 
-  useEffect(() => {
-    const supabase = createClient();
-    supabase.auth.getUser().then(({ data }) => {
-      setUserId(data.user?.id ?? null);
-    });
-  }, []);
+  const searchParams = useSearchParams();
+  const successParam = searchParams.get("success");
 
   // Animated background canvas
   useEffect(() => {
@@ -142,14 +126,13 @@ export default function PricingPage() {
 
       ctx.clearRect(0, 0, W, H);
 
-      // Floating orbs
       const orbs = [
         { x: W * 0.1, y: H * 0.2, r: 300, color: [168, 139, 250] as [number, number, number], opacity: 0.06 },
         { x: W * 0.85, y: H * 0.15, r: 250, color: [232, 121, 249] as [number, number, number], opacity: 0.05 },
         { x: W * 0.5, y: H * 0.8, r: 200, color: [96, 165, 250] as [number, number, number], opacity: 0.04 },
       ];
 
-      orbs.forEach(orb => {
+      orbs.forEach((orb) => {
         const grad = ctx.createRadialGradient(orb.x, orb.y, 0, orb.x, orb.y, orb.r);
         grad.addColorStop(0, `rgba(${orb.color.join(",")},${orb.opacity})`);
         grad.addColorStop(1, "transparent");
@@ -157,7 +140,6 @@ export default function PricingPage() {
         ctx.fillRect(0, 0, W, H);
       });
 
-      // Animated LED line at top
       const lineY = 2;
       const gW = W * 3;
       const gX = -(offset % 1) * W * 2;
@@ -181,16 +163,32 @@ export default function PricingPage() {
     return () => cancelAnimationFrame(animRef.current);
   }, []);
 
-  function openCheckout(planKey: "premium" | "pro") {
-    if (!paddle) {
-      alert("Pagamenti non ancora pronti, riprova tra qualche secondo.");
-      return;
+  async function openCheckout(planKey: "premium") {
+    setCheckoutLoading(true);
+    try {
+      const variantId = annual
+        ? VARIANT_IDS[planKey].annual
+        : VARIANT_IDS[planKey].monthly;
+
+      const res = await fetch("/api/lemonsqueezy/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ variantId }),
+      });
+
+      const data = await res.json() as { url?: string; error?: string };
+
+      if (!res.ok || !data.url) {
+        alert("Errore durante il checkout. Riprova.");
+        return;
+      }
+
+      window.location.href = data.url;
+    } catch {
+      alert("Errore durante il checkout. Riprova.");
+    } finally {
+      setCheckoutLoading(false);
     }
-    const priceId = annual ? PRICES[planKey].annual : PRICES[planKey].monthly;
-    paddle.Checkout.open({
-      items: [{ priceId, quantity: 1 }],
-      customData: userId ? { user_id: userId } : undefined,
-    });
   }
 
   function scrollToWaitlist() {
@@ -214,6 +212,20 @@ export default function PricingPage() {
       />
 
       <div className="relative z-10 mx-auto max-w-5xl px-4 py-12">
+        {/* Banner successo */}
+        {successParam === "true" && (
+          <div
+            className="mb-8 rounded-2xl px-6 py-4 text-center text-[14px] font-medium"
+            style={{
+              background: "rgba(16,185,129,0.1)",
+              border: "1px solid rgba(16,185,129,0.3)",
+              color: "#6EE7B7",
+            }}
+          >
+            🎉 Benvenuto in Premium! Il tuo piano è stato attivato.
+          </div>
+        )}
+
         {/* Header */}
         <div className="mb-14 text-center">
           <Link
@@ -539,8 +551,9 @@ export default function PricingPage() {
                     </button>
                   ) : (
                     <button
-                      onClick={() => openCheckout(plan.key as "premium" | "pro")}
-                      className="relative w-full overflow-hidden rounded-xl py-3.5 text-[13px] font-semibold text-white transition-all duration-300 hover:-translate-y-0.5"
+                      onClick={() => openCheckout("premium")}
+                      disabled={checkoutLoading}
+                      className="relative w-full overflow-hidden rounded-xl py-3.5 text-[13px] font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0"
                       style={
                         plan.popular
                           ? {
@@ -562,10 +575,10 @@ export default function PricingPage() {
                         className="absolute inset-0 -translate-x-full"
                         style={{
                           background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent)",
-                          animation: isHovered ? "shimmer 0.6s ease" : "none",
+                          animation: isHovered && !checkoutLoading ? "shimmer 0.6s ease" : "none",
                         }}
                       />
-                      {plan.key === "premium" ? "Inizia con Premium →" : "Inizia con Pro →"}
+                      {checkoutLoading ? "Caricamento..." : plan.key === "premium" ? "Inizia con Premium →" : "Inizia con Pro →"}
                     </button>
                   )}
                 </div>
@@ -677,7 +690,7 @@ export default function PricingPage() {
           }}
         >
           <p className="text-[13px] font-medium" style={{ color: "rgba(255,255,255,0.6)" }}>
-            🔒 Pagamenti sicuri tramite Paddle · Cancellazione in qualsiasi momento · Nessun vincolo
+            🔒 Pagamenti sicuri tramite Lemon Squeezy · Cancellazione in qualsiasi momento · Nessun vincolo
           </p>
           <p className="text-[12px]" style={{ color: "rgba(255,255,255,0.25)" }}>
             <Link href="/privacy" className="underline hover:opacity-70">Privacy</Link>
@@ -701,5 +714,13 @@ export default function PricingPage() {
         }
       `}</style>
     </div>
+  );
+}
+
+export default function PricingPage() {
+  return (
+    <Suspense>
+      <PricingContent />
+    </Suspense>
   );
 }

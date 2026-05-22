@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { Inter, Fraunces } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import { SwRegister } from "@/components/sw-register";
-import { PaddleProvider } from "@/components/paddle-provider";
 import { PageTransition } from "@/components/page-transition";
 import { TimeTheme } from "@/components/time-theme";
 import "./globals.css";
@@ -67,13 +66,11 @@ export default function RootLayout({
           themes={["light", "dark"]}
           storageKey="valorem-theme"
         >
-          <PaddleProvider>
-            <SwRegister />
-            <PageTransition />
-            <TimeTheme />
-            <div className="ambient-bg" />
-            <div id="page-content">{children}</div>
-          </PaddleProvider>
+          <SwRegister />
+          <PageTransition />
+          <TimeTheme />
+          <div className="ambient-bg" />
+          <div id="page-content">{children}</div>
         </ThemeProvider>
       </body>
     </html>
