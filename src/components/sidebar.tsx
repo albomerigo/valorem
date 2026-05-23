@@ -150,7 +150,7 @@ useEffect(() => {
             <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.8)] animate-pulse" />
           </div>
           <span className="ml-3 whitespace-nowrap text-[12px] font-medium opacity-0 translate-x-[-6px] transition-all duration-200 delay-75 group-hover:opacity-100 group-hover:translate-x-0">
-            {userName || "Profilo"}
+            {(() => { const s = userName || "Profilo"; return s.length > 18 ? s.slice(0, 17) + "…" : s; })()}
           </span>
         </Link>
       </aside>

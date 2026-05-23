@@ -92,178 +92,179 @@ export function ProfiloView({
   return (
     <div className="relative min-h-screen">
       <div className="hidden md:block fixed left-0 top-0 z-20 h-screen w-[64px]">
-        <Sidebar activeRoute="settings" />
+        <Sidebar activeRoute="profilo" userName={profile.name || ""} />
       </div>
 
       <div className="md:ml-[64px] min-h-screen pb-36 md:pb-0">
-        <div className="mx-auto max-w-[680px] px-4 py-5 md:px-8 md:py-7">
+        <div className="mx-auto max-w-[1400px] px-4 py-5 md:px-8 md:py-7">
           <Topbar userName={profile.name || "ospite"} section="Profilo" showBack />
 
-          {/* Avatar + identità */}
-          <div className="mt-8 flex flex-col items-center gap-3 text-center">
-            <div
-              className="flex h-20 w-20 items-center justify-center rounded-[22px] font-serif text-[28px] font-normal italic text-[#0A0812] shadow-[0_8px_28px_-6px_rgba(168,139,250,0.6)] [background-size:200%_200%] animate-gradient-shift"
-              style={{
-                background:
-                  "linear-gradient(135deg, #A88BFA 0%, #E879F9 50%, #60A5FA 100%)",
-              }}
-            >
-              {initials}
-            </div>
-            <div>
-              <h1 className="m-0 font-serif text-[28px] font-normal italic text-ink-primary">
-                {profile.name || "Utente"}
-              </h1>
-              <p className="m-0 mt-1 text-[13px] text-ink-secondary">{email}</p>
-              <p className="m-0 mt-1.5 flex items-center justify-center gap-1.5 text-[11px] text-ink-muted">
-                <Calendar className="h-3 w-3" strokeWidth={1.8} />
-                Membro dal {memberDate}
-              </p>
-            </div>
-          </div>
+          {/* 2-column grid on desktop */}
+          <div className="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-2 md:mt-6">
 
-          {/* Stats 2×2 */}
-          <div className="mt-8 grid grid-cols-2 gap-3">
-            <StatCard
-              icon={
-                <BarChart2
-                  className="h-4 w-4 text-iri-pale"
-                  strokeWidth={1.8}
-                />
-              }
-              label="Transazioni totali"
-              value={String(stats.totalTransactions)}
-            />
-            <StatCard
-              icon={
-                <Calendar className="h-4 w-4 text-iri-pale" strokeWidth={1.8} />
-              }
-              label="Mesi attivi"
-              value={String(stats.activeMonths)}
-            />
-            <StatCard
-              icon={
-                <Target className="h-4 w-4 text-iri-pale" strokeWidth={1.8} />
-              }
-              label="Speso in totale"
-              value={`${spentSplit.int},${spentSplit.dec}€`}
-            />
-            <StatCard
-              icon={
-                <Ghost className="h-4 w-4 text-iri-pale" strokeWidth={1.8} />
-              }
-              label="Impulsi resistiti"
-              value={String(stats.totalImpulsiResistiti)}
-            />
-          </div>
+            {/* ── COLONNA SINISTRA: identità + piano ── */}
+            <div className="flex flex-col gap-4">
 
-          {/* Coach sentence */}
-          <div className="glass-panel mt-6 rounded-[16px] px-5 py-4">
-            <p className="eyebrow mb-2">Il tuo coach dice</p>
-            <p className="m-0 font-serif text-[15px] italic leading-[1.6] text-ink-primary">
-              {coachSentence}
-            </p>
-          </div>
-
-          {/* Sparkline spese ultimi 6 mesi */}
-          {monthlySpending.length > 0 && (
-            <div className="glass-panel mt-6 rounded-[16px] px-5 py-4">
-              <p className="eyebrow mb-4">Andamento spese</p>
-              <SparklineChart data={monthlySpending} />
-            </div>
-          )}
-
-          {/* Le tue abitudini */}
-          {topCategory && topCategory.top3.length > 0 && (
-            <div className="glass-panel mt-6 rounded-[16px] px-5 py-4">
-              <p className="eyebrow mb-1">Le tue abitudini</p>
-              <p className="mb-4 font-serif text-[14px] italic leading-[1.5] text-ink-secondary">
-                La tua categoria principale è{" "}
-                <span className="text-ink-primary">{topCategory.name}</span>{" "}
-                — {topCategory.percent}% delle tue spese negli ultimi 3 mesi.
-              </p>
-              <div className="flex flex-col gap-3">
-                {topCategory.top3.map((cat) => {
-                  const color = CAT_COLORS_PROFILO[cat.name] ?? "#A88BFA";
-                  const { int, dec } = splitCurrency(cat.amount);
-                  return (
-                    <div key={cat.name}>
-                      <div className="mb-1.5 flex items-center justify-between gap-2">
-                        <span className="text-[13px] text-ink-secondary">{cat.name}</span>
-                        <span className="font-mono-tabular text-[12px] text-ink-muted">
-                          {int},{dec}€ · {cat.percent}%
-                        </span>
-                      </div>
-                      <div className="relative h-[5px] overflow-hidden rounded-full bg-white/[0.05]">
-                        <div
-                          className="absolute inset-y-0 left-0 rounded-full transition-all duration-700"
-                          style={{ width: `${cat.percent}%`, background: color }}
-                        />
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {/* Piano */}
-          <div className="glass-panel mt-4 rounded-[16px] px-5 py-4">
-            <div className="flex items-center justify-between gap-4">
-              <div>
-                <p className="eyebrow mb-2">Piano attivo</p>
+              {/* Avatar + identità */}
+              <div className="glass-panel rounded-[20px] px-6 py-8 flex flex-col items-center gap-3 text-center">
                 <div
-                  className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[12px] font-medium"
+                  className="flex h-20 w-20 items-center justify-center rounded-[22px] font-serif text-[28px] font-normal italic text-[#0A0812] shadow-[0_8px_28px_-6px_rgba(168,139,250,0.6)] [background-size:200%_200%] animate-gradient-shift"
                   style={{
-                    background: planBg,
-                    color: planColor,
-                    border: `1px solid ${planColor}40`,
+                    background:
+                      "linear-gradient(135deg, #A88BFA 0%, #E879F9 50%, #60A5FA 100%)",
                   }}
                 >
-                  <Sparkles className="h-3 w-3" strokeWidth={1.8} />
-                  {planLabel}
+                  {initials}
                 </div>
-                {(profile.plan === "premium" || profile.plan === "pro") && (
-                  <a
-                    href="https://app.lemonsqueezy.com/billing"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-2 block text-[11px] text-iri-pale transition-colors hover:text-ink-primary"
-                  >
-                    Gestisci abbonamento →
-                  </a>
-                )}
-                {profile.plan === "free" && (
-                  <a
-                    href="/pricing"
-                    className="mt-2 block text-[11px] text-iri-pale transition-colors hover:text-ink-primary"
-                  >
-                    Passa a Premium →
-                  </a>
-                )}
+                <div>
+                  <h1 className="m-0 font-serif text-[28px] font-normal italic text-ink-primary">
+                    {profile.name || "Utente"}
+                  </h1>
+                  <p className="m-0 mt-1 text-[13px] text-ink-secondary">{email}</p>
+                  <p className="m-0 mt-1.5 flex items-center justify-center gap-1.5 text-[11px] text-ink-muted">
+                    <Calendar className="h-3 w-3" strokeWidth={1.8} />
+                    Membro dal {memberDate}
+                  </p>
+                </div>
               </div>
-              {profile.plan === "free" && (
-                <a
-                  href="/pricing"
-                  className="relative overflow-hidden rounded-xl bg-gradient-to-br from-iri-violet via-iri-magenta to-iri-blue px-4 py-2.5 text-[11px] font-medium uppercase tracking-[0.1em] text-white shadow-[0_6px_20px_-6px_rgba(168,139,250,0.6)] transition-all duration-[400ms] [background-size:200%_200%] animate-gradient-shift hover:-translate-y-0.5"
-                >
-                  Upgrade
-                </a>
+
+              {/* Piano */}
+              <div className="glass-panel rounded-[16px] px-5 py-4">
+                <div className="flex items-center justify-between gap-4">
+                  <div>
+                    <p className="eyebrow mb-2">Piano attivo</p>
+                    <div
+                      className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[12px] font-medium"
+                      style={{
+                        background: planBg,
+                        color: planColor,
+                        border: `1px solid ${planColor}40`,
+                      }}
+                    >
+                      <Sparkles className="h-3 w-3" strokeWidth={1.8} />
+                      {planLabel}
+                    </div>
+                    {(profile.plan === "premium" || profile.plan === "pro") && (
+                      <a
+                        href="https://app.lemonsqueezy.com/billing"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-2 block text-[11px] text-iri-pale transition-colors hover:text-ink-primary"
+                      >
+                        Gestisci abbonamento →
+                      </a>
+                    )}
+                    {profile.plan === "free" && (
+                      <a
+                        href="/pricing"
+                        className="mt-2 block text-[11px] text-iri-pale transition-colors hover:text-ink-primary"
+                      >
+                        Passa a Premium →
+                      </a>
+                    )}
+                  </div>
+                  {profile.plan === "free" && (
+                    <a
+                      href="/pricing"
+                      className="relative overflow-hidden rounded-xl bg-gradient-to-br from-iri-violet via-iri-magenta to-iri-blue px-4 py-2.5 text-[11px] font-medium uppercase tracking-[0.1em] text-white shadow-[0_6px_20px_-6px_rgba(168,139,250,0.6)] transition-all duration-[400ms] [background-size:200%_200%] animate-gradient-shift hover:-translate-y-0.5"
+                    >
+                      Upgrade
+                    </a>
+                  )}
+                </div>
+              </div>
+
+              {/* Logout */}
+              <div>
+                <form action={signOut}>
+                  <button
+                    type="submit"
+                    className="flex w-full items-center justify-center gap-2 rounded-[14px] border border-red-400/20 bg-red-400/[0.05] px-4 py-3 text-[13px] font-medium text-red-400 transition-all hover:bg-red-400/10"
+                  >
+                    <LogOut className="h-4 w-4" strokeWidth={1.8} />
+                    Esci dall&apos;account
+                  </button>
+                </form>
+              </div>
+            </div>
+
+            {/* ── COLONNA DESTRA: statistiche + coach + sparkline + categorie ── */}
+            <div className="flex flex-col gap-4">
+
+              {/* Stats 2×2 */}
+              <div className="grid grid-cols-2 gap-3">
+                <StatCard
+                  icon={<BarChart2 className="h-4 w-4 text-iri-pale" strokeWidth={1.8} />}
+                  label="Transazioni totali"
+                  value={String(stats.totalTransactions)}
+                />
+                <StatCard
+                  icon={<Calendar className="h-4 w-4 text-iri-pale" strokeWidth={1.8} />}
+                  label="Mesi attivi"
+                  value={String(stats.activeMonths)}
+                />
+                <StatCard
+                  icon={<Target className="h-4 w-4 text-iri-pale" strokeWidth={1.8} />}
+                  label="Speso in totale"
+                  value={`${spentSplit.int},${spentSplit.dec}€`}
+                />
+                <StatCard
+                  icon={<Ghost className="h-4 w-4 text-iri-pale" strokeWidth={1.8} />}
+                  label="Impulsi resistiti"
+                  value={String(stats.totalImpulsiResistiti)}
+                />
+              </div>
+
+              {/* Coach sentence */}
+              <div className="glass-panel rounded-[16px] px-5 py-4">
+                <p className="eyebrow mb-2">Il tuo coach dice</p>
+                <p className="m-0 font-serif text-[15px] italic leading-[1.6] text-ink-primary">
+                  {coachSentence}
+                </p>
+              </div>
+
+              {/* Sparkline spese ultimi 6 mesi */}
+              {monthlySpending.length > 0 && (
+                <div className="glass-panel rounded-[16px] px-5 py-4">
+                  <p className="eyebrow mb-4">Andamento spese</p>
+                  <SparklineChart data={monthlySpending} />
+                </div>
+              )}
+
+              {/* Le tue abitudini */}
+              {topCategory && topCategory.top3.length > 0 && (
+                <div className="glass-panel rounded-[16px] px-5 py-4">
+                  <p className="eyebrow mb-1">Le tue abitudini</p>
+                  <p className="mb-4 font-serif text-[14px] italic leading-[1.5] text-ink-secondary">
+                    La tua categoria principale è{" "}
+                    <span className="text-ink-primary">{topCategory.name}</span>{" "}
+                    — {topCategory.percent}% delle tue spese negli ultimi 3 mesi.
+                  </p>
+                  <div className="flex flex-col gap-3">
+                    {topCategory.top3.map((cat) => {
+                      const color = CAT_COLORS_PROFILO[cat.name] ?? "#A88BFA";
+                      const { int, dec } = splitCurrency(cat.amount);
+                      return (
+                        <div key={cat.name}>
+                          <div className="mb-1.5 flex items-center justify-between gap-2">
+                            <span className="text-[13px] text-ink-secondary">{cat.name}</span>
+                            <span className="font-mono-tabular text-[12px] text-ink-muted">
+                              {int},{dec}€ · {cat.percent}%
+                            </span>
+                          </div>
+                          <div className="relative h-[5px] overflow-hidden rounded-full bg-white/[0.05]">
+                            <div
+                              className="absolute inset-y-0 left-0 rounded-full transition-all duration-700"
+                              style={{ width: `${cat.percent}%`, background: color }}
+                            />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
               )}
             </div>
-          </div>
-
-          {/* Logout */}
-          <div className="mt-8 border-t border-white/[0.04] pt-6">
-            <form action={signOut}>
-              <button
-                type="submit"
-                className="flex w-full items-center justify-center gap-2 rounded-[14px] border border-red-400/20 bg-red-400/[0.05] px-4 py-3 text-[13px] font-medium text-red-400 transition-all hover:bg-red-400/10"
-              >
-                <LogOut className="h-4 w-4" strokeWidth={1.8} />
-                Esci dall'account
-              </button>
-            </form>
           </div>
         </div>
       </div>
@@ -313,17 +314,14 @@ function SparklineChart({
 
   const pts = data.map((d, i) => ({ x: toX(i), y: toY(d.amount), ...d }));
 
-  // Build smooth path
   let linePath = `M ${pts[0].x} ${pts[0].y}`;
   for (let i = 1; i < pts.length; i++) {
     const cpx = (pts[i - 1].x + pts[i].x) / 2;
     linePath += ` C ${cpx} ${pts[i - 1].y}, ${cpx} ${pts[i].y}, ${pts[i].x} ${pts[i].y}`;
   }
 
-  // Build area path (close below)
   const areaPath =
-    linePath +
-    ` L ${pts[n - 1].x} ${H} L ${pts[0].x} ${H} Z`;
+    linePath + ` L ${pts[n - 1].x} ${H} L ${pts[0].x} ${H} Z`;
 
   return (
     <div className="w-full">
@@ -339,9 +337,7 @@ function SparklineChart({
             <stop offset="100%" stopColor="#A88BFA" stopOpacity="0.01" />
           </linearGradient>
         </defs>
-        {/* Area fill */}
         <path d={areaPath} fill="url(#sparkGrad)" />
-        {/* Line */}
         <path
           d={linePath}
           fill="none"
@@ -350,12 +346,10 @@ function SparklineChart({
           strokeLinejoin="round"
           strokeLinecap="round"
         />
-        {/* Dots */}
         {pts.map((p) => (
           <circle key={p.month} cx={p.x} cy={p.y} r="3" fill="#A88BFA" />
         ))}
       </svg>
-      {/* Labels */}
       <div
         className="mt-1.5 flex justify-between"
         style={{ padding: `0 ${PAD.left}px` }}

@@ -117,7 +117,8 @@ export default function OnboardingPage() {
   const [showAllReady, setShowAllReady] = useState(false);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [name, setName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [incomeType, setIncomeType] = useState<IncomeType | null>(null);
   const [monthlyIncome, setMonthlyIncome] = useState(0);
   const [monthlyHours, setMonthlyHours] = useState(160);
@@ -143,8 +144,9 @@ export default function OnboardingPage() {
     if (!incomeType || !timeMetric) return;
     setError(null);
     setPending(true);
+    const fullName = [firstName.trim(), lastName.trim()].filter(Boolean).join(" ") || "amico";
     const result = await completeOnboarding({
-      name,
+      name: fullName,
       incomeType,
       monthlyIncome,
       monthlyHours: timeMetric === "work_hours" ? monthlyHours : null,
@@ -191,21 +193,37 @@ export default function OnboardingPage() {
           </div>
 
           <div className="flex flex-col gap-4">
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              onKeyDown={(e) => { if (e.key === "Enter") setStep(1); }}
-              placeholder="Il tuo nome"
-              autoFocus
-              className="w-full rounded-[14px] px-5 py-4 text-[18px] font-serif italic text-ink-primary outline-none transition-all"
-              style={{
-                background: "rgba(255,255,255,0.04)",
-                border: "1px solid rgba(168,139,250,0.25)",
-              }}
-              onFocus={(e) => (e.currentTarget.style.border = "1px solid rgba(168,139,250,0.6)")}
-              onBlur={(e) => (e.currentTarget.style.border = "1px solid rgba(168,139,250,0.25)")}
-            />
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <input
+                type="text"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter") setStep(1); }}
+                placeholder="Mario"
+                autoFocus
+                className="flex-1 rounded-[14px] px-5 py-4 text-[18px] font-serif italic text-ink-primary outline-none transition-all"
+                style={{
+                  background: "rgba(255,255,255,0.04)",
+                  border: "1px solid rgba(168,139,250,0.25)",
+                }}
+                onFocus={(e) => (e.currentTarget.style.border = "1px solid rgba(168,139,250,0.6)")}
+                onBlur={(e) => (e.currentTarget.style.border = "1px solid rgba(168,139,250,0.25)")}
+              />
+              <input
+                type="text"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter") setStep(1); }}
+                placeholder="Rossi"
+                className="flex-1 rounded-[14px] px-5 py-4 text-[18px] font-serif italic text-ink-primary outline-none transition-all"
+                style={{
+                  background: "rgba(255,255,255,0.04)",
+                  border: "1px solid rgba(168,139,250,0.25)",
+                }}
+                onFocus={(e) => (e.currentTarget.style.border = "1px solid rgba(168,139,250,0.6)")}
+                onBlur={(e) => (e.currentTarget.style.border = "1px solid rgba(168,139,250,0.25)")}
+              />
+            </div>
             <button
               type="button"
               onClick={() => setStep(1)}
@@ -213,10 +231,10 @@ export default function OnboardingPage() {
             >
               Continua →
             </button>
-            {!name.trim() && (
+            {!firstName.trim() && !lastName.trim() && (
               <button
                 type="button"
-                onClick={() => { setName(""); setStep(1); }}
+                onClick={() => setStep(1)}
                 className="text-center text-[12px] text-ink-muted transition-colors hover:text-ink-secondary"
               >
                 Salta

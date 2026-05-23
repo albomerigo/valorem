@@ -38,7 +38,7 @@ export function ProfileSection({ profile }: { profile: UserProfile }) {
     >
       <div className="flex flex-col gap-5">
         <div>
-          <p className="eyebrow mb-2">Nome</p>
+          <p className="eyebrow mb-2">Nome completo</p>
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
