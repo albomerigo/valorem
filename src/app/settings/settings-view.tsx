@@ -63,6 +63,14 @@ export function SettingsView({
 
             {/* Footer links */}
             <p className="mt-6 text-center text-[10px] text-ink-muted">
+              <Link href="/guida" className="hover:text-ink-secondary transition-colors">
+                Guida
+              </Link>
+              {" · "}
+              <Link href="/ricorrenti" className="hover:text-ink-secondary transition-colors">
+                Spese ricorrenti
+              </Link>
+              {" · "}
               <Link href="/privacy" className="hover:text-ink-secondary transition-colors">
                 Privacy Policy
               </Link>

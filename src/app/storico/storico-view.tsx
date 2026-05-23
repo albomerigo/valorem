@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   TrendingUp,
@@ -25,6 +25,7 @@ import {
   Cell,
 } from "recharts";
 import Link from "next/link";
+import { SkeletonCard } from "@/components/skeleton";
 import { Sidebar } from "@/components/sidebar";
 import { BottomBar } from "@/components/bottom-bar";
 import { FabButton } from "@/components/fab-button";
@@ -58,7 +59,12 @@ export function StoricoView({
   recaps: MonthEntry[];
 }) {
   const router = useRouter();
+  const [hydrating, setHydrating] = useState(true);
   const isFree = (profile.plan || "free") === "free";
+
+  useEffect(() => {
+    setHydrating(false);
+  }, []);
 
   // Free plan: show only current month
   const now = new Date();
@@ -179,18 +185,26 @@ export function StoricoView({
               )}
 
               <p className="eyebrow mb-5 text-[10px]">Mesi</p>
-              <div className="flex flex-col gap-4">
-                {visibleRecaps.map((entry, i) => (
-                  <MonthCard
-                    key={entry.slug}
-                    entry={entry}
-                    isBestMonth={agg?.bestEntry?.slug === entry.slug && visibleRecaps.length > 1}
-                    isCurrentMonth={entry.slug === currentSlug}
-                    onClick={() => router.push(`/recap/${entry.slug}`)}
-                    index={i}
-                  />
-                ))}
-              </div>
+              {hydrating ? (
+                <div className="flex flex-col gap-4">
+                  <SkeletonCard height={100} />
+                  <SkeletonCard height={100} />
+                  <SkeletonCard height={100} />
+                </div>
+              ) : (
+                <div className="flex flex-col gap-4">
+                  {visibleRecaps.map((entry, i) => (
+                    <MonthCard
+                      key={entry.slug}
+                      entry={entry}
+                      isBestMonth={agg?.bestEntry?.slug === entry.slug && visibleRecaps.length > 1}
+                      isCurrentMonth={entry.slug === currentSlug}
+                      onClick={() => router.push(`/recap/${entry.slug}`)}
+                      index={i}
+                    />
+                  ))}
+                </div>
+              )}
             </>
           )}
         </div>

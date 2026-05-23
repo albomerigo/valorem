@@ -25,6 +25,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 
 import { EmptyActivity, EmptyActivityFiltered } from "@/components/empty-states";
+import { SkeletonTransactionRow } from "@/components/skeleton";
 import type {
   UserProfile,
   Transaction,
@@ -122,6 +123,7 @@ export function AttivitaView({
   const [selectedCategories, setSelectedCategories] = useState<Set<string>>(
     new Set()
   );
+  const [hydrating, setHydrating] = useState(true);
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const [deletingTransactionId, setDeletingTransactionId] = useState<string | null>(null);
   const [isExporting, setIsExporting] = useState(false);
@@ -130,6 +132,7 @@ export function AttivitaView({
   const [customTo, setCustomTo] = useState("");
 
   useEffect(() => {
+    setHydrating(false);
     getCustomCategories().then(setCustomCategories);
   }, []);
 
@@ -573,7 +576,13 @@ export function AttivitaView({
           </div>
 
           {/* LISTA */}
-          {grouped.length === 0 ? (
+          {hydrating ? (
+            <div className="glass-panel overflow-hidden rounded-[18px]">
+              {Array.from({ length: 5 }, (_, i) => (
+                <SkeletonTransactionRow key={i} isLast={i === 4} />
+              ))}
+            </div>
+          ) : grouped.length === 0 ? (
             hasActiveFilters ? (
               <EmptyActivityFiltered onReset={clearFilters} />
             ) : (

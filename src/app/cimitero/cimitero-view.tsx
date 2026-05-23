@@ -71,6 +71,20 @@ export function CimiteroView({
   const [scope, setScope] = useState<Scope>("month");
   const [toast, setToast] = useState<string | null>(null);
 
+  const monthlyChart = useMemo(() => {
+    const byMonth: Record<string, number> = {};
+    for (const d of declined) {
+      const month = d.declined_at.slice(0, 7);
+      byMonth[month] = (byMonth[month] || 0) + 1;
+    }
+    const sorted = Object.entries(byMonth).sort((a, b) => a[0].localeCompare(b[0]));
+    return sorted.map(([month, count]) => ({
+      month,
+      count,
+      label: new Date(month + "-15").toLocaleDateString("it-IT", { month: "short" }),
+    }));
+  }, [declined]);
+
   const filtered = useMemo(() => {
     if (scope === "all") return declined;
     const now = new Date();
@@ -171,6 +185,15 @@ export function CimiteroView({
               </div>
             )}
           </div>
+          {/* BAR CHART: disciplina nel tempo */}
+          {monthlyChart.length >= 2 && (
+            <div className="mt-8">
+              <p className="eyebrow mb-4 px-1">La tua disciplina nel tempo</p>
+              <div className="glass-panel rounded-[18px] px-5 py-5">
+                <ImpulseBarChart data={monthlyChart} />
+              </div>
+            </div>
+          )}
        </div>
       </div>
 
@@ -389,6 +412,75 @@ function categoryMeta(category: string | null): {
   };
   return (
     (category && map[category]) || { Icon: MoreHorizontal, color: "#9CA3AF" }
+  );
+}
+
+function ImpulseBarChart({
+  data,
+}: {
+  data: { month: string; count: number; label: string }[];
+}) {
+  const W = 400;
+  const H = 80;
+  const PAD = { left: 4, right: 4, top: 8, bottom: 20 };
+  const max = Math.max(...data.map((d) => d.count), 1);
+  const n = data.length;
+  const barW = Math.max(4, ((W - PAD.left - PAD.right) / n) * 0.55);
+  const gap = (W - PAD.left - PAD.right) / n;
+
+  const barH = H - PAD.top - PAD.bottom;
+
+  return (
+    <div className="w-full">
+      <svg
+        viewBox={`0 0 ${W} ${H}`}
+        className="w-full overflow-visible"
+        style={{ height: H }}
+        preserveAspectRatio="none"
+      >
+        <defs>
+          <linearGradient id="barGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#A88BFA" stopOpacity="0.9" />
+            <stop offset="100%" stopColor="#E879F9" stopOpacity="0.5" />
+          </linearGradient>
+        </defs>
+        {data.map((d, i) => {
+          const x = PAD.left + i * gap + gap / 2 - barW / 2;
+          const h = (d.count / max) * barH;
+          const y = PAD.top + barH - h;
+          return (
+            <g key={d.month}>
+              <rect
+                x={x}
+                y={y}
+                width={barW}
+                height={h}
+                rx={3}
+                fill="url(#barGrad)"
+              />
+              <text
+                x={x + barW / 2}
+                y={H - 4}
+                textAnchor="middle"
+                fontSize={9}
+                fill="rgba(255,255,255,0.4)"
+              >
+                {d.label}
+              </text>
+              <text
+                x={x + barW / 2}
+                y={y - 3}
+                textAnchor="middle"
+                fontSize={8}
+                fill="rgba(168,139,250,0.8)"
+              >
+                {d.count}
+              </text>
+            </g>
+          );
+        })}
+      </svg>
+    </div>
   );
 }
 

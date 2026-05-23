@@ -19,7 +19,6 @@ import { SpendingChart } from "./spending-chart";
 import { UpgradeBanner } from "./upgrade-banner";
 import { OnboardingChecklist } from "./onboarding-checklist";
 import { WeeklyRecap } from "./weekly-recap";
-import { AiCoach } from "./ai-coach";
 import { NewTransactionModal } from "./new-transaction-modal";
 import { getCustomCategories } from "@/app/settings/categories-actions";
 import type { CustomCategory } from "@/app/settings/categories-actions";
@@ -327,12 +326,6 @@ export function Dashboard({
             <SpendingChart data={dailyData} dailyBudgetBase={data.stats.dailyBudgetBase} />
             <UpcomingFixedCosts fixedCosts={data.fixedCosts} />
             <CoachStripe coachMessage={data.stats.coachMessage} stats={data.stats} />
-            <AiCoach
-              stats={data.stats}
-              profile={data.profile}
-              transactions={data.transactions}
-              plan={plan}
-            />
             <TransactionsList
               transactions={data.transactions}
               stats={data.stats}

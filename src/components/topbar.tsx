@@ -36,8 +36,8 @@ export function Topbar({
       </div>
 
       <div className="flex items-center gap-2 flex-shrink-0">
-        <ThemeToggle />
-        <Search transactions={transactions} goals={goals} />
+        <div className="hidden md:block"><ThemeToggle /></div>
+        <div className="hidden md:block"><Search transactions={transactions} goals={goals} /></div>
       </div>
     </div>
   );
