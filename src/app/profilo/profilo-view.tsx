@@ -223,6 +223,24 @@ export function ProfiloView({
                   <Sparkles className="h-3 w-3" strokeWidth={1.8} />
                   {planLabel}
                 </div>
+                {(profile.plan === "premium" || profile.plan === "pro") && (
+                  <a
+                    href="https://app.lemonsqueezy.com/billing"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-2 block text-[11px] text-iri-pale transition-colors hover:text-ink-primary"
+                  >
+                    Gestisci abbonamento →
+                  </a>
+                )}
+                {profile.plan === "free" && (
+                  <a
+                    href="/pricing"
+                    className="mt-2 block text-[11px] text-iri-pale transition-colors hover:text-ink-primary"
+                  >
+                    Passa a Premium →
+                  </a>
+                )}
               </div>
               {profile.plan === "free" && (
                 <a

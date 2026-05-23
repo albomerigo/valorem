@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Calendar, ChevronRight, X } from "lucide-react";
+import { AlertCircle, Calendar, ChevronRight, X } from "lucide-react";
 import type { DashboardData, Goal, FixedCost } from "@/lib/finance";
 import { splitCurrency } from "@/lib/utils";
 import { Sidebar } from "./sidebar";
@@ -18,6 +18,7 @@ import { TransactionsList } from "./transactions-list";
 import { SpendingChart } from "./spending-chart";
 import { UpgradeBanner } from "./upgrade-banner";
 import { OnboardingChecklist } from "./onboarding-checklist";
+import { WeeklyRecap } from "./weekly-recap";
 import { NewTransactionModal } from "./new-transaction-modal";
 import { getCustomCategories } from "@/app/settings/categories-actions";
 import type { CustomCategory } from "@/app/settings/categories-actions";
@@ -97,6 +98,65 @@ function PlanPill({ plan }: { plan: string }) {
         </span>
         <style>{`@keyframes shimmerSlide{0%{transform:translateX(-100%)}50%{transform:translateX(100%)}100%{transform:translateX(100%)}}`}</style>
       </Link>
+    </div>
+  );
+}
+
+function CompleteProfileBanner({
+  monthlyIncome,
+  safeToSpendToday,
+}: {
+  monthlyIncome: number;
+  safeToSpendToday: number;
+}) {
+  const [dismissed, setDismissed] = useState(true);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    const key = "valorem_profile_banner_dismissed";
+    setDismissed(localStorage.getItem(key) === "true");
+    setMounted(true);
+  }, []);
+
+  if (!mounted || dismissed || safeToSpendToday !== 0 || monthlyIncome !== 0)
+    return null;
+
+  function handleDismiss() {
+    localStorage.setItem("valorem_profile_banner_dismissed", "true");
+    setDismissed(true);
+  }
+
+  return (
+    <div
+      className="relative overflow-hidden rounded-[16px] border border-amber-400/20 px-5 py-4"
+      style={{ background: "rgba(245,158,11,0.06)" }}
+    >
+      <button
+        type="button"
+        onClick={handleDismiss}
+        title="Chiudi"
+        className="absolute right-3 top-3 flex h-6 w-6 items-center justify-center rounded-lg text-ink-muted transition-colors hover:text-ink-primary"
+      >
+        <X className="h-3.5 w-3.5" />
+      </button>
+      <div className="flex flex-wrap items-center gap-3 pr-8">
+        <AlertCircle
+          className="h-4 w-4 flex-shrink-0 text-amber-400"
+          strokeWidth={1.8}
+        />
+        <p className="m-0 flex-1 text-[13px] text-ink-secondary">
+          <span className="font-medium text-ink-primary">
+            Il tuo Safe-to-Spend è 0
+          </span>{" "}
+          — completa il profilo per vedere il tuo budget reale.
+        </p>
+        <Link
+          href="/settings"
+          className="flex-shrink-0 rounded-lg border border-amber-400/20 bg-amber-400/10 px-3 py-1.5 text-[11px] font-medium text-amber-300 transition-colors hover:bg-amber-400/20"
+        >
+          Configura ora →
+        </Link>
+      </div>
     </div>
   );
 }
@@ -242,6 +302,11 @@ export function Dashboard({
           />
           <div className="mt-5 flex flex-col gap-4 md:mt-6 md:gap-5">
             <RecapBanner />
+            <CompleteProfileBanner
+              monthlyIncome={data.profile?.monthly_income ?? 0}
+              safeToSpendToday={data.stats.safeToSpendToday}
+            />
+            <WeeklyRecap transactions={data.transactions} />
             <EveningCheck
               name={data.profile?.name || ""}
               safeToSpendToday={data.stats.safeToSpendToday}

@@ -176,6 +176,13 @@ export function ImportView({ userName }: { userName: string }) {
   const [isImporting, setIsImporting] = useState(false);
   const [importedCount, setImportedCount] = useState(0);
   const [importError, setImportError] = useState("");
+  const [importSummary, setImportSummary] = useState<{
+    totalExpense: number;
+    totalIncome: number;
+    topCategories: { name: string; count: number }[];
+    dateFrom: string;
+    dateTo: string;
+  } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // ── File parsing ─────────────────────────────────────────────────────────────
@@ -245,6 +252,33 @@ export function ImportView({ userName }: { userName: string }) {
 
     if (result.success) {
       setImportedCount(result.count ?? 0);
+
+      // Calcola summary dalle righe valide
+      const totalExpense = validRows
+        .filter((r) => r.type === "expense")
+        .reduce((s, r) => s + Number(r.amount), 0);
+      const totalIncome = validRows
+        .filter((r) => r.type === "income")
+        .reduce((s, r) => s + Number(r.amount), 0);
+
+      const catCount: Record<string, number> = {};
+      for (const r of validRows) {
+        const c = r.category || "Altro";
+        catCount[c] = (catCount[c] || 0) + 1;
+      }
+      const topCategories = Object.entries(catCount)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 3)
+        .map(([name, count]) => ({ name, count }));
+
+      const dates = validRows
+        .map((r) => r.transaction_date)
+        .filter(Boolean)
+        .sort();
+      const dateFrom = dates[0] ?? "";
+      const dateTo = dates[dates.length - 1] ?? "";
+
+      setImportSummary({ totalExpense, totalIncome, topCategories, dateFrom, dateTo });
       setStep("success");
     } else {
       setImportError(result.error ?? "Errore sconosciuto");
@@ -260,6 +294,7 @@ export function ImportView({ userName }: { userName: string }) {
     setRawRows([]);
     setParsedRows([]);
     setImportError("");
+    setImportSummary(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
@@ -325,6 +360,7 @@ export function ImportView({ userName }: { userName: string }) {
           {step === "success" && (
             <SuccessStep
               count={importedCount}
+              summary={importSummary}
               onReset={reset}
               onDashboard={() => router.push("/")}
             />
@@ -689,27 +725,144 @@ function PreviewStep({
 
 // ─── Success Step ─────────────────────────────────────────────────────────────
 
+type ImportSummary = {
+  totalExpense: number;
+  totalIncome: number;
+  topCategories: { name: string; count: number }[];
+  dateFrom: string;
+  dateTo: string;
+};
+
 function SuccessStep({
   count,
+  summary,
   onReset,
   onDashboard,
 }: {
   count: number;
+  summary: ImportSummary | null;
   onReset: () => void;
   onDashboard: () => void;
 }) {
+  const formatDate = (d: string) =>
+    d
+      ? new Date(d + "T00:00:00").toLocaleDateString("it-IT", {
+          day: "numeric",
+          month: "short",
+          year: "numeric",
+        })
+      : "—";
+
   return (
-    <div className="mx-auto max-w-lg text-center">
-      <div className="glass-panel-strong rounded-[24px] p-12">
-        <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full border border-emerald-300/30 bg-emerald-300/[0.08] text-[40px]">
+    <div className="mx-auto max-w-lg">
+      <div className="glass-panel-strong rounded-[24px] p-8 text-center">
+        <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full border border-emerald-300/30 bg-emerald-300/[0.08] text-[32px]">
           🎉
         </div>
-        <h2 className="mb-2 font-serif text-[28px] italic text-ink-primary">
+        <h2 className="mb-1 font-serif text-[26px] italic text-ink-primary">
           Import completato!
         </h2>
-        <p className="mb-8 text-[15px] text-ink-secondary">
+        <p className="mb-6 text-[14px] text-ink-secondary">
           <span className="font-medium text-emerald-400">{count} transazioni</span> importate con successo
         </p>
+
+        {summary && (
+          <>
+            {/* KPI 2×2 */}
+            <div className="mb-5 grid grid-cols-2 gap-3 text-left">
+              <div
+                className="rounded-[14px] px-4 py-3.5"
+                style={{
+                  background: "rgba(255,255,255,0.03)",
+                  border: "1px solid rgba(255,255,255,0.07)",
+                }}
+              >
+                <p className="text-[9px] font-medium uppercase tracking-[0.12em] text-ink-muted">
+                  Spese importate
+                </p>
+                <p className="mt-1 font-mono-tabular text-[18px] font-medium text-red-300">
+                  −{summary.totalExpense.toFixed(2).replace(".", ",")}€
+                </p>
+              </div>
+              <div
+                className="rounded-[14px] px-4 py-3.5"
+                style={{
+                  background: "rgba(255,255,255,0.03)",
+                  border: "1px solid rgba(255,255,255,0.07)",
+                }}
+              >
+                <p className="text-[9px] font-medium uppercase tracking-[0.12em] text-ink-muted">
+                  Entrate importate
+                </p>
+                <p className="mt-1 font-mono-tabular text-[18px] font-medium text-emerald-300">
+                  +{summary.totalIncome.toFixed(2).replace(".", ",")}€
+                </p>
+              </div>
+              <div
+                className="rounded-[14px] px-4 py-3.5"
+                style={{
+                  background: "rgba(255,255,255,0.03)",
+                  border: "1px solid rgba(255,255,255,0.07)",
+                }}
+              >
+                <p className="text-[9px] font-medium uppercase tracking-[0.12em] text-ink-muted">
+                  Periodo
+                </p>
+                <p className="mt-1 text-[12px] font-medium text-ink-primary">
+                  {formatDate(summary.dateFrom)}
+                </p>
+                <p className="text-[11px] text-ink-muted">
+                  → {formatDate(summary.dateTo)}
+                </p>
+              </div>
+              <div
+                className="rounded-[14px] px-4 py-3.5"
+                style={{
+                  background: "rgba(255,255,255,0.03)",
+                  border: "1px solid rgba(255,255,255,0.07)",
+                }}
+              >
+                <p className="text-[9px] font-medium uppercase tracking-[0.12em] text-ink-muted">
+                  Totale righe
+                </p>
+                <p className="mt-1 font-mono-tabular text-[18px] font-medium text-ink-primary">
+                  {count}
+                </p>
+              </div>
+            </div>
+
+            {/* Top categorie */}
+            {summary.topCategories.length > 0 && (
+              <div
+                className="mb-6 rounded-[14px] px-4 py-3.5 text-left"
+                style={{
+                  background: "rgba(255,255,255,0.02)",
+                  border: "1px solid rgba(255,255,255,0.06)",
+                }}
+              >
+                <p className="mb-3 text-[9px] font-medium uppercase tracking-[0.12em] text-ink-muted">
+                  Top categorie
+                </p>
+                <div className="flex flex-col gap-2">
+                  {summary.topCategories.map((cat) => (
+                    <div
+                      key={cat.name}
+                      className="flex items-center justify-between gap-3"
+                    >
+                      <span className="text-[13px] text-ink-secondary">
+                        {cat.name}
+                      </span>
+                      <span className="rounded-full bg-iri-violet/10 px-2 py-0.5 text-[11px] font-medium text-iri-pale">
+                        {cat.count} tx
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </>
+        )}
+
         <div className="flex flex-col gap-3">
           <button
             type="button"

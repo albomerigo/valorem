@@ -127,7 +127,7 @@ export default function OnboardingPage() {
   const [fixedCosts, setFixedCosts] = useState<FixedCostEntry[]>([
     { name: "", amount: 0 },
   ]);
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(0);
 
   // Mostra le slide intro prima del wizard
   if (showIntro) {
@@ -161,9 +161,76 @@ export default function OnboardingPage() {
     }
   }
 
-  // ── STEP 1 — nome + tipologia reddito ──
+  // ── STEP 0 — nome ──
+  if (step === 0) {
+    return (
+      <div
+        className="flex min-h-screen items-center justify-center p-6"
+        style={{
+          background:
+            "radial-gradient(ellipse 80% 50% at 50% 0%, #1A1530 0%, #0A0812 40%, #060508 100%)",
+        }}
+      >
+        <div className="w-full max-w-[440px] animate-slide-up">
+          <div className="mb-8 text-center">
+            <div
+              className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-[20px] text-[32px]"
+              style={{
+                background: "linear-gradient(135deg, rgba(168,139,250,0.2), rgba(232,121,249,0.1))",
+                border: "1px solid rgba(168,139,250,0.3)",
+              }}
+            >
+              👋
+            </div>
+            <h1 className="font-serif text-[32px] font-normal italic leading-tight text-ink-primary">
+              Come ti chiami?
+            </h1>
+            <p className="mt-2 text-[14px] text-ink-secondary">
+              Il tuo Coach ti chiamerà per nome.
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-4">
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter") setStep(1); }}
+              placeholder="Il tuo nome"
+              autoFocus
+              className="w-full rounded-[14px] px-5 py-4 text-[18px] font-serif italic text-ink-primary outline-none transition-all"
+              style={{
+                background: "rgba(255,255,255,0.04)",
+                border: "1px solid rgba(168,139,250,0.25)",
+              }}
+              onFocus={(e) => (e.currentTarget.style.border = "1px solid rgba(168,139,250,0.6)")}
+              onBlur={(e) => (e.currentTarget.style.border = "1px solid rgba(168,139,250,0.25)")}
+            />
+            <button
+              type="button"
+              onClick={() => setStep(1)}
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-br from-iri-violet via-iri-magenta to-iri-blue py-4 text-[14px] font-medium uppercase tracking-[0.1em] text-white shadow-[0_8px_24px_-6px_rgba(168,139,250,0.5)] transition-all [background-size:200%_200%] animate-gradient-shift hover:-translate-y-0.5"
+            >
+              Continua →
+            </button>
+            {!name.trim() && (
+              <button
+                type="button"
+                onClick={() => { setName(""); setStep(1); }}
+                className="text-center text-[12px] text-ink-muted transition-colors hover:text-ink-secondary"
+              >
+                Salta
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ── STEP 1 — tipologia reddito ──
   if (step === 1) {
-    const canProceed = name.trim().length > 0 && incomeType !== null;
+    const canProceed = incomeType !== null;
     return (
       <WizardShell
         step={1}
@@ -172,7 +239,6 @@ export default function OnboardingPage() {
         subtitle="Valorem si adatta alla tua situazione finanziaria"
       >
         <div className="flex flex-col gap-5">
-          <TextField label="Come ti chiami" value={name} onChange={setName} placeholder="Marco" />
           <div>
             <p className="mb-2.5 text-[10px] font-medium uppercase tracking-[0.16em] text-ink-secondary">
               Il tuo reddito è…

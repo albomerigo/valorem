@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Check, Sparkles, Zap, Crown, ArrowLeft } from "lucide-react";
+import { Check, CheckCircle, Sparkles, Zap, Crown, ArrowLeft } from "lucide-react";
 import { usePlan } from "@/hooks/usePlan";
 import { VARIANT_IDS } from "@/lib/lemonsqueezy";
 
@@ -310,6 +310,49 @@ function PricingContent() {
             </button>
           </div>
         </div>
+
+        {/* Banner abbonato attivo */}
+        {(currentPlan === "premium" || currentPlan === "pro") && (
+          <div
+            className="mb-8 rounded-2xl px-6 py-5"
+            style={{
+              background: "rgba(16,185,129,0.06)",
+              border: "1px solid rgba(16,185,129,0.25)",
+            }}
+          >
+            <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-start gap-3">
+                <CheckCircle
+                  className="mt-0.5 h-5 w-5 flex-shrink-0"
+                  style={{ color: "#34D399" }}
+                  strokeWidth={1.8}
+                />
+                <div>
+                  <p className="text-[14px] font-medium" style={{ color: "#6EE7B7" }}>
+                    Sei già su Piano {currentPlan === "premium" ? "Premium" : "Pro"} 🎉
+                  </p>
+                  <p className="mt-0.5 text-[12px]" style={{ color: "rgba(110,231,183,0.65)" }}>
+                    Gestisci il tuo abbonamento, aggiorna il metodo di pagamento o cancella dal portale clienti.
+                  </p>
+                </div>
+              </div>
+              <a
+                href="https://app.lemonsqueezy.com/billing"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-shrink-0 rounded-xl px-4 py-2.5 text-[12px] font-medium transition-all hover:opacity-80"
+                style={{
+                  background: "rgba(16,185,129,0.12)",
+                  border: "1px solid rgba(16,185,129,0.3)",
+                  color: "#6EE7B7",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                Gestisci abbonamento →
+              </a>
+            </div>
+          </div>
+        )}
 
         {/* Piani */}
         <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
