@@ -80,8 +80,17 @@ div, p, span, h1, h2, h3, h4, h5, h6,
 section, article, header, footer, main,
 nav, li, ul, ol, aside, figure, figcaption,
 [class*="glass"], [class*="card"], [class*="panel"] {
-  cursor: default;
-  user-select: none;
+  cursor: default !important;
+  user-select: none !important;
+}
+
+input, textarea {
+  cursor: text !important;
+  user-select: text !important;
+}
+
+a, button, [role="button"] {
+  cursor: pointer !important;
 }
 
 /* Elementi interattivi mantengono il cursore corretto */

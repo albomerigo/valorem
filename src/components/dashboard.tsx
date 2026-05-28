@@ -358,7 +358,7 @@ export function Dashboard({
   // Ctrl+N / Cmd+N → apri nuova transazione
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === "n") {
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === "N") {
         e.preventDefault();
         setIsAddingTransaction(true);
       }
