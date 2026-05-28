@@ -355,6 +355,18 @@ export function Dashboard({
     getCustomCategories().then(setCustomCategories);
   }, []);
 
+  // Ctrl+N / Cmd+N → apri nuova transazione
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "n") {
+        e.preventDefault();
+        setIsAddingTransaction(true);
+      }
+    };
+    document.addEventListener("keydown", handler);
+    return () => document.removeEventListener("keydown", handler);
+  }, []);
+
   const openNewTransaction = () => setIsAddingTransaction(true);
 
   return (

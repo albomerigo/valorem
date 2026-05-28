@@ -176,6 +176,7 @@ export function ImportView({ userName }: { userName: string }) {
   const [isImporting, setIsImporting] = useState(false);
   const [importedCount, setImportedCount] = useState(0);
   const [importError, setImportError] = useState("");
+  const [duplicatesCount, setDuplicatesCount] = useState(0);
   const [importSummary, setImportSummary] = useState<{
     totalExpense: number;
     totalIncome: number;
@@ -252,6 +253,7 @@ export function ImportView({ userName }: { userName: string }) {
 
     if (result.success) {
       setImportedCount(result.count ?? 0);
+      setDuplicatesCount(result.duplicates ?? 0);
 
       // Calcola summary dalle righe valide
       const totalExpense = validRows
@@ -295,6 +297,7 @@ export function ImportView({ userName }: { userName: string }) {
     setParsedRows([]);
     setImportError("");
     setImportSummary(null);
+    setDuplicatesCount(0);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
@@ -360,6 +363,7 @@ export function ImportView({ userName }: { userName: string }) {
           {step === "success" && (
             <SuccessStep
               count={importedCount}
+              duplicates={duplicatesCount}
               summary={importSummary}
               onReset={reset}
               onDashboard={() => router.push("/")}
@@ -735,11 +739,13 @@ type ImportSummary = {
 
 function SuccessStep({
   count,
+  duplicates,
   summary,
   onReset,
   onDashboard,
 }: {
   count: number;
+  duplicates: number;
   summary: ImportSummary | null;
   onReset: () => void;
   onDashboard: () => void;
@@ -765,6 +771,20 @@ function SuccessStep({
         <p className="mb-6 text-[14px] text-ink-secondary">
           <span className="font-medium text-emerald-400">{count} transazioni</span> importate con successo
         </p>
+
+        {duplicates > 0 && (
+          <div
+            className="mb-5 flex items-center gap-2 rounded-[14px] px-4 py-3 text-[13px]"
+            style={{
+              background: "rgba(245,158,11,0.07)",
+              border: "1px solid rgba(245,158,11,0.25)",
+              color: "#FCD34D",
+            }}
+          >
+            <AlertCircle className="h-4 w-4 flex-shrink-0" strokeWidth={2} />
+            <span>{duplicates} transazioni già presenti sono state saltate</span>
+          </div>
+        )}
 
         {summary && (
           <>

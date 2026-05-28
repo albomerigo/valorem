@@ -14,7 +14,7 @@ type ImportRow = {
 
 export async function importTransactions(
   rows: ImportRow[]
-): Promise<{ success: boolean; count?: number; error?: string }> {
+): Promise<{ success: boolean; count?: number; duplicates?: number; error?: string }> {
   const supabase = await createClient();
 
   const {
@@ -24,7 +24,34 @@ export async function importTransactions(
   if (!user) return { success: false, error: "Non autenticato" };
   if (rows.length === 0) return { success: false, error: "Nessuna transazione da importare" };
 
-  const toInsert = rows.map((r) => ({
+  // ── Rileva duplicati ──────────────────────────────────────────────────────────
+  // Per ogni riga verifica se esiste già una transazione con stesso merchant + amount + date
+  const toInsert: typeof rows = [];
+  let duplicates = 0;
+
+  for (const row of rows) {
+    const { data: existing } = await supabase
+      .from("transactions")
+      .select("id")
+      .eq("user_id", user.id)
+      .eq("merchant", row.merchant)
+      .eq("amount", row.amount)
+      .eq("transaction_date", row.transaction_date)
+      .limit(1)
+      .maybeSingle();
+
+    if (existing) {
+      duplicates++;
+    } else {
+      toInsert.push(row);
+    }
+  }
+
+  if (toInsert.length === 0) {
+    return { success: true, count: 0, duplicates };
+  }
+
+  const records = toInsert.map((r) => ({
     user_id: user.id,
     merchant: r.merchant,
     amount: r.amount,
@@ -35,8 +62,8 @@ export async function importTransactions(
     recurring: r.recurring,
   }));
 
-  const { error } = await supabase.from("transactions").insert(toInsert);
+  const { error } = await supabase.from("transactions").insert(records);
 
   if (error) return { success: false, error: error.message };
-  return { success: true, count: toInsert.length };
+  return { success: true, count: records.length, duplicates };
 }

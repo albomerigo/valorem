@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Check, CheckCircle, Sparkles, Zap, Crown, ArrowLeft } from "lucide-react";
+import { Check, CheckCircle, Sparkles, Zap, Crown, ArrowLeft, AlertCircle } from "lucide-react";
 import { usePlan } from "@/hooks/usePlan";
 import { VARIANT_IDS } from "@/lib/lemonsqueezy";
 
@@ -88,6 +88,25 @@ function PricingContent() {
 
   const searchParams = useSearchParams();
   const successParam = searchParams.get("success");
+  const cancelledParam = searchParams.get("cancelled");
+  const [cancelledVisible, setCancelledVisible] = useState(cancelledParam === "true");
+
+  // Auto-dismiss cancelled banner after 5 seconds
+  useEffect(() => {
+    if (cancelledParam !== "true") return;
+    const t = setTimeout(() => setCancelledVisible(false), 5000);
+    return () => clearTimeout(t);
+  }, [cancelledParam]);
+
+  async function openPortal() {
+    try {
+      const res = await fetch("/api/lemonsqueezy/portal");
+      const data = await res.json() as { url?: string };
+      if (data.url) window.open(data.url, "_blank", "noopener,noreferrer");
+    } catch {
+      window.open("https://app.lemonsqueezy.com/billing", "_blank", "noopener,noreferrer");
+    }
+  }
 
   // Animated background canvas
   useEffect(() => {
@@ -226,6 +245,27 @@ function PricingContent() {
           </div>
         )}
 
+        {/* Banner pagamento annullato */}
+        {cancelledVisible && (
+          <div
+            className="mb-8 flex items-center gap-3 rounded-2xl px-6 py-4 text-[14px] font-medium"
+            style={{
+              background: "rgba(245,158,11,0.08)",
+              border: "1px solid rgba(245,158,11,0.3)",
+              color: "#FCD34D",
+            }}
+          >
+            <AlertCircle className="h-4 w-4 flex-shrink-0" strokeWidth={2} />
+            <span>Il pagamento è stato annullato. Puoi riprovare quando vuoi.</span>
+            <button
+              onClick={() => setCancelledVisible(false)}
+              className="ml-auto text-[12px] opacity-60 hover:opacity-100 transition-opacity"
+            >
+              ✕
+            </button>
+          </div>
+        )}
+
         {/* Header */}
         <div className="mb-14 text-center">
           <Link
@@ -336,10 +376,8 @@ function PricingContent() {
                   </p>
                 </div>
               </div>
-              <a
-                href="https://app.lemonsqueezy.com/billing"
-                target="_blank"
-                rel="noopener noreferrer"
+              <button
+                onClick={openPortal}
                 className="flex-shrink-0 rounded-xl px-4 py-2.5 text-[12px] font-medium transition-all hover:opacity-80"
                 style={{
                   background: "rgba(16,185,129,0.12)",
@@ -349,7 +387,7 @@ function PricingContent() {
                 }}
               >
                 Gestisci abbonamento →
-              </a>
+              </button>
             </div>
           </div>
         )}

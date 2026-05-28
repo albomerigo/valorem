@@ -99,7 +99,7 @@ function KPITile({
     <div
       ref={ref}
       onMouseMove={handleMove}
-      className="glass-panel group relative overflow-hidden rounded-[18px] px-5 py-[18px] transition-all duration-[400ms] [transition-timing-function:cubic-bezier(0.2,0.8,0.2,1)] hover:-translate-y-[3px] hover:border-iri-violet/25 hover:shadow-[0_20px_40px_-12px_rgba(168,139,250,0.3)]"
+      className="glass-panel group relative overflow-hidden rounded-[18px] px-3 py-[10px] md:px-5 md:py-[18px] transition-all duration-[400ms] [transition-timing-function:cubic-bezier(0.2,0.8,0.2,1)] hover:-translate-y-[3px] hover:border-iri-violet/25 hover:shadow-[0_20px_40px_-12px_rgba(168,139,250,0.3)]"
     >
       <div
         className="pointer-events-none absolute inset-0 rounded-[18px] opacity-0 transition-opacity duration-[400ms] group-hover:opacity-100"
@@ -109,24 +109,24 @@ function KPITile({
         }}
       />
 
-      <p className="eyebrow mb-3">{label}</p>
+      <p className="eyebrow mb-2 hidden md:block">{label}</p>
 
       <p className="m-0 font-mono-tabular font-medium">
         {valueGradThick ? (
-          <span className="iri-text text-[32px] font-bold [letter-spacing:-0.03em]">
+          <span className="iri-text text-[24px] md:text-[32px] font-bold [letter-spacing:-0.03em]">
             {valueInt}
           </span>
         ) : (
           <>
-            <span className="text-[26px] text-ink-primary [letter-spacing:-0.02em]">
+            <span className="text-[20px] md:text-[26px] text-ink-primary [letter-spacing:-0.02em]">
               {valueInt}
             </span>
             {valueDec && (
-              <span className="text-[16px] font-normal text-ink-primary/60">
+              <span className="text-[12px] md:text-[16px] font-normal text-ink-primary/60">
                 ,{valueDec}
               </span>
             )}
-            <span className="ml-0.5 text-[14px] font-normal text-ink-muted">€</span>
+            <span className="ml-0.5 text-[12px] md:text-[14px] font-normal text-ink-muted">€</span>
           </>
         )}
         {valueSuffix && (
@@ -136,7 +136,7 @@ function KPITile({
         )}
       </p>
 
-      <div className="mt-2.5 flex items-center gap-1.5">{trend}</div>
+      <div className="mt-1.5 md:mt-2.5 flex items-center gap-1.5">{trend}</div>
     </div>
   );
 }

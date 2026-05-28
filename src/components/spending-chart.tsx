@@ -323,7 +323,7 @@ export function SpendingChart({
       </div>
 
       {/* Legenda */}
-      <div className="mt-3 flex items-center gap-5">
+      <div className="mt-3 hidden md:flex items-center gap-5">
         <div className="flex items-center gap-2">
           <div
             className="h-[2px] w-5 rounded-full"

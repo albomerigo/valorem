@@ -63,6 +63,16 @@ export function ProfiloView({
 
   const spentSplit = splitCurrency(stats.totalSpent);
 
+  async function openPortal() {
+    try {
+      const res = await fetch("/api/lemonsqueezy/portal");
+      const data = await res.json() as { url?: string };
+      if (data.url) window.open(data.url, "_blank", "noopener,noreferrer");
+    } catch {
+      window.open("https://app.lemonsqueezy.com/billing", "_blank", "noopener,noreferrer");
+    }
+  }
+
   const planLabel =
     profile.plan === "premium"
       ? "Premium"
@@ -145,14 +155,12 @@ export function ProfiloView({
                       {planLabel}
                     </div>
                     {(profile.plan === "premium" || profile.plan === "pro") && (
-                      <a
-                        href="https://app.lemonsqueezy.com/billing"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="mt-2 block text-[11px] text-iri-pale transition-colors hover:text-ink-primary"
+                      <button
+                        onClick={openPortal}
+                        className="mt-2 block text-left text-[11px] text-iri-pale transition-colors hover:text-ink-primary"
                       >
                         Gestisci abbonamento →
-                      </a>
+                      </button>
                     )}
                     {profile.plan === "free" && (
                       <a

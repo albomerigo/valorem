@@ -68,6 +68,40 @@ html.dark body.night {
   --color-surface-2: #0b091e;
 }
 
+/* ═══════════════════════════════════════════════════════════
+   CURSORE — previeni cursore testo su elementi non editabili
+   ═══════════════════════════════════════════════════════════ */
+
+body {
+  cursor: default;
+}
+
+div, p, span, h1, h2, h3, h4, h5, h6,
+section, article, header, footer, main,
+nav, li, ul, ol, aside, figure, figcaption,
+[class*="glass"], [class*="card"], [class*="panel"] {
+  cursor: default;
+  user-select: none;
+}
+
+/* Elementi interattivi mantengono il cursore corretto */
+a, button, [role="button"], [role="link"],
+input, textarea, select, label,
+[tabindex], [onclick] {
+  cursor: pointer;
+}
+
+input, textarea {
+  cursor: text;
+  user-select: text;
+}
+
+/* Testo selezionabile solo dove serve */
+.selectable, p.selectable, span.selectable {
+  user-select: text;
+  cursor: text;
+}
+
 body {
   background: var(--color-surface-0);
   color: var(--color-ink-primary);

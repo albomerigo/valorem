@@ -264,18 +264,18 @@ function TransactionRow({
 
         <div className="min-w-0 flex-1">
           <div className="flex items-baseline justify-between gap-3">
-            <div className="flex items-center gap-2">
-              <p className="m-0 text-[14px] font-medium text-ink-primary">
+            <div className="flex items-center gap-2 min-w-0">
+              <p className="m-0 text-[14px] font-medium text-ink-primary truncate max-w-[20ch] md:max-w-none">
                 {tx.merchant}
               </p>
               {tx.recurring && (
-                <span className="flex items-center gap-1 rounded-md border border-iri-violet/25 bg-iri-violet/[0.1] px-2 py-px text-[9px] font-medium uppercase tracking-[0.08em] text-iri-pale">
+                <span className="hidden sm:flex items-center gap-1 rounded-md border border-iri-violet/25 bg-iri-violet/[0.1] px-2 py-px text-[9px] font-medium uppercase tracking-[0.08em] text-iri-pale shrink-0">
                   <Repeat2 className="h-2.5 w-2.5" strokeWidth={2} />
                   Ricorrente
                 </span>
               )}
             </div>
-            <p className="m-0 font-mono-tabular text-[14px] font-medium text-ink-primary [letter-spacing:-0.01em]">
+            <p className="m-0 font-mono-tabular text-[13px] md:text-[14px] font-medium text-ink-primary [letter-spacing:-0.01em] shrink-0">
               {tx.type === "expense" ? "−" : "+"}
               {eurosInt}
               <span className="text-[11px] text-ink-primary/65">,{eurosDec}</span>
@@ -286,7 +286,7 @@ function TransactionRow({
             <span className="text-[11px] text-ink-secondary">
               {tx.category || "Altro"} · {formatRelativeDate(tx.transaction_date)}
             </span>
-            <p className="m-0 font-mono-tabular text-[11px] text-ink-muted">
+            <p className="m-0 font-mono-tabular text-[11px] text-ink-muted hidden md:block">
               {timeLabel}
             </p>
           </div>

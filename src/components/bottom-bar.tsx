@@ -28,7 +28,7 @@ export function BottomBar({
 
   return (
    <nav
-      className="glass-panel-strong fixed bottom-0 left-0 right-0 z-30 flex md:hidden items-center justify-around border-t border-white/[0.06] px-2 pt-2"
+      className="glass-panel-strong fixed bottom-0 left-0 right-0 z-30 flex md:hidden items-center justify-around border-t border-white/[0.06] px-2 pt-2 backdrop-blur-xl"
       style={{
         paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 8px)",
       }}
@@ -42,8 +42,8 @@ export function BottomBar({
           className="relative flex flex-1 flex-col items-center justify-center gap-1 rounded-lg py-2 transition-all duration-[250ms] active:scale-95"
           style={{ color: "#A88BFA" }}
         >
-          <Sparkles className="h-[18px] w-[18px]" strokeWidth={1.6} />
-          <span className="text-[9px] font-medium uppercase tracking-[0.04em]">Upgrade</span>
+          <Sparkles className="h-[20px] w-[20px]" strokeWidth={1.6} />
+          <span className="text-[8px] font-medium uppercase tracking-[0.04em]">Upgrade</span>
         </Link>
       )}
     </nav>
@@ -73,10 +73,10 @@ function BottomLink({
       )}
     >
       {active && (
-        <span className="absolute top-0 left-1/2 h-[2px] w-8 -translate-x-1/2 rounded-full bg-gradient-to-r from-iri-violet via-iri-magenta to-iri-blue shadow-[0_0_12px_rgba(168,139,250,0.8)]" />
+        <span className="absolute top-0 left-1/2 h-[2px] w-10 -translate-x-1/2 rounded-full bg-gradient-to-r from-iri-violet via-iri-magenta to-iri-blue shadow-[0_0_12px_rgba(168,139,250,0.8)]" />
       )}
-      <Icon className="h-[18px] w-[18px]" strokeWidth={active ? 2 : 1.6} />
-      <span className="text-[9px] font-medium uppercase tracking-[0.04em]">
+      <Icon className="h-[20px] w-[20px]" strokeWidth={active ? 2 : 1.6} />
+      <span className="text-[8px] font-medium uppercase tracking-[0.04em]">
         {label}
       </span>
     </Link>

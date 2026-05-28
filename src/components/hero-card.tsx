@@ -60,35 +60,35 @@ export function HeroCard({ stats }: { stats: DashboardStats }) {
 
       <div className="relative z-10 grid grid-cols-1 md:grid-cols-[1.2fr_1fr] items-center gap-5 md:gap-7">
         <div>
-          <div className="mb-6 flex items-center justify-between gap-3 flex-wrap">
-            <div className="inline-flex items-center gap-[7px] rounded-full border border-iri-violet/20 bg-iri-violet/[0.08] px-3 py-[5px]">
+          <div className="mb-4 md:mb-6 flex items-center justify-between gap-2 flex-wrap">
+            <div className="inline-flex items-center gap-[7px] rounded-full border border-iri-violet/20 bg-iri-violet/[0.08] px-2.5 py-[4px] md:px-3 md:py-[5px]">
               <span className="h-[6px] w-[6px] rounded-full bg-iri-violet animate-pulse-dot" />
-              <span className="eyebrow-accent text-[10px]">
+              <span className="eyebrow-accent text-[9px] md:text-[10px]">
                 Potere d&apos;acquisto · oggi
               </span>
             </div>
             <SafeModeSwitcher current={stats.safeMode} />
           </div>
           <div className="flex items-baseline gap-[2px] font-mono-tabular">
-            <span className="mt-3.5 self-start text-[22px] font-light text-ink-secondary">
+            <span className="mt-2.5 self-start text-[18px] md:mt-3.5 md:text-[22px] font-light text-ink-secondary">
               €
             </span>
-            <span className="hero-number-grad text-[96px] font-normal leading-[0.9] [letter-spacing:-0.055em]">
+            <span className="hero-number-grad text-[72px] md:text-[96px] font-normal leading-[0.9] [letter-spacing:-0.055em]">
               {eurosInt}
             </span>
-            <span className="ml-0.5 mt-[18px] self-start text-[32px] font-normal text-ink-primary/75 [letter-spacing:-0.02em]">
+            <span className="ml-0.5 mt-[14px] self-start text-[24px] md:mt-[18px] md:text-[32px] font-normal text-ink-primary/75 [letter-spacing:-0.02em]">
               ,{eurosDec}
             </span>
           </div>
 
-          <div className="mt-5 inline-flex items-center gap-2 rounded-full border border-iri-violet/20 bg-iri-violet/[0.06] px-3.5 py-[7px] transition-all duration-[350ms] hover:scale-[1.03] hover:border-iri-violet/40 [transition-timing-function:cubic-bezier(0.2,0.8,0.2,1)]">
+          <div className="mt-4 md:mt-5 inline-flex items-center gap-2 rounded-full border border-iri-violet/20 bg-iri-violet/[0.06] px-3.5 py-[7px] transition-all duration-[350ms] hover:scale-[1.03] hover:border-iri-violet/40 [transition-timing-function:cubic-bezier(0.2,0.8,0.2,1)]">
             <Clock className="h-3 w-3 text-iri-violet" />
             <span className="iri-text font-mono-tabular text-xs">
               ≡ {timeLabel} {timeSuffix}
             </span>
           </div>
 
-          <p className="mt-6 max-w-[340px] text-[13px] leading-[1.65] text-ink-secondary">
+          <p className="mt-5 md:mt-6 max-w-[340px] text-[13px] leading-[1.65] text-ink-secondary">
             {safeToSpendToday > 0 ? (
               <>
                 Stai rispettando la tua{" "}
@@ -100,7 +100,7 @@ export function HeroCard({ stats }: { stats: DashboardStats }) {
           </p>
         </div>
 
-        <div className="relative mx-auto h-[140px] w-[140px] md:h-[200px] md:w-[200px] flex-shrink-0">
+        <div className="relative mx-auto h-[120px] w-[120px] md:h-[200px] md:w-[200px] flex-shrink-0">
           <svg viewBox="0 0 200 200" className="absolute inset-0 w-full h-full">
             <defs>
               <linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
