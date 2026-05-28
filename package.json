@@ -8,6 +8,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.99.0",
     "@lemonsqueezy/lemonsqueezy.js": "^4.0.0",
     "@paddle/paddle-js": "^1.6.4",
     "@supabase/ssr": "^0.10.2",
