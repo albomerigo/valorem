@@ -129,6 +129,13 @@ function TransactionRow({
   const { int: eurosInt, dec: eurosDec } = splitCurrency(amount);
   const { Icon, color } = categoryMeta(tx.category, tx.type);
 
+  // Highlight per transazioni aggiunte negli ultimi 5 secondi
+  const isNew = (() => {
+    if (!(tx as { created_at?: string }).created_at) return false;
+    const createdAt = new Date((tx as { created_at?: string }).created_at!).getTime();
+    return Date.now() - createdAt < 5000;
+  })();
+
   const [swipeOffset, setSwipeOffset] = useState(0);
   const [isSwiped, setIsSwiped] = useState(false);
   const [isTouchDevice, setIsTouchDevice] = useState(false);
@@ -162,7 +169,7 @@ function TransactionRow({
   return (
     <div
       ref={rowRef}
-      className={`group relative overflow-hidden ${!isLast ? "border-b border-white/[0.04]" : ""} border-l-2 ${tx.type === "income" ? "border-l-emerald-400/40" : "border-l-red-400/20"}`}
+      className={`group relative overflow-hidden ${!isLast ? "border-b border-white/[0.04]" : ""} border-l-2 ${tx.type === "income" ? "border-l-emerald-400/40" : "border-l-red-400/20"} ${isNew ? "new-tx-highlight" : ""}`}
       onTouchStart={isTouchDevice ? (e) => {
         touchStartX.current = e.touches[0].clientX;
         touchStartY.current = e.touches[0].clientY;

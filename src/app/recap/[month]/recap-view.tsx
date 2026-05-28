@@ -332,32 +332,158 @@ function HeroRecap({ recap }: { recap: RecapData }) {
     });
   }
 
+  // Gradiente tematico in base al tipo di mese
+  const title = recap.narrativeTitle.toLowerCase();
+  const themeGrad = title.includes("costruttore")
+    ? "linear-gradient(135deg, rgba(168,139,250,0.35) 0%, rgba(96,165,250,0.25) 100%)"
+    : title.includes("svolta")
+    ? "linear-gradient(135deg, rgba(16,185,129,0.25) 0%, rgba(96,165,250,0.2) 100%)"
+    : title.includes("guardiano")
+    ? "linear-gradient(135deg, rgba(232,121,249,0.3) 0%, rgba(168,139,250,0.25) 100%)"
+    : "linear-gradient(135deg, rgba(168,139,250,0.28) 0%, rgba(232,121,249,0.22) 100%)";
+
+  const titleWords = recap.narrativeTitle.split(" ");
+
   return (
-    <div className="relative mt-6 mb-8 overflow-hidden rounded-[24px] animate-slide-up">
+    <div
+      className="relative mt-6 mb-6 overflow-hidden rounded-[28px] animate-slide-up"
+      style={{ background: themeGrad, border: "1px solid rgba(168,139,250,0.15)" }}
+    >
+      {/* Radial overlay */}
       <div
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "radial-gradient(ellipse 80% 50% at 50% 0%, rgba(168, 139, 250, 0.22), transparent 70%)",
+            "radial-gradient(ellipse 70% 60% at 50% 0%, rgba(255,255,255,0.06), transparent 70%)",
         }}
       />
-      <div className="relative z-10 py-14 text-center">
-        <p className="eyebrow-accent mb-4 text-[10px]">
+
+      <div className="relative z-10 px-6 py-14 text-center md:px-12">
+        {/* Eyebrow */}
+        <p className="eyebrow-accent mb-5 text-[10px]">
           Recap · {recap.monthYear}
         </p>
-        <h1 className="m-0 font-serif text-[40px] font-normal italic leading-[1.1] text-ink-primary md:text-[56px]">
-          {recap.narrativeTitle}
+
+        {/* Titolo con stagger per parola */}
+        <h1 className="m-0 font-serif font-normal italic leading-[1.08]">
+          {titleWords.map((word, i) => (
+            <span
+              key={i}
+              className="inline-block animate-slide-up"
+              style={{
+                animationDelay: `${i * 80}ms`,
+                animationFillMode: "both",
+                marginRight: i < titleWords.length - 1 ? "0.28em" : 0,
+                background:
+                  "linear-gradient(135deg, #F0EEFF 0%, #C4B5FD 50%, #E879F9 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+                fontSize: "clamp(40px, 6vw, 72px)",
+              }}
+            >
+              {word}
+            </span>
+          ))}
         </h1>
+
+        {/* Coach quote card */}
+        {recap.coachQuote && (
+          <div
+            className="mx-auto mt-8 max-w-[600px] rounded-[16px] px-6 py-4 text-left"
+            style={{
+              background: "rgba(0,0,0,0.2)",
+              borderLeft: "4px solid #A88BFA",
+              backdropFilter: "blur(8px)",
+            }}
+          >
+            <p className="m-0 font-serif italic text-[16px] md:text-[18px] leading-[1.7] text-ink-primary/90">
+              &ldquo;{recap.coachQuote}&rdquo;
+            </p>
+            <p className="m-0 mt-2 text-[11px] text-iri-pale/70 uppercase tracking-[0.12em]">
+              Dal tuo Coach
+            </p>
+          </div>
+        )}
+
+        {/* Share */}
         <div className="mt-6 flex justify-center">
           <button
             type="button"
             onClick={handleShare}
-            className="flex items-center gap-2 rounded-full border border-iri-violet/40 bg-iri-violet/[0.08] px-4 py-2 text-[12px] font-medium text-iri-pale transition-all duration-[200ms] hover:border-iri-violet/60 hover:bg-iri-violet/[0.15]"
+            className="flex items-center gap-2 rounded-full border border-iri-violet/40 bg-iri-violet/[0.12] px-4 py-2 text-[12px] font-medium text-iri-pale transition-all duration-[200ms] hover:border-iri-violet/60 hover:bg-iri-violet/[0.22]"
           >
             <Share2 className="h-3.5 w-3.5" strokeWidth={1.8} />
             {copied ? "Copiato! ✓" : "Condividi"}
           </button>
         </div>
+      </div>
+
+      {/* 4 stat cards — numeri del mese */}
+      <div
+        className="relative z-10 grid grid-cols-2 gap-3 px-6 pb-6 md:grid-cols-4"
+      >
+        {[
+          {
+            label: "Spese",
+            value: splitCurrency(recap.totalSpent).int,
+            dec: splitCurrency(recap.totalSpent).dec,
+            color: "#F87171",
+            bg: "rgba(248,113,113,0.08)",
+            border: "rgba(248,113,113,0.2)",
+            icon: <TrendingDown className="h-4 w-4" strokeWidth={1.8} />,
+          },
+          {
+            label: "Entrate",
+            value: splitCurrency(recap.totalIncome).int,
+            dec: splitCurrency(recap.totalIncome).dec,
+            color: "#10B981",
+            bg: "rgba(16,185,129,0.08)",
+            border: "rgba(16,185,129,0.2)",
+            icon: <TrendingUp className="h-4 w-4" strokeWidth={1.8} />,
+          },
+          {
+            label: "Impulsi salvati",
+            value: `${recap.savedImpulsesCount}`,
+            dec: "",
+            suffix: ` (${splitCurrency(recap.savedFromImpulses).int}€)`,
+            color: "#A88BFA",
+            bg: "rgba(168,139,250,0.08)",
+            border: "rgba(168,139,250,0.2)",
+            icon: <Ghost className="h-4 w-4" strokeWidth={1.8} />,
+          },
+          {
+            label: "Investito",
+            value: splitCurrency(recap.capitalInvested).int,
+            dec: splitCurrency(recap.capitalInvested).dec,
+            color: "#60A5FA",
+            bg: "rgba(96,165,250,0.08)",
+            border: "rgba(96,165,250,0.2)",
+            icon: <Trophy className="h-4 w-4" strokeWidth={1.8} />,
+          },
+        ].map((stat) => (
+          <div
+            key={stat.label}
+            className="rounded-[14px] px-4 py-3"
+            style={{
+              background: stat.bg,
+              border: `1px solid ${stat.border}`,
+            }}
+          >
+            <div className="mb-1.5 flex items-center gap-1.5" style={{ color: stat.color }}>
+              {stat.icon}
+              <p className="m-0 text-[9px] font-medium uppercase tracking-[0.12em]" style={{ color: stat.color }}>
+                {stat.label}
+              </p>
+            </div>
+            <p className="m-0 font-serif font-normal" style={{ color: stat.color }}>
+              <span className="text-[22px] [letter-spacing:-0.02em]">{stat.value}</span>
+              {stat.dec && <span className="text-[13px] opacity-60">,{stat.dec}</span>}
+              {!stat.dec && <span className="text-[12px] opacity-70 ml-1">{(stat as { suffix?: string }).suffix}</span>}
+              {stat.dec && <span className="ml-0.5 text-[11px] opacity-50">€</span>}
+            </p>
+          </div>
+        ))}
       </div>
     </div>
   );

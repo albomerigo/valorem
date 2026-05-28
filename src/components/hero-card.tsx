@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useEffect, useState } from "react";
 import { Clock } from "lucide-react";
 import type { DashboardStats } from "@/lib/finance";
 import { amountToTimeLabel, getTimeMetricSuffix } from "@/lib/finance";
@@ -28,6 +28,19 @@ export function HeroCard({ stats }: { stats: DashboardStats }) {
 
   const { safeToSpendToday, savingsPercent, monthLabel, timeMetric } = stats;
   const { int: eurosInt, dec: eurosDec } = useAnimatedCurrency(safeToSpendToday);
+
+  // Flash rosso quando il valore scende
+  const [flashDown, setFlashDown] = useState(false);
+  const prevSafe = useRef(safeToSpendToday);
+  useEffect(() => {
+    if (safeToSpendToday < prevSafe.current && prevSafe.current > 0) {
+      setFlashDown(true);
+      const t = setTimeout(() => setFlashDown(false), 500);
+      prevSafe.current = safeToSpendToday;
+      return () => clearTimeout(t);
+    }
+    prevSafe.current = safeToSpendToday;
+  }, [safeToSpendToday]);
   const timeLabel = amountToTimeLabel(safeToSpendToday, stats);
   const timeSuffix = getTimeMetricSuffix(timeMetric);
 
@@ -77,11 +90,17 @@ export function HeroCard({ stats }: { stats: DashboardStats }) {
             </div>
             <SafeModeSwitcher current={stats.safeMode} />
           </div>
-          <div className="flex items-baseline gap-[2px]">
+          <div
+            className="flex items-baseline gap-[2px] rounded-[12px] transition-all duration-[500ms]"
+            style={flashDown ? { background: "rgba(248,113,113,0.12)" } : undefined}
+          >
             <span className="mt-2.5 self-start text-[18px] md:mt-3.5 md:text-[22px] font-light text-ink-secondary">
               €
             </span>
-            <span className="hero-number-grad font-serif text-[80px] md:text-[112px] font-normal leading-[0.9] [letter-spacing:-0.07em]">
+            <span
+              className="hero-number-grad font-serif text-[80px] md:text-[112px] font-normal leading-[0.9] [letter-spacing:-0.07em] transition-all duration-[500ms]"
+              style={flashDown ? { filter: "drop-shadow(0 0 12px rgba(248,113,113,0.5))" } : undefined}
+            >
               {eurosInt}
             </span>
             <span className="ml-0.5 mt-[14px] self-start text-[24px] md:mt-[18px] md:text-[32px] font-normal text-ink-primary/75 [letter-spacing:-0.02em]">

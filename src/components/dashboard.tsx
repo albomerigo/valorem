@@ -336,6 +336,18 @@ function UpcomingFixedCosts({ fixedCosts }: { fixedCosts: FixedCost[] }) {
   );
 }
 
+function SectionEyebrow({ label }: { label: string }) {
+  return (
+    <div className="mb-3 flex items-center gap-3 px-1">
+      <p className="eyebrow text-[9px]">{label}</p>
+      <div
+        className="h-[1px] flex-1"
+        style={{ background: "linear-gradient(90deg, rgba(168,139,250,0.25), transparent)" }}
+      />
+    </div>
+  );
+}
+
 export function Dashboard({
   data,
   dailyData,
@@ -401,18 +413,47 @@ export function Dashboard({
               profileCreatedAt={(data.profile as unknown as { created_at?: string })?.created_at}
             />
             <PlanPill plan={plan} />
-            <HeroCard stats={data.stats} />
+
+            {/* ── HERO (nessun titolo — protagonista) ── */}
+            <div style={{ animationDelay: "0ms", animationFillMode: "both" }}
+              className="animate-slide-up">
+              <HeroCard stats={data.stats} />
+            </div>
+
             <UpgradeBanner plan={plan} />
-            <KPIRow stats={data.stats} />
-            <CoachBanner stats={data.stats} transactions={data.transactions} />
-            <SpendingChart data={dailyData} dailyBudgetBase={data.stats.dailyBudgetBase} />
+
+            {/* ── I TUOI NUMERI ── */}
+            <div style={{ animationDelay: "100ms", animationFillMode: "both" }}
+              className="animate-slide-up">
+              <SectionEyebrow label="I tuoi numeri" />
+              <KPIRow stats={data.stats} />
+            </div>
+
+            {/* ── COACH ── */}
+            <div style={{ animationDelay: "200ms", animationFillMode: "both" }}
+              className="animate-slide-up">
+              <CoachBanner stats={data.stats} transactions={data.transactions} />
+            </div>
+
+            {/* ── IL TUO RITMO ── */}
+            <div style={{ animationDelay: "300ms", animationFillMode: "both" }}
+              className="animate-slide-up">
+              <SectionEyebrow label="Il tuo ritmo" />
+              <SpendingChart data={dailyData} dailyBudgetBase={data.stats.dailyBudgetBase} />
+            </div>
+
             <UpcomingFixedCosts fixedCosts={data.fixedCosts} />
             <CoachStripe coachMessage={data.stats.coachMessage} stats={data.stats} />
-            <TransactionsList
-              transactions={data.transactions}
-              stats={data.stats}
-              onAddTransaction={openNewTransaction}
-            />
+
+            {/* ── MOVIMENTI RECENTI ── */}
+            <div style={{ animationDelay: "400ms", animationFillMode: "both" }}
+              className="animate-slide-up">
+              <TransactionsList
+                transactions={data.transactions}
+                stats={data.stats}
+                onAddTransaction={openNewTransaction}
+              />
+            </div>
           </div>
         </div>
       </div>

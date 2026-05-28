@@ -42,6 +42,103 @@ const slides: Slide[] = [
   },
 ];
 
+/** Widget interattivo per slide 2: converte euro in minuti di lavoro */
+function TimeValueWidget() {
+  const [euros, setEuros] = useState(12);
+  const HOURLY_RATE = 15; // €/ora hardcoded per la demo
+  const minutes = Math.round((euros / HOURLY_RATE) * 60);
+  const hours = Math.floor(minutes / 60);
+  const remainingMins = minutes % 60;
+
+  const timeLabel =
+    hours > 0
+      ? `${hours}h ${remainingMins}min`
+      : `${minutes} minuti`;
+
+  return (
+    <div
+      className="mt-8 w-full max-w-[380px] rounded-[20px] px-6 py-5"
+      style={{
+        background: "rgba(168,139,250,0.07)",
+        border: "1px solid rgba(168,139,250,0.2)",
+        backdropFilter: "blur(12px)",
+      }}
+    >
+      <p className="eyebrow mb-4 text-center text-[9px]">Prova tu stesso</p>
+
+      {/* Valore in euro */}
+      <div className="mb-4 text-center">
+        <span className="font-serif italic text-[48px] font-normal leading-none text-ink-primary [letter-spacing:-0.03em]">
+          {euros}
+        </span>
+        <span className="ml-1 text-[20px] text-ink-secondary">€</span>
+      </div>
+
+      {/* Slider */}
+      <input
+        type="range"
+        min={1}
+        max={100}
+        value={euros}
+        onChange={(e) => setEuros(Number(e.target.value))}
+        className="w-full"
+        style={{
+          accentColor: "#A88BFA",
+          height: 4,
+        }}
+      />
+      <div className="mt-1 flex justify-between text-[10px] text-ink-muted">
+        <span>1€</span>
+        <span>100€</span>
+      </div>
+
+      {/* Risultato */}
+      <div
+        className="mt-4 flex items-center justify-center gap-2 rounded-[12px] py-3"
+        style={{ background: "rgba(168,139,250,0.08)" }}
+      >
+        <Clock className="h-4 w-4 text-iri-pale" strokeWidth={1.6} />
+        <span className="font-serif italic text-[16px] text-iri-pale">
+          ≡ {timeLabel} del tuo lavoro
+        </span>
+      </div>
+    </div>
+  );
+}
+
+/** Card decorativa fluttuante */
+function FloatingCard({
+  label,
+  style,
+  delay,
+}: {
+  label: string;
+  style: React.CSSProperties;
+  delay: string;
+}) {
+  return (
+    <div
+      className="pointer-events-none absolute animate-float-y select-none"
+      style={{
+        ...style,
+        animationDelay: delay,
+        opacity: 0.55,
+        background: "rgba(168,139,250,0.07)",
+        border: "1px solid rgba(168,139,250,0.18)",
+        backdropFilter: "blur(10px)",
+        borderRadius: 14,
+        padding: "8px 14px",
+        fontSize: 12,
+        color: "rgba(255,255,255,0.7)",
+        whiteSpace: "nowrap",
+        zIndex: 0,
+      }}
+    >
+      {label}
+    </div>
+  );
+}
+
 /**
  * Onboarding narrativo — 3 slide empatiche prima del form tecnico.
  * Parametro `onComplete` viene chiamato quando l'utente finisce l'ultima slide.
@@ -71,10 +168,31 @@ export function OnboardingIntro({ onComplete }: { onComplete: () => void }) {
         }}
       />
 
+      {/* Card decorative fluttuanti — solo slide 1 */}
+      {slide.id === 1 && (
+        <>
+          <FloatingCard
+            label="€ 2,50 = 10 min"
+            style={{ left: "4%", top: "18%" }}
+            delay="0s"
+          />
+          <FloatingCard
+            label="👻 3 impulsi evitati"
+            style={{ right: "4%", top: "22%" }}
+            delay="0.6s"
+          />
+          <FloatingCard
+            label="📈 +12% risparmio"
+            style={{ right: "6%", bottom: "22%" }}
+            delay="1.2s"
+          />
+        </>
+      )}
+
       {/* Contenuto slide */}
       <div
         key={slide.id}
-        className="mx-auto flex max-w-[520px] flex-col items-center text-center animate-slide-up"
+        className="relative z-10 mx-auto flex max-w-[520px] flex-col items-center text-center animate-slide-up"
       >
         {/* Icona in alto */}
         <div className="mb-8 flex h-20 w-20 items-center justify-center rounded-[22px] border border-iri-violet/30 bg-iri-violet/[0.08]">
@@ -96,6 +214,9 @@ export function OnboardingIntro({ onComplete }: { onComplete: () => void }) {
         <p className="mt-6 max-w-[440px] text-[15px] md:text-[16px] leading-[1.65] text-ink-secondary">
           {slide.description}
         </p>
+
+        {/* Widget interattivo — solo slide 2 */}
+        {slide.id === 2 && <TimeValueWidget />}
 
         {/* Pulsante CTA */}
         <button
@@ -120,7 +241,7 @@ export function OnboardingIntro({ onComplete }: { onComplete: () => void }) {
       </div>
 
       {/* Indicator puntini in basso */}
-      <div className="mt-12 flex items-center gap-2">
+      <div className="relative z-10 mt-12 flex items-center gap-2">
         {slides.map((s, i) => (
           <button
             key={s.id}

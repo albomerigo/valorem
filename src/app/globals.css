@@ -347,6 +347,16 @@ html.dark .ambient-bg {
   }
 }
 
+/* New transaction highlight — fades out in 2s */
+@keyframes newTxHighlight {
+  0%   { background-color: rgba(168,139,250,0.18); transform: scale(1.015); }
+  40%  { background-color: rgba(168,139,250,0.10); transform: scale(1); }
+  100% { background-color: transparent; }
+}
+.new-tx-highlight {
+  animation: newTxHighlight 2s ease-out forwards;
+}
+
 .animate-gradient-shift { animation: gradientShift 10s ease-in-out infinite; }
 .animate-shimmer { animation: shimmer 5s linear infinite; }
 .animate-rotate-slow { animation: rotateSlow 22s linear infinite; }
