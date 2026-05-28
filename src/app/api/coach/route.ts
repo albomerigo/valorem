@@ -50,6 +50,16 @@ Il mese scorso aveva speso €${ctx.prevMonthSpent}.
 La differenza è ${Number(ctx.trendPercent) > 0 ? "+" : ""}${ctx.trendPercent}%.
 
 Commenta questo andamento in modo personale e motivante.`,
+
+  custom: (ctx) => `Sei Valorem Coach, un coach finanziario italiano empatico. Rispondi in italiano in 3-4 frasi max, tono caldo e personale.
+
+L'utente si chiama ${ctx.name}.
+Questo mese ha speso €${ctx.totalSpent} su un budget di €${ctx.monthlyFree}.
+Safe-to-Spend oggi: €${ctx.safeToSpend}.
+
+L'utente ti chiede: "${ctx.customQuestion}"
+
+Rispondi in modo specifico alla sua domanda usando i suoi dati reali.`,
 };
 
 export async function POST(req: NextRequest) {

@@ -25,6 +25,75 @@ import type { CustomCategory } from "@/app/settings/categories-actions";
 
 type DailyPoint = { date: string; amount: number; label: string };
 
+function WelcomeAnimation({ name }: { name: string }) {
+  const [phase, setPhase] = useState<"in" | "hold" | "out" | "done">("done");
+  const firstName = name ? name.split(" ")[0] : "";
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (localStorage.getItem("valorem_welcomed") === "1") return;
+    localStorage.setItem("valorem_welcomed", "1");
+    setPhase("in");
+    const t1 = setTimeout(() => setPhase("hold"), 500);
+    const t2 = setTimeout(() => setPhase("out"), 2000);
+    const t3 = setTimeout(() => setPhase("done"), 2500);
+    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
+  }, []);
+
+  if (phase === "done") return null;
+
+  const opacity =
+    phase === "in" ? 0 :
+    phase === "hold" ? 1 :
+    0;
+
+  return (
+    <div
+      aria-hidden="true"
+      style={{
+        position: "fixed",
+        inset: 0,
+        zIndex: 9999,
+        pointerEvents: "none",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "rgba(6,5,12,0.82)",
+        backdropFilter: "blur(6px)",
+        transition: "opacity 0.5s ease",
+        opacity,
+      }}
+    >
+      <h2
+        style={{
+          fontFamily: "var(--font-fraunces, serif)",
+          fontSize: "clamp(28px, 6vw, 48px)",
+          fontStyle: "italic",
+          fontWeight: 400,
+          color: "#E9E4FF",
+          margin: 0,
+          textAlign: "center",
+          lineHeight: 1.3,
+        }}
+      >
+        Benvenuto{firstName ? `, ${firstName}` : ""} 🎉
+      </h2>
+      <p
+        style={{
+          marginTop: "12px",
+          fontSize: "16px",
+          color: "rgba(200,190,240,0.7)",
+          letterSpacing: "0.03em",
+        }}
+      >
+        Valorem è pronto per te.
+      </p>
+    </div>
+  );
+}
+
+
 function CurrentMonthRecapLink() {
   const now = new Date();
   const slug = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
@@ -290,6 +359,7 @@ export function Dashboard({
 
   return (
     <div className="relative min-h-screen">
+      <WelcomeAnimation name={data.profile?.name || ""} />
       <div className="hidden md:block fixed left-0 top-0 z-20 h-screen w-[64px]">
         <Sidebar userName={data.profile?.name || ""} />
       </div>

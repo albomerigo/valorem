@@ -4,6 +4,7 @@ import { ThemeProvider } from "next-themes";
 import { SwRegister } from "@/components/sw-register";
 import { PageTransition } from "@/components/page-transition";
 import { TimeTheme } from "@/components/time-theme";
+import { PushNotification } from "@/components/push-notification";
 import "./globals.css";
 
 const inter = Inter({
@@ -69,6 +70,7 @@ export default function RootLayout({
           <SwRegister />
           <PageTransition />
           <TimeTheme />
+          <PushNotification />
           <div className="ambient-bg" />
           <div id="page-content">{children}</div>
         </ThemeProvider>

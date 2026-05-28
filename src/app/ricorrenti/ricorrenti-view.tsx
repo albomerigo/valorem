@@ -32,6 +32,8 @@ export function RicorrentiView({
   const recurringExpenses = recurring.filter((t) => t.type === "expense");
   const monthlyTotal = recurringExpenses.reduce((s, t) => s + Number(t.amount), 0);
   const { int, dec } = splitCurrency(monthlyTotal);
+  const yearlyTotal = monthlyTotal * 12;
+  const { int: yInt, dec: yDec } = splitCurrency(yearlyTotal);
 
   // Group by category
   const byCat: Record<string, Transaction[]> = {};
@@ -68,25 +70,53 @@ export function RicorrentiView({
             </p>
           </header>
 
-          {/* Monthly total hero */}
-          <div
-            className="mb-6 rounded-[20px] px-6 py-6"
-            style={{
-              background: "rgba(168,139,250,0.06)",
-              border: "1px solid rgba(168,139,250,0.2)",
-            }}
-          >
-            <p className="eyebrow mb-2">Totale mensile stimato</p>
-            <div className="flex items-baseline gap-1 font-mono-tabular">
-              <span className="text-[18px] text-ink-secondary">€</span>
-              <span className="text-[48px] font-medium leading-none text-ink-primary">
-                {int}
-              </span>
-              <span className="text-[24px] text-ink-primary/70">,{dec}</span>
+          {/* KPI cards: monthly + yearly */}
+          <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {/* Monthly total */}
+            <div
+              className="rounded-[20px] px-6 py-6"
+              style={{
+                background: "rgba(168,139,250,0.06)",
+                border: "1px solid rgba(168,139,250,0.2)",
+              }}
+            >
+              <p className="eyebrow mb-2">Totale mensile stimato</p>
+              <div className="flex items-baseline gap-1 font-mono-tabular">
+                <span className="text-[18px] text-ink-secondary">€</span>
+                <span className="text-[48px] font-medium leading-none text-ink-primary">
+                  {int}
+                </span>
+                <span className="text-[24px] text-ink-primary/70">,{dec}</span>
+              </div>
+              <p className="mt-2 text-[12px] text-ink-muted">
+                {recurringExpenses.length} spese ricorrenti · solo uscite
+              </p>
             </div>
-            <p className="mt-2 text-[12px] text-ink-muted">
-              {recurringExpenses.length} spese ricorrenti · solo uscite
-            </p>
+
+            {/* Yearly total */}
+            <div
+              className="rounded-[20px] px-6 py-6"
+              style={{
+                background: "rgba(245,158,11,0.06)",
+                border: "1px solid rgba(245,158,11,0.2)",
+              }}
+            >
+              <p className="eyebrow mb-2" style={{ color: "rgba(251,191,36,0.7)" }}>
+                Totale annuale stimato
+              </p>
+              <div className="flex items-baseline gap-1 font-mono-tabular">
+                <span className="text-[18px] text-ink-secondary">€</span>
+                <span className="text-[48px] font-medium leading-none" style={{ color: "#FCD34D" }}>
+                  {yInt}
+                </span>
+                <span className="text-[24px]" style={{ color: "rgba(252,211,77,0.7)" }}>
+                  ,{yDec}
+                </span>
+              </div>
+              <p className="mt-2 text-[12px] text-ink-muted">
+                Basato sulle transazioni ricorrenti degli ultimi 3 mesi
+              </p>
+            </div>
           </div>
 
           {/* Groups */}

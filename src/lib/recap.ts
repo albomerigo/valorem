@@ -286,6 +286,18 @@ function buildNarrative(ctx: {
             narrativeTitle: `${M} — il mese del visionario`,
             coachQuote: `Chi investe pensa al domani mentre vive oggi. Questo mese hai fatto esattamente questo: ${capitalInvested.toFixed(0)}€ che cambieranno forma e torneranno moltiplicati. La visione precede sempre il risultato.`,
           },
+          {
+            narrativeTitle: `${M} — il mese della semina`,
+            coachQuote: `Quello che hai fatto questo mese — ${capitalInvested.toFixed(0)}€ in ${capitalInvestedCount} movimenti — è la versione finanziaria di piantare alberi la cui ombra non vedrai subito. Ma l'ombra arriva, sempre, per chi ha la pazienza di aspettare.`,
+          },
+          {
+            narrativeTitle: `${M} — il mese del costruttore`,
+            coachQuote: `Quello che stai costruendo con ogni versamento non è solo un saldo — è un'abitudine mentale. ${capitalInvested.toFixed(0)}€ investiti questo mese significano che il tuo futuro self riceverà dividendi non solo di denaro, ma di autodisciplina.`,
+          },
+          {
+            narrativeTitle: `${M} — il mese del marinaio`,
+            coachQuote: `Come un marinaio che naviga con le stelle, hai orientato ${capitalInvested.toFixed(0)}€ verso una direzione precisa. La rotta non si vede dal porto — si vede solo quando sei in mare aperto e sai dove stai andando.`,
+          },
         ]);
       }
       return pick([
@@ -300,6 +312,14 @@ function buildNarrative(ctx: {
         {
           narrativeTitle: `${M} — il mese del visionario`,
           coachQuote: `Hai scelto di mettere ${capitalInvested.toFixed(0)}€ al lavoro questo mese. È una scelta di mentalità prima che di numeri. Chi comincia a pensare al futuro oggi, lo vive meglio domani.`,
+        },
+        {
+          narrativeTitle: `${M} — il mese dell'inizio`,
+          coachQuote: `Quello che hai fatto questo mese — anche solo ${capitalInvested.toFixed(0)}€ investiti — segna un confine: prima e dopo. Le grandi fortune non nascono da grandi somme, nascono dalla prima volta che qualcuno decide di iniziare.`,
+        },
+        {
+          narrativeTitle: `${M} — il mese della freccia`,
+          coachQuote: `Quello che stai costruendo è ancora invisibile, ma la freccia è già scoccata. ${capitalInvested.toFixed(0)}€ in volo verso il futuro. La traiettoria inizia qui, con questa scelta, questo mese.`,
         },
       ]);
 
@@ -317,6 +337,18 @@ function buildNarrative(ctx: {
           narrativeTitle: `${M} — il mese della Volontà`,
           coachQuote: `La volontà non è assenza di desiderio — è scegliere quale desiderio serve davvero. Questo mese hai scelto ${savedImpulsesCount} volte, lasciando ${savedFromImpulses.toFixed(0)}€ al tuo futuro invece che all'impulso del momento. Questo è autocontrollo concreto.`,
         },
+        {
+          narrativeTitle: `${M} — il mese del filtro`,
+          coachQuote: `Quello che hai fatto questo mese è stato filtrare. ${savedImpulsesCount} volte hai visto qualcosa che volevi e hai scelto di non farlo tuo. ${savedFromImpulses.toFixed(0)}€ che esistono ancora nel tuo conto — disponibili per qualcosa che conta davvero.`,
+        },
+        {
+          narrativeTitle: `${M} — il mese del comandante`,
+          coachQuote: `Quello che stai costruendo con ogni "no" è un muscolo mentale. ${savedImpulsesCount} ripetizioni questo mese. Il prossimo mese sarà più facile, quello dopo ancora di più. La disciplina cresce come un investimento composto.`,
+        },
+        {
+          narrativeTitle: `${M} — il mese dello scultore`,
+          coachQuote: `Lo scultore toglie marmo per rivelare la statua. Questo mese hai tolto ${savedImpulsesCount} impulsi per rivelare una versione più solida di te. ${savedFromImpulses.toFixed(0)}€ non spesi non sono mancanza — sono scultura.`,
+        },
       ]);
 
     case "trend_pos":
@@ -333,6 +365,18 @@ function buildNarrative(ctx: {
           narrativeTitle: `${M} — il mese della disciplina`,
           coachQuote: `Un calo del ${Math.abs(trendVsPrevMonth!)}% rispetto al mese scorso non nasce dal nulla. Nasce da piccole decisioni quotidiane che si sommano. La disciplina non si sente mentre la eserciti — si vede solo quando guardi indietro, come stai facendo adesso.`,
         },
+        {
+          narrativeTitle: `${M} — il mese del taglio`,
+          coachQuote: `Quello che hai fatto questo mese — ridurre del ${Math.abs(trendVsPrevMonth!)}% — è come liberare zavorra da una mongolfiera. Sali più in alto non perché hai aggiunto potere, ma perché hai tolto peso. Leggero è libero.`,
+        },
+        {
+          narrativeTitle: `${M} — il mese del margine`,
+          coachQuote: `${Math.abs(trendVsPrevMonth!)}% in meno: quello che stai costruendo è margine. Il margine non si vede finché non ti serve — ma quando arrivi a un momento imprevisto, è quello che ti permette di non vacillare. Stai costruendo resilienza, non solo risparmio.`,
+        },
+        {
+          narrativeTitle: `${M} — il mese della marea`,
+          coachQuote: `Come una marea che si ritira e rivela la riva, questo mese il ${Math.abs(trendVsPrevMonth!)}% di spese in meno ha rivelato qualcosa di tuo: la capacità di scegliere diversamente. Quella riva era già lì — ci voleva solo la marea giusta.`,
+        },
       ]);
 
     case "trend_neg":
@@ -348,6 +392,18 @@ function buildNarrative(ctx: {
         {
           narrativeTitle: `${M} — un mese vissuto in pieno`,
           coachQuote: `+${trendVsPrevMonth}% rispetto al mese scorso. I mesi più spesi sono spesso i più vissuti. La domanda da porti non è "ho speso troppo?" ma "ne valeva la pena?". Solo tu puoi rispondere — e la risposta cambia tutto.`,
+        },
+        {
+          narrativeTitle: `${M} — il mese del picco`,
+          coachQuote: `Quello che hai fatto questo mese — spendere il ${trendVsPrevMonth}% in più — racconta qualcosa. Forse un'occasione imperdibile, forse un momento di vita intenso. I picchi non sono sempre errori. A volte sono ricordi che valgono ogni centesimo.`,
+        },
+        {
+          narrativeTitle: `${M} — il mese della consapevolezza`,
+          coachQuote: `+${trendVsPrevMonth}% rispetto al mese scorso. Quello che stai costruendo guardando questi dati è qualcosa di più prezioso del risparmio: la consapevolezza. Sapere di aver speso di più è già metà del lavoro per decidere cosa fare il prossimo mese.`,
+        },
+        {
+          narrativeTitle: `${M} — il mese dell'onda`,
+          coachQuote: `Come un'onda che si alza prima di rompersi sulla riva, questo mese le spese hanno avuto un picco del ${trendVsPrevMonth}%. Le onde si gestiscono, non si combattono. L'importante è avere la tavola giusta — e tu ce l'hai.`,
         },
       ]);
 
@@ -366,6 +422,18 @@ function buildNarrative(ctx: {
             narrativeTitle: `${M} — il mese della solidità`,
             coachQuote: `Un bilancio positivo di ${netValue.toFixed(0)}€ non è fortuna — è la somma di scelte quotidiane che si sono accumulate. La solidità finanziaria si costruisce esattamente così: un mese alla volta, una scelta alla volta.`,
           },
+          {
+            narrativeTitle: `${M} — il mese della riserva`,
+            coachQuote: `Quello che hai fatto questo mese — chiudere con ${netValue.toFixed(0)}€ di surplus — è come riempire una riserva d'acqua prima della siccità. Non sai quando ne avrai bisogno, ma sapere che c'è cambia il modo in cui cammini nel mondo.`,
+          },
+          {
+            narrativeTitle: `${M} — il mese del distillato`,
+            coachQuote: `Quello che stai costruendo con ogni mese positivo è un distillato di scelte giuste. ${netValue.toFixed(0)}€ di differenza tra entrate e uscite: numeri piccoli su scala mensile, enormi su scala di anni. La compound economy inizia esattamente qui.`,
+          },
+          {
+            narrativeTitle: `${M} — il mese del faro`,
+            coachQuote: `Come un faro che rimane acceso nella tempesta, un bilancio positivo di ${netValue.toFixed(0)}€ dice che sei stabile. Non importa cosa succede intorno — le tue fondamenta tengono. Questo mese lo dimostra.`,
+          },
         ]);
       }
       return pick([
@@ -380,6 +448,14 @@ function buildNarrative(ctx: {
         {
           narrativeTitle: `${M} — il mese della costanza`,
           coachQuote: `Entrate maggiori delle uscite — semplice eppure potente. La costanza nel mantenere il bilancio positivo è più preziosa di un colpo di fortuna. Stai dimostrando di poterlo fare sistematicamente.`,
+        },
+        {
+          narrativeTitle: `${M} — il mese del telaio`,
+          coachQuote: `Quello che hai fatto questo mese è tessere un filo verde nel tessuto del tuo futuro. Piccolo, forse, ma reale. Ogni mese positivo è un filo — il telaio si riempie lentamente, finché un giorno guardi indietro e vedi un arazzo.`,
+        },
+        {
+          narrativeTitle: `${M} — il mese del germe`,
+          coachQuote: `Quello che stai costruendo con ogni mese in positivo, anche di poco, è un germe di libertà. La libertà finanziaria non arriva dall'esterno — cresce dall'interno di mesi come questo, silenziosi e costanti.`,
         },
       ]);
 
@@ -396,6 +472,18 @@ function buildNarrative(ctx: {
         {
           narrativeTitle: `${M} — ${topCategory!.name} come priorità`,
           coachQuote: `Quando una categoria assorbe il ${topCategory!.percent}% delle spese, non è caso: è un messaggio. ${topCategory!.name} ha parlato forte questo mese. Nel prossimo hai una nuova occasione di scegliere se confermarlo o ribilanciare.`,
+        },
+        {
+          narrativeTitle: `${M} — la voce di ${topCategory!.name}`,
+          coachQuote: `Quello che hai fatto questo mese parla chiaro: ${topCategory!.percent}% delle uscite in ${topCategory!.name}. Non c'è niente di sbagliato in una priorità forte — l'importante è che sia una scelta, non un'abitudine automatica mai messa in discussione.`,
+        },
+        {
+          narrativeTitle: `${M} — il peso di ${topCategory!.name}`,
+          coachQuote: `Quello che stai costruendo, mese dopo mese, è una mappa di te stesso. Questo mese la mappa dice: ${topCategory!.name}, ${topCategory!.percent}%. La prossima volta che apri questa pagina, vedrai se la mappa è cambiata — o se racconta la stessa storia.`,
+        },
+        {
+          narrativeTitle: `${M} — il centro di gravità`,
+          coachQuote: `Come un pianeta che attrae tutto ciò che gli orbita intorno, ${topCategory!.name} è stato il tuo centro di gravità questo mese: ${topCategory!.percent}% del totale. I centri di gravità non sono buoni o cattivi — ma è utile sapere dove sono.`,
         },
       ]);
 
@@ -416,6 +504,18 @@ function buildNarrative(ctx: {
         {
           narrativeTitle: `${M} — un mese di consapevolezza`,
           coachQuote: `Hai tracciato le tue spese, hai guardato i numeri, sei qui. Questo atto di consapevolezza, ripetuto mese dopo mese, è più potente di qualsiasi trucco finanziario. Il dato che hai davanti vale più di qualsiasi consiglio generico.`,
+        },
+        {
+          narrativeTitle: `${M} — il mese del mattone`,
+          coachQuote: `Quello che hai fatto questo mese — semplicemente esserci, tenere traccia, guardare i dati — è un mattone. Un mattone non fa un muro, ma senza mattoni non esiste nessun muro. Questo è il tuo mattone di ${M}.`,
+        },
+        {
+          narrativeTitle: `${M} — il mese del battito`,
+          coachQuote: `Quello che stai costruendo assomiglia a un battito cardiaco: non clamoroso, non drammatico, ma costante. Ed è proprio la costanza che tiene tutto in vita. Questo mese ha battuto. È abbastanza.`,
+        },
+        {
+          narrativeTitle: `${M} — il mese del testimone`,
+          coachQuote: `Essere il testimone della propria vita finanziaria — guardare i numeri senza giudizio, registrare, osservare — è un atto di cura verso te stesso. Questo mese l'hai fatto. Ogni mese che lo fai, diventi un po' più libero.`,
         },
       ]);
   }
