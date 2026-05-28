@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { fetchUserProfile } from "@/lib/finance";
+import { fetchUserProfile, getMonthlyFreeBudget } from "@/lib/finance";
+import { calculateValoremScore } from "@/lib/score";
 import { ProfiloView } from "./profilo-view";
 
 export default async function ProfiloPage() {
@@ -20,7 +21,7 @@ export default async function ProfiloPage() {
   threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
   const threeMonthsAgoStr = threeMonthsAgo.toISOString().split("T")[0];
 
-  const [txResult, declinedResult, catTxResult] = await Promise.all([
+  const [txResult, declinedResult, catTxResult, fixedCostsResult, goalsResult] = await Promise.all([
     supabase
       .from("transactions")
       .select("id, transaction_date, amount, type"),
@@ -32,10 +33,18 @@ export default async function ProfiloPage() {
       .select("category, amount, type")
       .eq("type", "expense")
       .gte("transaction_date", threeMonthsAgoStr),
+    supabase
+      .from("fixed_costs")
+      .select("id, name, amount"),
+    supabase
+      .from("goals")
+      .select("id, target_amount, current_amount"),
   ]);
 
   const transactions = txResult.data || [];
   const totalTransactions = transactions.length;
+  const fixedCosts = (fixedCostsResult.data || []) as { id: string; name: string; amount: number }[];
+  const goals = (goalsResult.data || []) as { id: string; target_amount: number; current_amount: number }[];
 
   // Category distribution (last 3 months, expenses only)
   const catTransactions = catTxResult.data || [];
@@ -71,6 +80,35 @@ export default async function ProfiloPage() {
   const activeMonths = monthSet.size;
   const totalImpulsiResistiti = declinedResult.count ?? 0;
 
+  // Valorem Score
+  const scoreNow = new Date();
+  const monthlyFree = getMonthlyFreeBudget(
+    profile,
+    fixedCosts.map((fc) => ({ ...fc, user_id: profile.id ?? "" }))
+  );
+  const currentMonthKey = `${scoreNow.getFullYear()}-${String(scoreNow.getMonth() + 1).padStart(2, "0")}`;
+  const currentMonthExpenses = transactions
+    .filter((t) => t.type === "expense" && t.transaction_date.startsWith(currentMonthKey))
+    .reduce((s, t) => s + Number(t.amount), 0);
+  const savingsGoal = Number(profile.savings_goal ?? 0);
+  const savingsPct =
+    monthlyFree > 0 && savingsGoal > 0
+      ? Math.min(100, Math.round((savingsGoal / monthlyFree) * 100))
+      : 0;
+  const goalsOnTrack = goals.filter(
+    (g) => Number(g.current_amount) >= Number(g.target_amount)
+  ).length;
+  const valoremScore = calculateValoremScore({
+    savingsPercent: savingsPct,
+    trendVsLastMonth: 0,
+    impulsiResistiti: totalImpulsiResistiti,
+    totalSpent: currentMonthExpenses,
+    monthlyFree,
+    goalsOnTrack,
+    totalGoals: goals.length,
+    transactionCount: totalTransactions,
+  });
+
   // Sparkline: last 6 months of expense spending
   const now = new Date();
   const monthlySpending: { month: string; label: string; amount: number }[] = [];
@@ -103,6 +141,7 @@ export default async function ProfiloPage() {
       }}
       monthlySpending={monthlySpending}
       topCategory={topCategory}
+      valoremScore={valoremScore}
     />
   );
 }

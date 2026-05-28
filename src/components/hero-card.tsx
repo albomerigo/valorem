@@ -9,7 +9,13 @@ import { splitCurrency } from "@/lib/utils";
 import { useAnimatedCurrency } from "./animated-number";
 import { HelpTooltip } from "./help-tooltip";
 
-export function HeroCard({ stats }: { stats: DashboardStats }) {
+export function HeroCard({
+  stats,
+  valoremScore,
+}: {
+  stats: DashboardStats;
+  valoremScore?: { score: number; label: string; color: string };
+}) {
   const cardRef = useRef<HTMLDivElement>(null);
 
   function handleMouseMove(e: React.MouseEvent<HTMLDivElement>) {
@@ -78,6 +84,28 @@ export function HeroCard({ stats }: { stats: DashboardStats }) {
       />
       <AuraLayers />
       <Stars />
+
+      {/* Valorem Score pill */}
+      {valoremScore && (
+        <div
+          className="absolute bottom-4 right-4 z-20 hidden md:flex flex-col items-center rounded-[14px] px-[14px] py-2 transition-all duration-300 hover:scale-105 cursor-default"
+          style={{
+            background: `rgba(${hexToRgb(valoremScore.color)}, 0.1)`,
+            border: `1px solid rgba(${hexToRgb(valoremScore.color)}, 0.3)`,
+          }}
+          title="Il tuo Valorem Score — misura la tua salute finanziaria mensile"
+        >
+          <span
+            className="font-serif text-[28px] font-normal leading-none [letter-spacing:-0.04em]"
+            style={{ color: valoremScore.color }}
+          >
+            {valoremScore.score}
+          </span>
+          <span className="mt-0.5 text-[9px] font-medium uppercase tracking-[0.12em] text-ink-secondary">
+            {valoremScore.label}
+          </span>
+        </div>
+      )}
 
       <div className="relative z-10 grid grid-cols-1 md:grid-cols-[1.2fr_1fr] items-center gap-5 md:gap-7">
         <div>
@@ -187,6 +215,13 @@ export function HeroCard({ stats }: { stats: DashboardStats }) {
       </div>
     </div>
   );
+}
+
+function hexToRgb(hex: string): string {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `${r}, ${g}, ${b}`;
 }
 
 function AuraLayers() {

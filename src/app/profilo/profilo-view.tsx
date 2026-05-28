@@ -35,6 +35,7 @@ export function ProfiloView({
   stats,
   monthlySpending,
   topCategory,
+  valoremScore,
 }: {
   profile: UserProfile;
   email: string;
@@ -47,6 +48,12 @@ export function ProfiloView({
   };
   monthlySpending: { month: string; label: string; amount: number }[];
   topCategory?: TopCategory;
+  valoremScore?: {
+    score: number;
+    label: string;
+    color: string;
+    breakdown: Record<string, number>;
+  };
 }) {
   const initials = (profile.name || email || "V")
     .split(" ")
@@ -222,6 +229,91 @@ export function ProfiloView({
                   value={String(stats.totalImpulsiResistiti)}
                 />
               </div>
+
+              {/* Valorem Score */}
+              {valoremScore && (
+                <div className="glass-panel rounded-[20px] px-5 py-5">
+                  <p className="eyebrow mb-4">Valorem Score</p>
+                  <div className="flex items-center gap-6">
+                    {/* Ring */}
+                    <div className="relative h-[100px] w-[100px] flex-shrink-0">
+                      <svg viewBox="0 0 100 100" className="absolute inset-0 w-full h-full">
+                        <defs>
+                          <linearGradient id="scoreRingGrad" x1="0" y1="0" x2="1" y2="1">
+                            <stop offset="0%" stopColor="#A88BFA" />
+                            <stop offset="100%" stopColor="#E879F9" />
+                          </linearGradient>
+                          <filter id="scoreRingGlow">
+                            <feGaussianBlur stdDeviation="2.5" result="blur" />
+                            <feMerge>
+                              <feMergeNode in="blur" />
+                              <feMergeNode in="SourceGraphic" />
+                            </feMerge>
+                          </filter>
+                        </defs>
+                        <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(168,139,250,0.08)" strokeWidth="5" />
+                        <circle
+                          cx="50" cy="50" r="40" fill="none"
+                          stroke={valoremScore.color}
+                          strokeWidth="4"
+                          strokeLinecap="round"
+                          strokeDasharray={2 * Math.PI * 40}
+                          strokeDashoffset={2 * Math.PI * 40 * (1 - valoremScore.score / 100)}
+                          transform="rotate(-90 50 50)"
+                          filter="url(#scoreRingGlow)"
+                          style={{ transition: "stroke-dashoffset 1s ease" }}
+                        />
+                      </svg>
+                      <div className="absolute inset-0 flex flex-col items-center justify-center">
+                        <span
+                          className="font-serif text-[28px] font-normal leading-none [letter-spacing:-0.04em]"
+                          style={{ color: valoremScore.color }}
+                        >
+                          {valoremScore.score}
+                        </span>
+                        <span className="text-[9px] uppercase tracking-[0.1em] text-ink-muted mt-0.5">
+                          {valoremScore.label}
+                        </span>
+                      </div>
+                    </div>
+                    {/* Breakdown bars */}
+                    <div className="flex flex-1 flex-col gap-2">
+                      {(
+                        [
+                          { key: "risparmio", label: "Risparmio", max: 30 },
+                          { key: "budget", label: "Budget", max: 25 },
+                          { key: "trend", label: "Trend", max: 20 },
+                          { key: "impulsi", label: "Disciplina", max: 15 },
+                          { key: "obiettivi", label: "Obiettivi", max: 10 },
+                        ] as const
+                      ).map(({ key, label, max }) => {
+                        const val = valoremScore.breakdown[key] ?? 0;
+                        const pct = Math.round((val / max) * 100);
+                        return (
+                          <div key={key}>
+                            <div className="mb-1 flex items-center justify-between gap-2">
+                              <span className="text-[10px] text-ink-muted">{label}</span>
+                              <span className="font-mono-tabular text-[10px] text-ink-secondary">
+                                {val}/{max}
+                              </span>
+                            </div>
+                            <div className="relative h-[4px] overflow-hidden rounded-full bg-white/[0.05]">
+                              <div
+                                className="absolute inset-y-0 left-0 rounded-full transition-all duration-700"
+                                style={{
+                                  width: `${pct}%`,
+                                  background: valoremScore.color,
+                                  opacity: 0.75,
+                                }}
+                              />
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Coach sentence */}
               <div className="glass-panel rounded-[16px] px-5 py-4">

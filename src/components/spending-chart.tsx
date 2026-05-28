@@ -39,6 +39,8 @@ export function SpendingChart({
   const offsetRef = useRef(0);
   const hoverIdxRef = useRef<number | null>(null);
   const rafRef = useRef<number>(0);
+  const startTimeRef = useRef<number | null>(null);
+  const entranceProgressRef = useRef(0);
   const [hoverInfo, setHoverInfo] = useState<{
     label: string; amount: number; x: number; y: number;
   } | null>(null);
@@ -68,6 +70,17 @@ export function SpendingChart({
     canvas.height = H * devicePixelRatio;
     const ctx = canvas.getContext("2d")!;
     ctx.scale(devicePixelRatio, devicePixelRatio);
+
+    // Clip rect entrance animation
+    const ep = entranceProgressRef.current;
+    if (ep < 1) {
+      // ease-out cubic
+      const eased = 1 - Math.pow(1 - ep, 3);
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(0, 0, W * eased, H);
+      ctx.clip();
+    }
 
     const isMobile = W < 500;
     const PAD = isMobile
@@ -178,11 +191,22 @@ export function SpendingChart({
       ctx.fillStyle = `rgb(${r},${g},${b})`;
       ctx.fill();
     }
+
+    // Restore clip if entrance animation active
+    if (ep < 1) {
+      ctx.restore();
+    }
   }, [data, dailyBudgetBase, avgDaily]);
 
   useEffect(() => {
     if (data.length === 0) return;
-    const loop = () => {
+    startTimeRef.current = null;
+    entranceProgressRef.current = 0;
+    const DURATION = 1200;
+    const loop = (timestamp: number) => {
+      if (startTimeRef.current === null) startTimeRef.current = timestamp;
+      const elapsed = timestamp - startTimeRef.current;
+      entranceProgressRef.current = Math.min(1, elapsed / DURATION);
       offsetRef.current = (offsetRef.current + 0.007) % 1;
       draw();
       rafRef.current = requestAnimationFrame(loop);

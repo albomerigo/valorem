@@ -5,6 +5,8 @@ import { SwRegister } from "@/components/sw-register";
 import { PageTransition } from "@/components/page-transition";
 import { TimeTheme } from "@/components/time-theme";
 import { PushNotification } from "@/components/push-notification";
+import { SplashScreen } from "@/components/splash-screen";
+import { CustomCursor } from "@/components/custom-cursor";
 import "./globals.css";
 
 const inter = Inter({
@@ -71,6 +73,8 @@ export default function RootLayout({
           <PageTransition />
           <TimeTheme />
           <PushNotification />
+          <SplashScreen />
+          <CustomCursor />
           <div className="ambient-bg" />
           <div id="page-content">{children}</div>
         </ThemeProvider>
