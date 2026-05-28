@@ -231,7 +231,12 @@ export function CoachView({
   const [mounted, setMounted] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const MAX_CHARS = 150;
+  const MAX_CHARS = 350;
+  const MAX_TOKENS = 100;
+  const estimatedTokens = Math.ceil(customInput.length / 3.5);
+  const tokenOverAmber = estimatedTokens > 80;
+  const tokenOverRed = estimatedTokens > 95;
+  const tokenOverLimit = estimatedTokens > MAX_TOKENS;
   const isPro = plan === "pro";
 
   const { displayed: typewriterText } = useTypewriter(response);
@@ -322,7 +327,7 @@ export function CoachView({
 
   async function handleCustomSend() {
     const q = customInput.trim();
-    if (!q || !isPro) return;
+    if (!q || !isPro || tokenOverLimit) return;
     await fetchCoach("custom", null, q);
     setCustomInput("");
   }
@@ -348,7 +353,7 @@ export function CoachView({
     });
   }
 
-  const charCount = customInput.length;
+
 
   // History = all messages except current exchange
   const prevMessages = response ? messages.slice(0, -2) : messages;
@@ -358,7 +363,7 @@ export function CoachView({
   const activeBorderColor = activeCard?.iconColor ?? "#A88BFA";
 
   return (
-    <div className="relative min-h-screen">
+    <div className="relative h-screen overflow-hidden">
       {/* ── ANIMATED BACKGROUND ── */}
       <div
         aria-hidden="true"
@@ -410,26 +415,25 @@ export function CoachView({
         <Sidebar activeRoute="coach" userName={profile.name || ""} />
       </div>
 
-      <div className="relative z-10 md:ml-[64px] min-h-screen pb-36 md:pb-0">
-        <div className="mx-auto max-w-[1400px] px-4 py-5 md:px-6 md:py-6">
+      {/* ── FULL HEIGHT CONTAINER ── */}
+      <div className="relative z-10 md:ml-[64px] h-screen flex flex-col">
+        {/* Topbar row */}
+        <div className="flex-shrink-0 px-4 pt-5 md:px-6 md:pt-6">
           <Topbar userName={profile.name || "ospite"} section="AI Coach" showBack />
+        </div>
 
-          {/* ── TWO-COLUMN GRID ── */}
-          <div
-            className="mt-5 grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-0 min-h-[calc(100vh-120px)]"
-            style={{ alignItems: "start" }}
-          >
+        {/* ── TWO-COLUMN GRID — fills remaining height ── */}
+        <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] flex-1 overflow-hidden">
             {/* ════════════════════════════════════
                 LEFT PANEL — Coach Identity + Prompts
                 ════════════════════════════════════ */}
             <aside
-              className="lg:sticky lg:top-6 overflow-y-auto"
+              className="overflow-y-auto hidden lg:block"
               style={{
                 background: "rgba(168,139,250,0.03)",
                 borderRight: "1px solid rgba(168,139,250,0.08)",
-                borderRadius: "20px 0 0 20px",
+                height: "100%",
                 padding: "28px 20px",
-                maxHeight: "calc(100vh - 100px)",
                 opacity: mounted ? 1 : 0,
                 transform: mounted ? "translateX(0)" : "translateX(-20px)",
                 transition: "opacity 400ms ease, transform 400ms ease",
@@ -544,67 +548,23 @@ export function CoachView({
                 style={{ height: 1, background: "rgba(168,139,250,0.1)" }}
               />
 
-              {/* Free-text input */}
-              <div className="relative">
-                <p
-                  className="mb-2 text-[9px] uppercase tracking-[0.12em]"
-                  style={{ color: "rgba(255,255,255,0.3)" }}
-                >
-                  Oppure scrivi tu
-                </p>
-                <div className="relative">
-                  <input
-                    type="text"
-                    value={customInput}
-                    onChange={(e) => setCustomInput(e.target.value.slice(0, MAX_CHARS))}
-                    onKeyDown={(e) => { if (e.key === "Enter") handleCustomSend(); }}
-                    onFocus={() => setInputFocused(true)}
-                    onBlur={() => setInputFocused(false)}
-                    placeholder="Fai una domanda..."
-                    disabled={loading || !isPro}
-                    maxLength={MAX_CHARS}
-                    className="w-full bg-transparent pr-8 py-2 text-[13px] text-ink-primary placeholder:text-ink-muted outline-none"
-                    style={{
-                      borderBottom: inputFocused
-                        ? "1px solid rgba(168,139,250,0.8)"
-                        : "1px solid rgba(168,139,250,0.3)",
-                      transition: "border-color 200ms ease",
-                    }}
-                  />
-                  {customInput.trim() && (
-                    <button
-                      type="button"
-                      onClick={handleCustomSend}
-                      disabled={loading || !isPro}
-                      className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center justify-center transition-opacity hover:opacity-70 disabled:opacity-30"
-                    >
-                      <ArrowRight
-                        className="h-4 w-4"
-                        style={{ color: "#A88BFA" }}
-                        strokeWidth={2}
-                      />
-                    </button>
-                  )}
-                </div>
-                <div className="mt-1 flex justify-end">
-                  <span
-                    className="text-[10px] font-mono-tabular"
-                    style={{
-                      color: charCount > 120 ? "#FCA5A5" : "rgba(255,255,255,0.2)",
-                    }}
-                  >
-                    {charCount}/{MAX_CHARS}
-                  </span>
-                </div>
-              </div>
+              {/* Left panel hint */}
+              <p
+                className="text-[10px] text-center"
+                style={{ color: "rgba(255,255,255,0.2)" }}
+              >
+                Scrivi nella barra in basso →
+              </p>
             </aside>
 
             {/* ════════════════════════════════════
                 RIGHT PANEL — Conversation Area
                 ════════════════════════════════════ */}
             <main
-              className="relative flex flex-col min-h-[calc(100vh-120px)] px-0 lg:px-8 pt-0 lg:pt-4 pb-8"
+              className="relative flex flex-col"
               style={{
+                height: "100%",
+                overflow: "hidden",
                 opacity: mounted ? 1 : 0,
                 transform: mounted ? "translateX(0)" : "translateX(20px)",
                 transition: "opacity 400ms ease 100ms, transform 400ms ease 100ms",
@@ -672,9 +632,12 @@ export function CoachView({
                 </div>
               )}
 
+              {/* ── SCROLLABLE MESSAGES AREA ── */}
+              <div className="flex-1 overflow-y-auto px-6 lg:px-10 py-6" style={{ scrollBehavior: "smooth" }}>
+
               {/* ── EMPTY STATE ── */}
               {!loading && !response && (
-                <div className="flex flex-1 flex-col items-center justify-center py-16 text-center">
+                <div className="flex flex-col items-center justify-center h-full min-h-[400px] text-center">
                   {/* Animated concentric circles SVG */}
                   <div className="relative mb-8" style={{ width: 180, height: 180 }}>
                     <svg
@@ -982,11 +945,81 @@ export function CoachView({
                 </div>
               )}
 
-              <div ref={messagesEndRef} />
+                <div ref={messagesEndRef} />
+              </div>{/* end scrollable area */}
+
+              {/* ── STICKY INPUT AREA ── */}
+              <div
+                className="flex-shrink-0 px-6 lg:px-10 py-4"
+                style={{
+                  borderTop: "1px solid rgba(168,139,250,0.1)",
+                  background: "rgba(6,5,12,0.6)",
+                  backdropFilter: "blur(12px)",
+                }}
+              >
+                <div className="relative flex items-center gap-3">
+                  <div className="flex-1 relative">
+                    <input
+                      type="text"
+                      value={customInput}
+                      onChange={(e) => setCustomInput(e.target.value.slice(0, MAX_CHARS))}
+                      onKeyDown={(e) => { if (e.key === "Enter") handleCustomSend(); }}
+                      onFocus={() => setInputFocused(true)}
+                      onBlur={() => setInputFocused(false)}
+                      placeholder={isPro ? "Scrivi una domanda al tuo Coach..." : "Piano Pro richiesto"}
+                      disabled={loading || !isPro}
+                      maxLength={MAX_CHARS}
+                      className="w-full bg-transparent py-2.5 text-[14px] text-ink-primary placeholder:text-ink-muted outline-none pr-16"
+                      style={{
+                        borderBottom: inputFocused
+                          ? "1px solid rgba(168,139,250,0.8)"
+                          : "1px solid rgba(168,139,250,0.25)",
+                        transition: "border-color 200ms ease",
+                      }}
+                    />
+                    {/* Token counter */}
+                    <span
+                      className="absolute right-0 top-1/2 -translate-y-1/2 text-[10px] font-mono-tabular select-none"
+                      style={{
+                        color: tokenOverRed
+                          ? "#FCA5A5"
+                          : tokenOverAmber
+                          ? "#FCD34D"
+                          : "rgba(255,255,255,0.2)",
+                      }}
+                    >
+                      ~{estimatedTokens} token
+                    </span>
+                  </div>
+
+                  {/* Send button */}
+                  <button
+                    type="button"
+                    onClick={handleCustomSend}
+                    disabled={loading || !isPro || !customInput.trim() || tokenOverLimit}
+                    className="flex-shrink-0 flex items-center justify-center rounded-full transition-all hover:opacity-80 disabled:opacity-30"
+                    style={{
+                      width: 36,
+                      height: 36,
+                      background: "linear-gradient(135deg, #A88BFA, #E879F9)",
+                      boxShadow: customInput.trim() && !tokenOverLimit
+                        ? "0 4px 16px -4px rgba(168,139,250,0.6)"
+                        : "none",
+                    }}
+                  >
+                    <ArrowRight className="h-4 w-4 text-white" strokeWidth={2} />
+                  </button>
+                </div>
+
+                {tokenOverLimit && (
+                  <p className="mt-1.5 text-[11px]" style={{ color: "#FCA5A5" }}>
+                    Messaggio troppo lungo — riduci a meno di 100 token (~350 caratteri)
+                  </p>
+                )}
+              </div>
             </main>
           </div>
         </div>
-      </div>
 
       <BottomBar activeRoute="coach" />
     </div>
