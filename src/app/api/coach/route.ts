@@ -80,9 +80,7 @@ Commenta questo andamento in modo personale e motivante.`,
   });
 
   const data = await response.json();
-  const text =
-    data.candidates?.[0]?.content?.parts?.[0]?.text ||
-    "Il Coach non è disponibile al momento.";
-
+console.log("Gemini response:", JSON.stringify(data));
+const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "Il Coach non è disponibile al momento.";
   return NextResponse.json({ message: text });
 }
