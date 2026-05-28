@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { CreditCard, ArrowUpRight, Zap } from "lucide-react";
+import { CreditCard, ArrowUpRight, Zap, Volume2, Vibrate } from "lucide-react";
+import { useState, useEffect } from "react";
 import type { UserProfile, FixedCost } from "@/lib/finance";
 import { Sidebar } from "@/components/sidebar";
 import { BottomBar } from "@/components/bottom-bar";
@@ -57,6 +58,7 @@ export function SettingsView({
                 plan={profile.plan ?? "free"}
                 initialCategories={customCategories}
               />
+              <EsperienzaSection />
             </div>
 
             <PlanSection profile={profile} />
@@ -85,6 +87,98 @@ export function SettingsView({
 
       <FabButton />
       <BottomBar activeRoute="settings" />
+    </div>
+  );
+}
+
+function ToggleRow({
+  icon,
+  label,
+  description,
+  storageKey,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  description: string;
+  storageKey: string;
+}) {
+  const [enabled, setEnabled] = useState(true);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    const stored = localStorage.getItem(storageKey);
+    setEnabled(stored !== "false");
+    setMounted(true);
+  }, [storageKey]);
+
+  function toggle() {
+    const next = !enabled;
+    setEnabled(next);
+    localStorage.setItem(storageKey, String(next));
+  }
+
+  return (
+    <div className="flex items-center justify-between gap-4 py-3">
+      <div className="flex items-center gap-3">
+        <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border border-iri-violet/20 bg-iri-violet/[0.06] text-iri-pale">
+          {icon}
+        </div>
+        <div>
+          <p className="m-0 text-[13px] font-medium text-ink-primary">{label}</p>
+          <p className="m-0 text-[11px] text-ink-muted">{description}</p>
+        </div>
+      </div>
+      {mounted && (
+        <button
+          type="button"
+          onClick={toggle}
+          title={enabled ? "Disabilita" : "Abilita"}
+          className="relative flex h-6 w-11 flex-shrink-0 cursor-pointer items-center rounded-full transition-all duration-300"
+          style={{
+            background: enabled
+              ? "linear-gradient(135deg, #A88BFA, #E879F9)"
+              : "rgba(255,255,255,0.08)",
+          }}
+        >
+          <span
+            className="absolute h-5 w-5 rounded-full bg-white shadow-sm transition-all duration-300"
+            style={{ left: enabled ? "calc(100% - 22px)" : "2px" }}
+          />
+        </button>
+      )}
+    </div>
+  );
+}
+
+function EsperienzaSection() {
+  return (
+    <div className="glass-panel rounded-[20px] p-6">
+      <div className="mb-5 flex items-center gap-3">
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-iri-violet/25 bg-iri-violet/[0.08] text-iri-pale">
+          <Zap className="h-5 w-5" strokeWidth={1.6} />
+        </div>
+        <div>
+          <p className="eyebrow-accent text-[10px]">Esperienza</p>
+          <p className="m-0 mt-0.5 text-[13px] text-ink-secondary">
+            Feedback sensoriale e micro-interazioni
+          </p>
+        </div>
+      </div>
+
+      <div className="divide-y divide-white/[0.04]">
+        <ToggleRow
+          icon={<Volume2 className="h-4 w-4" strokeWidth={1.6} />}
+          label="Suoni dell'app"
+          description="Micro-suoni al salvataggio e alle azioni"
+          storageKey="valorem_sounds_enabled"
+        />
+        <ToggleRow
+          icon={<Vibrate className="h-4 w-4" strokeWidth={1.6} />}
+          label="Feedback aptico"
+          description="Vibrazione leggera su azioni importanti (mobile)"
+          storageKey="valorem_haptics_enabled"
+        />
+      </div>
     </div>
   );
 }

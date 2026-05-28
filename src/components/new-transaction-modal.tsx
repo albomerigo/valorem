@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { X, Plus, Zap } from "lucide-react";
+import { hapticSuccess } from "@/lib/haptics";
+import { playSuccess } from "@/lib/sounds";
 import Link from "next/link";
 import { createTransaction, updateTransaction } from "@/app/actions";
 import { Transaction } from "@/lib/finance";
@@ -124,6 +126,8 @@ export function NewTransactionModal({
       }
 
       if (result.success) {
+        hapticSuccess();
+        playSuccess();
         onClose();
         router.refresh();
         // Reset form

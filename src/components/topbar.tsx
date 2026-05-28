@@ -1,8 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useTheme } from "next-themes";
-import { Sun, Moon } from "lucide-react";
 import { Search } from "./search";
 import { BackButton } from "./back-button";
 import type { Transaction, Goal } from "@/lib/finance";
@@ -36,60 +33,8 @@ export function Topbar({
       </div>
 
       <div className="flex items-center gap-2 flex-shrink-0">
-        <div className="hidden md:block"><ThemeToggle /></div>
         <div className="hidden md:block"><Search transactions={transactions} goals={goals} /></div>
       </div>
     </div>
-  );
-}
-
-function ThemeToggle() {
-  const [mounted, setMounted] = useState(false);
-  const { theme, setTheme } = useTheme();
-
-  // next-themes richiede questo pattern per evitare hydration mismatch
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    // Render invisibile prima dell'hydration
-    return (
-      <div className="h-[34px] w-[34px]" aria-hidden="true" />
-    );
-  }
-
-  const isDark = theme === "dark";
-
-  function handleToggle() {
-    setTheme(isDark ? "light" : "dark");
-  }
-
-  return (
-    <button
-      type="button"
-      onClick={handleToggle}
-      title={isDark ? "Passa al tema chiaro" : "Passa al tema scuro"}
-      className="glass-panel-subtle group relative flex h-[34px] w-[34px] items-center justify-center rounded-[10px] transition-all duration-[350ms] [transition-timing-function:cubic-bezier(0.2,0.8,0.2,1)] hover:scale-105 hover:border-iri-violet/30"
-    >
-      <div className="relative">
-        <Sun
-          className={`absolute inset-0 h-[14px] w-[14px] transition-all duration-[500ms] [transition-timing-function:cubic-bezier(0.2,0.8,0.2,1)] ${
-            isDark
-              ? "rotate-0 scale-100 opacity-100 text-amber-300"
-              : "rotate-90 scale-0 opacity-0"
-          }`}
-          strokeWidth={1.8}
-        />
-        <Moon
-          className={`h-[14px] w-[14px] transition-all duration-[500ms] [transition-timing-function:cubic-bezier(0.2,0.8,0.2,1)] ${
-            isDark
-              ? "-rotate-90 scale-0 opacity-0"
-              : "rotate-0 scale-100 opacity-100 text-iri-violet"
-          }`}
-          strokeWidth={1.8}
-        />
-      </div>
-    </button>
   );
 }

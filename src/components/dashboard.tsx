@@ -363,6 +363,38 @@ export function Dashboard({
   const plan = data.profile?.plan ?? "free";
   const [isAddingTransaction, setIsAddingTransaction] = useState(false);
 
+  // Sparkline KPI — ultimi 7 giorni
+  const weeklyKPI = (() => {
+    const budget: number[] = [];
+    const spent: number[] = [];
+    const invested: number[] = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const key = d.toISOString().split("T")[0];
+      const dayTx = data.transactions.filter(
+        (tx) => tx.transaction_date === key
+      );
+      spent.push(
+        dayTx
+          .filter((tx) => tx.type === "expense")
+          .reduce((s, tx) => s + Math.abs(Number(tx.amount)), 0)
+      );
+      invested.push(
+        dayTx
+          .filter(
+            (tx) =>
+              tx.type === "income" ||
+              tx.category?.toLowerCase() === "investimenti"
+          )
+          .reduce((s, tx) => s + Math.abs(Number(tx.amount)), 0)
+      );
+      // Budget disponibile: decrescente col passare del mese (approssimato)
+      budget.push(data.stats.remainingBudget);
+    }
+    return { budget, spent, invested };
+  })();
+
   // Valorem Score
   const now = new Date();
   const currentMonth = now.getMonth();
@@ -452,7 +484,12 @@ export function Dashboard({
             <div style={{ animationDelay: "100ms", animationFillMode: "both" }}
               className="animate-slide-up">
               <SectionEyebrow label="I tuoi numeri" />
-              <KPIRow stats={data.stats} />
+              <KPIRow
+                stats={data.stats}
+                weeklyBudget={weeklyKPI.budget}
+                weeklySpent={weeklyKPI.spent}
+                weeklyInvested={weeklyKPI.invested}
+              />
             </div>
 
             {/* ── COACH ── */}

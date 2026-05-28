@@ -15,6 +15,72 @@ type TopCategory = {
   top3: { name: string; amount: number; percent: number }[];
 } | null;
 
+type DNAProfile = {
+  type: string;
+  emoji: string;
+  description: string;
+  strength: string;
+  weakness: string;
+  gradient: string;
+  accentColor: string;
+};
+
+function getFinancialDNA(
+  score: { score: number } | undefined,
+  topCategory: TopCategory
+): DNAProfile {
+  const s = score?.score ?? 0;
+  if (s >= 75)
+    return {
+      type: "Il Costruttore",
+      emoji: "🏗️",
+      description:
+        "Investi con regolarità e resisti agli impulsi. Stai costruendo qualcosa di solido.",
+      strength: "Disciplina e visione a lungo termine",
+      weakness: topCategory?.name
+        ? `Attenzione alle spese in ${topCategory.name}`
+        : "Mantieni la costanza",
+      gradient:
+        "linear-gradient(135deg, rgba(168,139,250,0.18) 0%, rgba(96,165,250,0.10) 100%)",
+      accentColor: "#A88BFA",
+    };
+  if (s >= 55)
+    return {
+      type: "Il Consapevole",
+      emoji: "👁️",
+      description:
+        "Monitori le tue finanze e stai migliorando mese dopo mese.",
+      strength: "Consapevolezza e miglioramento continuo",
+      weakness: "Puoi ancora ottimizzare il risparmio",
+      gradient:
+        "linear-gradient(135deg, rgba(96,165,250,0.18) 0%, rgba(103,232,249,0.10) 100%)",
+      accentColor: "#60A5FA",
+    };
+  if (s >= 40)
+    return {
+      type: "Il Cercatore",
+      emoji: "🧭",
+      description:
+        "Stai trovando il tuo ritmo finanziario. Ogni mese impari qualcosa di nuovo.",
+      strength: "Apertura al cambiamento",
+      weakness: "Serve più costanza nel tracciare",
+      gradient:
+        "linear-gradient(135deg, rgba(245,158,11,0.18) 0%, rgba(253,186,116,0.08) 100%)",
+      accentColor: "#F59E0B",
+    };
+  return {
+    type: "Il Pioniere",
+    emoji: "🌱",
+    description:
+      "Sei all'inizio del percorso. Il momento migliore per iniziare era ieri — il secondo migliore è oggi.",
+    strength: "Hai iniziato — questo è già tutto",
+    weakness: "Inizia a tracciare ogni giorno",
+    gradient:
+      "linear-gradient(135deg, rgba(16,185,129,0.18) 0%, rgba(52,211,153,0.08) 100%)",
+    accentColor: "#10B981",
+  };
+}
+
 const CAT_COLORS_PROFILO: Record<string, string> = {
   Alimentari: "#A88BFA",
   Ristorazione: "#FDA4AF",
@@ -98,6 +164,8 @@ export function ProfiloView({
       : profile.plan === "pro"
         ? "rgba(168,139,250,0.18)"
         : "rgba(168,139,250,0.12)";
+
+  const dna = getFinancialDNA(valoremScore, topCategory ?? null);
 
   const coachSentence =
     stats.totalImpulsiResistiti > 10
@@ -228,6 +296,43 @@ export function ProfiloView({
                   label="Impulsi resistiti"
                   value={String(stats.totalImpulsiResistiti)}
                 />
+              </div>
+
+              {/* DNA Finanziario */}
+              <div
+                className="rounded-[20px] px-5 py-5"
+                style={{
+                  background: dna.gradient,
+                  border: `1px solid ${dna.accentColor}30`,
+                }}
+              >
+                <p className="eyebrow mb-4" style={{ color: dna.accentColor }}>
+                  Il tuo DNA finanziario
+                </p>
+                <div className="flex items-start gap-4">
+                  <span style={{ fontSize: "48px", lineHeight: 1 }}>{dna.emoji}</span>
+                  <div className="flex-1">
+                    <h3
+                      className="m-0 font-serif text-[24px] italic font-normal leading-tight"
+                      style={{ color: dna.accentColor }}
+                    >
+                      {dna.type}
+                    </h3>
+                    <p className="mt-2 font-serif text-[13px] italic leading-[1.6] text-ink-secondary">
+                      {dna.description}
+                    </p>
+                    <div className="mt-3 flex flex-col gap-1.5">
+                      <p className="m-0 text-[12px] leading-[1.5]">
+                        <span style={{ color: dna.accentColor }}>✦ Punto di forza:</span>{" "}
+                        <span className="text-ink-secondary">{dna.strength}</span>
+                      </p>
+                      <p className="m-0 text-[12px] leading-[1.5]">
+                        <span className="text-ink-muted">◦ Area di crescita:</span>{" "}
+                        <span className="text-ink-muted">{dna.weakness}</span>
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               {/* Valorem Score */}

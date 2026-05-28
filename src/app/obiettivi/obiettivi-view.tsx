@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition, useEffect, useRef } from "react";
+import { hapticSuccess } from "@/lib/haptics";
 import {
   Target,
   Plus,
@@ -211,6 +212,7 @@ function GoalCard({
   useEffect(() => {
     if (prevProgressRef.current < 100 && progress >= 100) {
       setShowConfetti(true);
+      hapticSuccess();
       const t = setTimeout(() => setShowConfetti(false), 1800);
       // Web Audio celebrazione — beep melodico senza file audio
       try {

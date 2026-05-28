@@ -32,8 +32,20 @@ export function HeroCard({
     );
   }
 
-  const { safeToSpendToday, savingsPercent, monthLabel, timeMetric } = stats;
+  const { safeToSpendToday, savingsPercent, monthLabel, timeMetric, monthlyFree } = stats;
   const { int: eurosInt, dec: eurosDec } = useAnimatedCurrency(safeToSpendToday);
+
+  // Colore dinamico Safe-to-Spend
+  function getSafeToSpendColor(safeToSpend: number, mFree: number) {
+    if (safeToSpend <= 0)
+      return { color: "#F87171", glow: "rgba(248,113,113,0.3)" };
+    const daily = mFree > 0 ? mFree / 30 : 0;
+    const ratio = daily > 0 ? safeToSpend / daily : 1;
+    if (ratio < 0.3)
+      return { color: "#F59E0B", glow: "rgba(245,158,11,0.3)" };
+    return { color: "#A88BFA", glow: "rgba(168,139,250,0.3)" };
+  }
+  const safeColor = getSafeToSpendColor(safeToSpendToday, monthlyFree);
 
   // Flash rosso quando il valore scende
   const [flashDown, setFlashDown] = useState(false);
@@ -57,9 +69,10 @@ export function HeroCard({
     <div
       ref={cardRef}
       onMouseMove={handleMouseMove}
-      className="glass-panel-strong group relative overflow-hidden rounded-[20px] p-5 md:p-9 transition-all duration-500 hover:-translate-y-0.5 hover:shadow-[0_32px_64px_-20px_rgba(168,139,250,0.3)] animate-slide-up [animation-delay:0.1s]"
+      className="glass-panel-strong group relative overflow-hidden rounded-[20px] p-5 md:p-9 transition-all duration-500 hover:-translate-y-0.5 animate-slide-up [animation-delay:0.1s]"
       style={{
         animationFillMode: "both",
+        boxShadow: `0 32px 64px -20px ${safeColor.glow}`,
         backgroundImage: `
           radial-gradient(
             circle at var(--mx, 30%) var(--my, 20%),
@@ -126,8 +139,13 @@ export function HeroCard({
               €
             </span>
             <span
-              className="hero-number-grad font-serif text-[80px] md:text-[112px] font-normal leading-[0.9] [letter-spacing:-0.07em] transition-all duration-[500ms]"
-              style={flashDown ? { filter: "drop-shadow(0 0 12px rgba(248,113,113,0.5))" } : undefined}
+              className="font-serif text-[80px] md:text-[112px] font-normal leading-[0.9] [letter-spacing:-0.07em] transition-all duration-[500ms]"
+              style={{
+                color: safeColor.color,
+                filter: flashDown
+                  ? "drop-shadow(0 0 12px rgba(248,113,113,0.5))"
+                  : `drop-shadow(0 0 20px ${safeColor.glow})`,
+              }}
             >
               {eurosInt}
             </span>
