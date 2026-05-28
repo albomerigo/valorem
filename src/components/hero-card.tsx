@@ -50,6 +50,14 @@ export function HeroCard({ stats }: { stats: DashboardStats }) {
         `,
       }}
     >
+      {/* LED line — top border shimmer */}
+      <div
+        className="pointer-events-none absolute left-0 right-0 top-0 h-[2px] animate-shimmer"
+        style={{
+          background: "linear-gradient(90deg, transparent, #A88BFA, #E879F9, #60A5FA, transparent)",
+          backgroundSize: "200% 100%",
+        }}
+      />
       <HelpTooltip
         title="Safe-to-Spend"
         content="È quanto puoi spendere oggi in modo sereno. Calcolato sottraendo dal reddito i costi fissi, il risparmio obiettivo e le spese già fatte questo mese."
@@ -61,19 +69,19 @@ export function HeroCard({ stats }: { stats: DashboardStats }) {
       <div className="relative z-10 grid grid-cols-1 md:grid-cols-[1.2fr_1fr] items-center gap-5 md:gap-7">
         <div>
           <div className="mb-4 md:mb-6 flex items-center justify-between gap-2 flex-wrap">
-            <div className="inline-flex items-center gap-[7px] rounded-full border border-iri-violet/20 bg-iri-violet/[0.08] px-2.5 py-[4px] md:px-3 md:py-[5px]">
-              <span className="h-[6px] w-[6px] rounded-full bg-iri-violet animate-pulse-dot" />
-              <span className="eyebrow-accent text-[9px] md:text-[10px]">
+            <div className="inline-flex items-center gap-[7px] rounded-full border border-iri-violet/20 bg-iri-violet/[0.08] px-4 py-2">
+              <span className="h-2 w-2 rounded-full bg-iri-violet animate-pulse-dot" />
+              <span className="eyebrow-accent text-[11px]">
                 Potere d&apos;acquisto · oggi
               </span>
             </div>
             <SafeModeSwitcher current={stats.safeMode} />
           </div>
-          <div className="flex items-baseline gap-[2px] font-mono-tabular">
+          <div className="flex items-baseline gap-[2px]">
             <span className="mt-2.5 self-start text-[18px] md:mt-3.5 md:text-[22px] font-light text-ink-secondary">
               €
             </span>
-            <span className="hero-number-grad text-[72px] md:text-[96px] font-normal leading-[0.9] [letter-spacing:-0.055em]">
+            <span className="hero-number-grad font-serif text-[80px] md:text-[112px] font-normal leading-[0.9] [letter-spacing:-0.07em]">
               {eurosInt}
             </span>
             <span className="ml-0.5 mt-[14px] self-start text-[24px] md:mt-[18px] md:text-[32px] font-normal text-ink-primary/75 [letter-spacing:-0.02em]">
@@ -88,7 +96,7 @@ export function HeroCard({ stats }: { stats: DashboardStats }) {
             </span>
           </div>
 
-          <p className="mt-5 md:mt-6 max-w-[340px] text-[13px] leading-[1.65] text-ink-secondary">
+          <p className="mt-5 md:mt-6 max-w-[340px] font-serif text-[15px] italic leading-[1.65] text-ink-primary">
             {safeToSpendToday > 0 ? (
               <>
                 Stai rispettando la tua{" "}
@@ -109,19 +117,28 @@ export function HeroCard({ stats }: { stats: DashboardStats }) {
                 <stop offset="100%" stopColor="#60A5FA" />
               </linearGradient>
               <filter id="ringGlow">
-                <feGaussianBlur stdDeviation="3" result="blur" />
+                <feGaussianBlur stdDeviation="5" result="blur" />
                 <feMerge>
                   <feMergeNode in="blur" />
                   <feMergeNode in="SourceGraphic" />
                 </feMerge>
               </filter>
             </defs>
+            {/* Track circle */}
             <circle
               cx="100"
               cy="100"
               r="84"
               fill="none"
-              stroke="rgba(255,255,255,0.05)"
+              stroke="rgba(168,139,250,0.08)"
+              strokeWidth="8"
+            />
+            <circle
+              cx="100"
+              cy="100"
+              r="84"
+              fill="none"
+              stroke="rgba(255,255,255,0.04)"
               strokeWidth="1"
             />
             <circle
@@ -130,7 +147,7 @@ export function HeroCard({ stats }: { stats: DashboardStats }) {
               r="84"
               fill="none"
               stroke="url(#ringGrad)"
-              strokeWidth="2.5"
+              strokeWidth="4"
               strokeLinecap="round"
               strokeDasharray={2 * Math.PI * 84}
               strokeDashoffset={(2 * Math.PI * 84) * (1 - savingsPercent / 100)}

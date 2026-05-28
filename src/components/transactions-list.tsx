@@ -162,7 +162,7 @@ function TransactionRow({
   return (
     <div
       ref={rowRef}
-      className={`group relative overflow-hidden ${!isLast ? "border-b border-white/[0.04]" : ""}`}
+      className={`group relative overflow-hidden ${!isLast ? "border-b border-white/[0.04]" : ""} border-l-2 ${tx.type === "income" ? "border-l-emerald-400/40" : "border-l-red-400/20"}`}
       onTouchStart={isTouchDevice ? (e) => {
         touchStartX.current = e.touches[0].clientX;
         touchStartY.current = e.touches[0].clientY;
@@ -275,10 +275,10 @@ function TransactionRow({
                 </span>
               )}
             </div>
-            <p className="m-0 font-mono-tabular text-[13px] md:text-[14px] font-medium text-ink-primary [letter-spacing:-0.01em] shrink-0">
+            <p className={`m-0 font-mono-tabular text-[13px] md:text-[14px] font-medium [letter-spacing:-0.01em] shrink-0 ${tx.type === "income" ? "text-emerald-400" : "text-red-300"}`}>
               {tx.type === "expense" ? "−" : "+"}
               {eurosInt}
-              <span className="text-[11px] text-ink-primary/65">,{eurosDec}</span>
+              <span className="text-[11px] opacity-65">,{eurosDec}</span>
               <span className="ml-0.5 text-[11px] text-ink-muted">€</span>
             </p>
           </div>

@@ -132,10 +132,10 @@ export function StoricoView({
 
           <header className="mb-10 mt-8">
             <p className="eyebrow-accent mb-2 text-[10px]">La tua storia finanziaria</p>
-            <h1 className="m-0 font-serif text-[36px] font-normal italic leading-tight text-ink-primary md:text-[44px]">
+            <h1 className="m-0 font-serif text-[52px] font-normal italic leading-tight text-ink-primary md:text-[64px]">
               {visibleRecaps.length} {visibleRecaps.length === 1 ? "mese" : "mesi"} di crescita
             </h1>
-            <p className="mt-3 text-[14px] leading-[1.6] text-ink-secondary">
+            <p className="mt-3 font-serif italic text-[14px] leading-[1.6] text-ink-secondary">
               {headerSubtitle}
             </p>
             {visibleRecaps.length > 3 && (

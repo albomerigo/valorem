@@ -309,7 +309,7 @@ export function AttivitaView({
                     className="h-5 w-5 text-iri-pale"
                     strokeWidth={1.6}
                   />
-                  <h1 className="m-0 font-serif text-[32px] font-normal italic leading-tight text-ink-primary">
+                  <h1 className="m-0 font-serif text-[36px] font-normal italic leading-tight text-ink-primary md:text-[40px]">
                     La tua storia finanziaria
                   </h1>
                 </div>

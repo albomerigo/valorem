@@ -146,7 +146,7 @@ export function CoachBanner({
         <p className="m-0 text-[12px] font-medium uppercase tracking-[0.06em] text-ink-primary">
           {context.title}
         </p>
-        <p className="m-0 mt-0.5 text-[12px] leading-[1.55] text-ink-secondary">
+        <p className="m-0 mt-0.5 font-serif italic text-[13px] leading-[1.6] text-ink-secondary">
           {context.message}
         </p>
       </div>

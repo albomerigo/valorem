@@ -27,6 +27,7 @@ const monthlyFreeSplit = splitCurrency(remainingBudget);
           label="Disponibile mensile"
           valueInt={monthlyFreeSplit.int}
           valueDec={monthlyFreeSplit.dec}
+          valueColor="#A88BFA"
           trend={
           trendVsLastMonth !== 0 ? (
             <span className="flex items-center gap-1 text-[10px] font-medium tracking-[0.08em] text-emerald-300 font-mono-tabular">
@@ -43,12 +44,14 @@ const monthlyFreeSplit = splitCurrency(remainingBudget);
         label="Spese oggi"
         valueInt={spentTodaySplit.int}
         valueDec={spentTodaySplit.dec}
+        valueColor="#F87171"
         trend={<Equalizer />}
       />
       <KPITile
         label="Capitale investito"
         valueInt={investedSplit.int}
         valueDec={investedSplit.dec}
+        valueColor="#60A5FA"
         trend={
           <span className="flex items-center gap-1 text-[10px] font-medium tracking-[0.08em] text-emerald-300 font-mono-tabular">
             <TrendingUp className="h-2.5 w-2.5" />
@@ -71,6 +74,7 @@ function KPITile({
   valueSuffix,
   trend,
   valueGradThick = false,
+  valueColor,
 }: {
   label: string;
   valueInt: string;
@@ -78,6 +82,7 @@ function KPITile({
   valueSuffix?: string;
   trend: React.ReactNode;
   valueGradThick?: boolean;
+  valueColor?: string;
 }) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -109,7 +114,7 @@ function KPITile({
         }}
       />
 
-      <p className="eyebrow mb-2 hidden md:block">{label}</p>
+      <p className="font-serif italic text-[10px] tracking-[0.14em] text-ink-muted mb-2 hidden md:block uppercase">{label}</p>
 
       <p className="m-0 font-mono-tabular font-medium">
         {valueGradThick ? (
@@ -118,7 +123,10 @@ function KPITile({
           </span>
         ) : (
           <>
-            <span className="text-[20px] md:text-[26px] text-ink-primary [letter-spacing:-0.02em]">
+            <span
+              className="font-serif text-[20px] md:text-[26px] font-normal [letter-spacing:-0.02em]"
+              style={valueColor ? { color: valueColor } : undefined}
+            >
               {valueInt}
             </span>
             {valueDec && (

@@ -345,7 +345,7 @@ function HeroRecap({ recap }: { recap: RecapData }) {
         <p className="eyebrow-accent mb-4 text-[10px]">
           Recap · {recap.monthYear}
         </p>
-        <h1 className="m-0 font-serif text-[42px] font-normal italic leading-[1.1] text-ink-primary md:text-[54px]">
+        <h1 className="m-0 font-serif text-[40px] font-normal italic leading-[1.1] text-ink-primary md:text-[56px]">
           {recap.narrativeTitle}
         </h1>
         <div className="mt-6 flex justify-center">
@@ -864,7 +864,7 @@ function FinalQuote({ recap }: { recap: RecapData }) {
           </div>
         </div>
         <p className="eyebrow-accent mb-3 text-[10px]">Dal tuo Coach</p>
-        <p className="mx-auto max-w-[600px] font-serif text-[20px] font-normal italic leading-[1.5] text-ink-primary">
+        <p className="mx-auto max-w-[600px] font-serif text-[20px] font-normal italic leading-[1.8] text-ink-primary">
           &ldquo;{recap.coachQuote}&rdquo;
         </p>
       </div>
