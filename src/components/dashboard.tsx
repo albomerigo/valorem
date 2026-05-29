@@ -189,7 +189,7 @@ function CompleteProfileBanner({
     setMounted(true);
   }, []);
 
-  if (!mounted || dismissed || safeToSpendToday !== 0 || monthlyIncome !== 0)
+  if (!mounted || dismissed || (safeToSpendToday !== 0 && monthlyIncome !== 0))
     return null;
 
   function handleDismiss() {

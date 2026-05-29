@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import type { DashboardStats, UserProfile, Transaction } from "@/lib/finance";
+import { calculateValoremScore } from "@/lib/score";
 import { Sidebar } from "@/components/sidebar";
 import { BottomBar } from "@/components/bottom-bar";
 import { Topbar } from "@/components/topbar";
@@ -229,6 +230,7 @@ export function CoachView({
   const [copied, setCopied] = useState(false);
   const [loadingPhrase, setLoadingPhrase] = useState(0);
   const [mounted, setMounted] = useState(false);
+  const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const MAX_CHARS = 350;
@@ -269,6 +271,16 @@ export function CoachView({
       )
       .reduce((s, t) => s + Number(t.amount), 0)
   );
+  const valoremScore = calculateValoremScore({
+    savingsPercent: stats.savingsPercent,
+    trendVsLastMonth: stats.trendVsLastMonth ?? 0,
+    impulsiResistiti: 0,
+    totalSpent: monthSpent,
+    monthlyFree: stats.monthlyFree,
+    goalsOnTrack: 0,
+    totalGoals: 0,
+    transactionCount: monthTxCount,
+  });
 
   // Scroll to bottom after response
   useEffect(() => {
@@ -419,8 +431,105 @@ export function CoachView({
       <div className="relative z-10 md:ml-[64px] h-screen flex flex-col">
         {/* Topbar row */}
         <div className="flex-shrink-0 px-4 pt-5 md:px-6 md:pt-6">
-          <Topbar userName={profile.name || "ospite"} section="AI Coach" showBack />
+          <div className="flex items-center justify-between gap-3">
+            <Topbar userName={profile.name || "ospite"} section="AI Coach" showBack />
+            {/* Mobile prompt toggle — solo < lg */}
+            <button
+              type="button"
+              onClick={() => setMobileDrawerOpen(true)}
+              className="lg:hidden flex-shrink-0 flex items-center gap-1.5 rounded-[10px] px-3 py-1.5 text-[11px] font-medium text-iri-pale transition-colors"
+              style={{ background: "rgba(168,139,250,0.1)", border: "1px solid rgba(168,139,250,0.25)" }}
+            >
+              <Compass className="h-3.5 w-3.5" strokeWidth={2} />
+              Prompt
+            </button>
+          </div>
         </div>
+
+        {/* ── MOBILE DRAWER — Prompt panel ── */}
+        {mobileDrawerOpen && (
+          <>
+            {/* Backdrop */}
+            <div
+              className="fixed inset-0 z-40 lg:hidden"
+              style={{ background: "rgba(6,5,12,0.7)", backdropFilter: "blur(4px)" }}
+              onClick={() => setMobileDrawerOpen(false)}
+            />
+            {/* Drawer */}
+            <div
+              className="fixed bottom-0 left-0 right-0 z-50 lg:hidden overflow-y-auto"
+              style={{
+                background: "#0D0A1E",
+                borderTop: "1px solid rgba(168,139,250,0.2)",
+                borderRadius: "20px 20px 0 0",
+                maxHeight: "70vh",
+                padding: "20px 20px 40px",
+              }}
+            >
+              {/* Handle */}
+              <div className="mx-auto mb-4 h-1 w-10 rounded-full" style={{ background: "rgba(168,139,250,0.3)" }} />
+
+              {/* Coach Identity mini */}
+              <div className="flex items-center gap-3 mb-4">
+                <div className="relative flex-shrink-0" style={{ width: 40, height: 40 }}>
+                  <div
+                    className="absolute inset-0 rounded-full animate-gradient-shift"
+                    style={{
+                      background: "linear-gradient(135deg, #A88BFA 0%, #E879F9 50%, #60A5FA 100%)",
+                      backgroundSize: "200% 200%",
+                      boxShadow: "0 0 16px rgba(168,139,250,0.4)",
+                    }}
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center rounded-full">
+                    <Sparkles className="h-5 w-5 text-white" strokeWidth={1.8} />
+                  </div>
+                </div>
+                <div>
+                  <p className="m-0 font-serif italic text-[15px] text-ink-primary">Valorem Coach</p>
+                  <p className="m-0 text-[10px]" style={{ color: "rgba(255,255,255,0.35)" }}>Scegli un prompt</p>
+                </div>
+              </div>
+
+              <div
+                className="mb-4"
+                style={{ height: 1, background: "rgba(168,139,250,0.1)" }}
+              />
+
+              {/* Prompt cards */}
+              <div className="flex flex-col gap-2">
+                {CARDS.map((card) => (
+                  <button
+                    key={card.id}
+                    type="button"
+                    disabled={loading || !isPro}
+                    onClick={() => {
+                      fetchCoach(card.id, card);
+                      setMobileDrawerOpen(false);
+                    }}
+                    className="flex items-center gap-3 rounded-[12px] px-4 py-3 text-left transition-all"
+                    style={{
+                      background: activePrompt === card.id ? "rgba(168,139,250,0.12)" : "rgba(255,255,255,0.03)",
+                      border: activePrompt === card.id ? "1px solid rgba(168,139,250,0.3)" : "1px solid rgba(255,255,255,0.06)",
+                      opacity: loading || !isPro ? 0.5 : 1,
+                      cursor: loading || !isPro ? "not-allowed" : "pointer",
+                    }}
+                  >
+                    <div
+                      className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-[8px]"
+                      style={{ background: card.iconBg }}
+                    >
+                      <card.Icon className="h-4 w-4" style={{ color: card.iconColor }} strokeWidth={1.8} />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="m-0 text-[13px] font-medium text-ink-primary">{card.title}</p>
+                      <p className="m-0 text-[11px] text-ink-muted">{card.desc}</p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
 
         {/* ── TWO-COLUMN GRID — fills remaining height ── */}
         <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] flex-1 overflow-hidden">
@@ -491,7 +600,7 @@ export function CoachView({
                 {[
                   { emoji: "📊", label: `${monthTxCount} tx questo mese` },
                   { emoji: "💰", label: `€${monthSpent.toLocaleString("it-IT")} spesi` },
-                  { emoji: "⭐", label: `Score ${stats.savingsPercent}%` },
+                  { emoji: "⭐", label: `Score ${valoremScore.score}` },
                 ].map((s, i) => (
                   <span
                     key={i}

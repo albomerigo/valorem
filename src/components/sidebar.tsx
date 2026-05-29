@@ -12,6 +12,7 @@ import {
   History,
   Upload,
   User,
+  Newspaper,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
@@ -29,6 +30,7 @@ export type Route =
   | "settings"
   | "storico"
   | "import"
+  | "novita"
   | "profilo"
   | "rimborsi";
 
@@ -57,6 +59,7 @@ const navGroups: {
     items: [
       { icon: History, label: "Storico", route: "storico", href: "/storico" },
       { icon: Upload, label: "Importa", route: "import", href: "/import" },
+      { icon: Newspaper, label: "Novità", route: "novita", href: "/novita" },
     ],
   },
 ];

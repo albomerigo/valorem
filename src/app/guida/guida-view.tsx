@@ -15,6 +15,7 @@ import {
 import { Sidebar } from "@/components/sidebar";
 import { BottomBar } from "@/components/bottom-bar";
 import { Topbar } from "@/components/topbar";
+import { HelpTooltip } from "@/components/help-tooltip";
 
 /* ──────────────────────────────────────────────
    SAFE-TO-SPEND DEMO
@@ -462,11 +463,15 @@ export function GuidaView({ userName }: { userName: string }) {
         <div className="mx-auto max-w-[900px] px-4 py-5 md:px-8 md:py-7">
           <Topbar userName={userName || "ospite"} section="Guida" showBack />
 
-          <header className="mt-8 mb-10">
+          <header className="relative mt-8 mb-10">
             <p className="eyebrow-accent mb-2 text-[10px]">Come funziona Valorem</p>
             <h1 className="m-0 font-serif text-[32px] font-normal italic leading-tight text-ink-primary md:text-[42px]">
               Tutto quello che devi sapere
             </h1>
+            <HelpTooltip
+              title="Guida a Valorem"
+              content="Scopri come funzionano tutte le funzionalità di Valorem con esempi pratici e demo interattive."
+            />
             <p className="mt-3 text-[14px] leading-[1.6] text-ink-secondary">
               Una guida pratica alle funzionalità principali — clicca su "Prova la demo" per
               interagire con ogni concetto.

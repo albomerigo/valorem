@@ -7,6 +7,7 @@ import type { UserProfile, Transaction } from "@/lib/finance";
 import { Sidebar } from "@/components/sidebar";
 import { BottomBar } from "@/components/bottom-bar";
 import { Topbar } from "@/components/topbar";
+import { HelpTooltip } from "@/components/help-tooltip";
 import { splitCurrency } from "@/lib/utils";
 
 const CAT_COLORS: Record<string, string> = {
@@ -184,13 +185,17 @@ export function RicorrentiView({
         <div className="mx-auto max-w-[1400px] px-4 py-5 md:px-8 md:py-7">
           <Topbar userName={profile.name || "ospite"} section="Ricorrenti" showBack />
 
-          <header className="mt-8 mb-8">
+          <header className="relative mt-8 mb-8">
             <div className="flex items-center gap-3 mb-2">
               <Repeat2 className="h-5 w-5 text-iri-pale" strokeWidth={1.6} />
               <h1 className="m-0 font-serif text-[32px] font-normal italic leading-tight text-ink-primary">
                 Spese ricorrenti
               </h1>
             </div>
+            <HelpTooltip
+              title="Spese Ricorrenti"
+              content="Qui trovi tutte le transazioni che hai marcato come ricorrenti. Ti mostrano quanto spendi ogni mese in abbonamenti e spese fisse variabili."
+            />
             <p className="text-[14px] leading-[1.6] text-ink-secondary">
               Tutti gli abbonamenti e i pagamenti periodici — quello che esce ogni mese in automatico.
             </p>
