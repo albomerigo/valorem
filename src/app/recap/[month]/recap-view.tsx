@@ -1,13 +1,12 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   Sparkles,
   Ghost,
   TrendingUp,
   TrendingDown,
-  Calendar,
   Trophy,
   Target,
   ArrowRight,
@@ -23,12 +22,8 @@ import {
   BarChart2,
   Zap,
   ChevronDown,
-  ChevronLeft,
-  ChevronRight,
   Share2,
   AlertCircle,
-  Play,
-  X as XIcon,
 } from "lucide-react";
 import type { UserProfile, DashboardStats } from "@/lib/finance";
 import type { RecapData } from "@/lib/recap";
@@ -37,380 +32,6 @@ import { Sidebar } from "@/components/sidebar";
 import { BottomBar } from "@/components/bottom-bar";
 import { Topbar } from "@/components/topbar";
 import { splitCurrency } from "@/lib/utils";
-
-/* ──────────────────────────────────────────────
-   PRESENTATION MODE
-────────────────────────────────────────────── */
-function PresentationMode({
-  recap,
-  onClose,
-}: {
-  recap: RecapData;
-  onClose: () => void;
-}) {
-  const TOTAL_SLIDES = 6;
-  const AUTO_INTERVAL = 4000;
-
-  const [slide, setSlide] = useState(0);
-  const [fading, setFading] = useState(false);
-
-  const goTo = useCallback(
-    (next: number) => {
-      setFading(true);
-      setTimeout(() => {
-        setSlide(next);
-        setFading(false);
-      }, 300);
-    },
-    []
-  );
-
-  const next = useCallback(() => goTo((slide + 1) % TOTAL_SLIDES), [slide, goTo]);
-  const prev = useCallback(() => goTo((slide - 1 + TOTAL_SLIDES) % TOTAL_SLIDES), [slide, goTo]);
-
-  useEffect(() => {
-    const t = setInterval(next, AUTO_INTERVAL);
-    return () => clearInterval(t);
-  }, [next]);
-
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-      if (e.key === "ArrowRight") next();
-      if (e.key === "ArrowLeft") prev();
-    };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, [onClose, next, prev]);
-
-  const spentSplit = splitCurrency(recap.totalSpent);
-  const topCat = recap.categoryBreakdown[0];
-
-  const CAT_EMOJIS: Record<string, string> = {
-    Alimentari: "🛒", Ristorazione: "🍽️", Trasporti: "🚗",
-    Abbonamento: "📱", Svago: "🎮", Salute: "💪",
-    Casa: "🏠", Shopping: "🛍️", Investimenti: "📈", Altro: "📦",
-  };
-
-  // Stile comune per ogni slide — position absolute, tutto lo spazio
-  const slideStyle: React.CSSProperties = {
-    position: "absolute",
-    inset: 0,
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: "48px 48px 32px",
-    textAlign: "center",
-    zIndex: 10,
-  };
-
-  const slides = [
-    /* 0 — Titolo narrativo */
-    <div key="s0" style={slideStyle}>
-      <p style={{ margin: "0 0 24px", fontSize: 11, letterSpacing: "0.2em", textTransform: "uppercase", color: "#C4B5FD", fontWeight: 600 }}>
-        {recap.monthYear}
-      </p>
-      <h1
-        style={{
-          margin: 0,
-          fontFamily: "Georgia, serif",
-          fontStyle: "italic",
-          fontWeight: 400,
-          lineHeight: 1.1,
-          fontSize: "clamp(48px, 10vw, 80px)",
-          background: "linear-gradient(135deg, #F0EEFF 0%, #C4B5FD 50%, #E879F9 100%)",
-          WebkitBackgroundClip: "text",
-          WebkitTextFillColor: "transparent",
-          backgroundClip: "text",
-          animation: "pmZoomIn 600ms ease both",
-        }}
-      >
-        {recap.narrativeTitle}
-      </h1>
-      <p style={{ marginTop: 24, fontSize: 16, color: "rgba(240,238,255,0.6)", lineHeight: 1.6 }}>
-        Il tuo mese in Valorem
-      </p>
-    </div>,
-
-    /* 1 — Spesa principale */
-    <div key="s1" style={slideStyle}>
-      <p style={{ margin: "0 0 16px", fontSize: 12, letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(240,238,255,0.45)" }}>
-        Questo mese hai speso
-      </p>
-      <p
-        style={{
-          margin: 0,
-          fontFamily: "Georgia, serif",
-          fontWeight: 400,
-          lineHeight: 1,
-          fontSize: "clamp(72px, 14vw, 112px)",
-          color: "#F87171",
-          letterSpacing: "-0.04em",
-          animation: "pmZoomIn 600ms ease both",
-        }}
-      >
-        €{spentSplit.int}
-        <span style={{ fontSize: "0.38em", opacity: 0.6 }}>,{spentSplit.dec}</span>
-      </p>
-      {recap.trendVsPrevMonth !== null && (
-        <p style={{ marginTop: 20, fontSize: 18, color: "rgba(240,238,255,0.55)" }}>
-          {recap.trendVsPrevMonth > 0 ? "+" : ""}{recap.trendVsPrevMonth}% rispetto al mese precedente
-        </p>
-      )}
-    </div>,
-
-    /* 2 — Categoria principale */
-    <div key="s2" style={slideStyle}>
-      {topCat ? (
-        <>
-          <span style={{ fontSize: 64, lineHeight: 1, animation: "pmZoomIn 600ms ease both", display: "block" }}>
-            {CAT_EMOJIS[topCat.name] ?? "📦"}
-          </span>
-          <p style={{ marginTop: 20, marginBottom: 4, fontSize: 13, letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(240,238,255,0.4)" }}>
-            La tua categoria principale è
-          </p>
-          <p
-            style={{
-              margin: 0,
-              fontFamily: "Georgia, serif",
-              fontStyle: "italic",
-              fontWeight: 400,
-              fontSize: "clamp(36px, 7vw, 56px)",
-              color: "#C4B5FD",
-              animation: "pmZoomIn 600ms ease both",
-            }}
-          >
-            {topCat.name}
-          </p>
-          <p style={{ marginTop: 12, fontSize: 20, color: "rgba(240,238,255,0.55)" }}>
-            {topCat.percent}% delle spese totali
-          </p>
-        </>
-      ) : (
-        <p style={{ fontSize: 20, color: "rgba(240,238,255,0.4)" }}>Nessuna categoria registrata</p>
-      )}
-    </div>,
-
-    /* 3 — Impulsi resistiti */
-    <div key="s3" style={slideStyle}>
-      <p style={{ margin: "0 0 8px", fontSize: 12, letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(240,238,255,0.4)" }}>
-        Acquisti impulsivi evitati
-      </p>
-      <p
-        style={{
-          margin: 0,
-          fontFamily: "Georgia, serif",
-          fontWeight: 400,
-          lineHeight: 1,
-          fontSize: "clamp(80px, 16vw, 128px)",
-          color: "#10B981",
-          letterSpacing: "-0.04em",
-          animation: "pmZoomIn 600ms ease both",
-        }}
-      >
-        {recap.savedImpulsesCount}
-      </p>
-      {recap.savedFromImpulses > 0 && (
-        <p style={{ marginTop: 16, fontSize: 18, color: "#6EE7B7" }}>
-          Hai salvato €{Math.round(recap.savedFromImpulses)}
-        </p>
-      )}
-    </div>,
-
-    /* 4 — Citazione Coach */
-    <div key="s4" style={slideStyle}>
-      <Sparkles
-        style={{ width: 40, height: 40, color: "#A88BFA", marginBottom: 24, flexShrink: 0 }}
-        strokeWidth={1.4}
-      />
-      {recap.coachQuote ? (
-        <>
-          <p
-            style={{
-              margin: 0,
-              fontFamily: "Georgia, serif",
-              fontStyle: "italic",
-              fontWeight: 400,
-              lineHeight: 1.55,
-              fontSize: "clamp(18px, 3.5vw, 30px)",
-              color: "#F0EEFF",
-              maxWidth: 640,
-              animation: "pmZoomIn 600ms ease both",
-            }}
-          >
-            "{recap.coachQuote}"
-          </p>
-          <p style={{ marginTop: 24, fontSize: 12, letterSpacing: "0.18em", textTransform: "uppercase", color: "#A88BFA" }}>
-            — Valorem Coach
-          </p>
-        </>
-      ) : (
-        <p style={{ fontFamily: "Georgia, serif", fontStyle: "italic", fontSize: 22, color: "rgba(240,238,255,0.55)" }}>
-          Il mese parla da solo.
-        </p>
-      )}
-    </div>,
-
-    /* 5 — Chiusura */
-    <div key="s5" style={slideStyle}>
-      <div
-        style={{
-          width: 96, height: 96, borderRadius: "50%",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          background: "linear-gradient(135deg, #A88BFA, #E879F9)",
-          boxShadow: "0 0 60px rgba(168,139,250,0.5)",
-          marginBottom: 28,
-          animation: "pmZoomIn 600ms ease both",
-          flexShrink: 0,
-        }}
-      >
-        <Sparkles style={{ width: 40, height: 40, color: "#fff" }} strokeWidth={1.4} />
-      </div>
-      <p style={{ margin: 0, fontFamily: "Georgia, serif", fontStyle: "italic", fontWeight: 400, fontSize: 32, color: "#F0EEFF" }}>
-        Fine del mese.
-      </p>
-      <p style={{ marginTop: 12, fontSize: 16, color: "rgba(240,238,255,0.55)" }}>
-        Il prossimo è una nuova possibilità.
-      </p>
-      <button
-        type="button"
-        onClick={onClose}
-        style={{
-          marginTop: 36,
-          display: "inline-flex", alignItems: "center", gap: 8,
-          borderRadius: 14, padding: "14px 32px",
-          fontSize: 13, fontWeight: 600, color: "#fff",
-          background: "linear-gradient(135deg, #A88BFA, #E879F9)",
-          boxShadow: "0 8px 32px -8px rgba(168,139,250,0.7)",
-          border: "none", cursor: "pointer",
-          transition: "transform 200ms ease, opacity 200ms ease",
-        }}
-        onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
-        onMouseLeave={(e) => (e.currentTarget.style.transform = "translateY(0)")}
-      >
-        Chiudi presentazione
-      </button>
-    </div>,
-  ];
-
-  return (
-    <div
-      style={{
-        position: "fixed",
-        inset: 0,
-        zIndex: 9999,
-        background: "#0D0A1E",
-        overflow: "hidden",
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
-      {/* Background glow — behind content */}
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          zIndex: 0,
-          pointerEvents: "none",
-          background: "radial-gradient(ellipse 80% 60% at 50% 30%, rgba(168,139,250,0.14), transparent 70%)",
-        }}
-      />
-
-      {/* Close button */}
-      <button
-        type="button"
-        onClick={onClose}
-        style={{
-          position: "absolute", right: 20, top: 20, zIndex: 20,
-          display: "flex", alignItems: "center", justifyContent: "center",
-          width: 40, height: 40, borderRadius: "50%",
-          background: "rgba(255,255,255,0.04)",
-          border: "1px solid rgba(255,255,255,0.12)",
-          cursor: "pointer", transition: "background 200ms ease",
-        }}
-        onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.08)")}
-        onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.04)")}
-      >
-        <XIcon style={{ width: 20, height: 20, color: "rgba(240,238,255,0.5)" }} strokeWidth={1.8} />
-      </button>
-
-      {/* Slide area — position relative, flex-1 */}
-      <div
-        style={{
-          flex: 1,
-          position: "relative",
-          transition: "opacity 300ms ease",
-          opacity: fading ? 0 : 1,
-          minHeight: 0,
-        }}
-      >
-        {slides[slide]}
-      </div>
-
-      {/* Bottom controls */}
-      <div
-        style={{
-          flexShrink: 0,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          padding: "0 24px 32px",
-          position: "relative",
-          zIndex: 10,
-        }}
-      >
-        {[prev, next].map((fn, idx) => (
-          <button
-            key={idx}
-            type="button"
-            onClick={idx === 0 ? prev : next}
-            style={{
-              display: "flex", alignItems: "center", justifyContent: "center",
-              width: 40, height: 40, borderRadius: "50%",
-              background: "rgba(255,255,255,0.04)",
-              border: "1px solid rgba(255,255,255,0.12)",
-              cursor: "pointer",
-            }}
-          >
-            {idx === 0
-              ? <ChevronLeft style={{ width: 20, height: 20, color: "rgba(240,238,255,0.5)" }} strokeWidth={2} />
-              : <ChevronRight style={{ width: 20, height: 20, color: "rgba(240,238,255,0.5)" }} strokeWidth={2} />
-            }
-          </button>
-        ))}
-
-        {/* Dot indicators — centrati tra i due pulsanti */}
-        <div style={{ position: "absolute", left: "50%", transform: "translateX(-50%)", display: "flex", alignItems: "center", gap: 8 }}>
-          {Array.from({ length: TOTAL_SLIDES }).map((_, i) => (
-            <button
-              key={i}
-              type="button"
-              onClick={() => goTo(i)}
-              style={{
-                width: i === slide ? 20 : 6,
-                height: 6,
-                borderRadius: 999,
-                background: i === slide ? "#A88BFA" : "rgba(255,255,255,0.2)",
-                border: "none",
-                cursor: "pointer",
-                padding: 0,
-                transition: "width 300ms ease, background 300ms ease",
-              }}
-            />
-          ))}
-        </div>
-      </div>
-
-      <style>{`
-        @keyframes pmZoomIn {
-          from { opacity: 0; transform: scale(0.92); }
-          to   { opacity: 1; transform: scale(1); }
-        }
-      `}</style>
-    </div>
-  );
-}
 
 export function RecapView({
   profile,
@@ -423,13 +44,8 @@ export function RecapView({
   stats: DashboardStats;
   isCurrentMonth?: boolean;
 }) {
-  const [presenting, setPresenting] = useState(false);
-
   return (
     <div className="relative min-h-screen">
-      {presenting && (
-        <PresentationMode recap={recap} onClose={() => setPresenting(false)} />
-      )}
       <div className="hidden md:block fixed left-0 top-0 z-20 h-screen w-[64px]">
         <Sidebar activeRoute="dashboard" />
       </div>
@@ -453,22 +69,6 @@ export function RecapView({
               </p>
             </div>
           )}
-
-          {/* PULSANTE PRESENTAZIONE */}
-          <div className="mt-4 flex justify-end">
-            <button
-              type="button"
-              onClick={() => setPresenting(true)}
-              className="inline-flex items-center gap-2 rounded-[12px] px-4 py-2 text-[12px] font-medium text-iri-pale transition-all hover:opacity-80"
-              style={{
-                background: "rgba(168,139,250,0.08)",
-                border: "1px solid rgba(168,139,250,0.25)",
-              }}
-            >
-              <Play className="h-3.5 w-3.5" strokeWidth={2} />
-              Presenta il mese
-            </button>
-          </div>
 
           {/* HERO NARRATIVO */}
           <HeroRecap recap={recap} />
