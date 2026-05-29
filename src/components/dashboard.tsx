@@ -23,6 +23,7 @@ import { WeeklyRecap } from "./weekly-recap";
 import { NewTransactionModal } from "./new-transaction-modal";
 import { getCustomCategories } from "@/app/settings/categories-actions";
 import type { CustomCategory } from "@/app/settings/categories-actions";
+import { StreakBadge } from "./streak";
 
 type DailyPoint = { date: string; amount: number; label: string };
 
@@ -451,6 +452,7 @@ export function Dashboard({
             userName={data.profile?.name || "ospite"}
             transactions={data.transactions}
             goals={goals}
+            stats={data.stats}
           />
           <div className="mt-5 flex flex-col gap-4 md:mt-6 md:gap-5">
             <RecapBanner />
@@ -471,6 +473,7 @@ export function Dashboard({
               profileCreatedAt={(data.profile as unknown as { created_at?: string })?.created_at}
             />
             <PlanPill plan={plan} />
+            <StreakBadge transactions={data.transactions} />
 
             {/* ── HERO (nessun titolo — protagonista) ── */}
             <div style={{ animationDelay: "0ms", animationFillMode: "both" }}

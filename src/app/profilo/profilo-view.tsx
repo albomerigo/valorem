@@ -102,6 +102,7 @@ export function ProfiloView({
   monthlySpending,
   topCategory,
   valoremScore,
+  scoreHistory,
 }: {
   profile: UserProfile;
   email: string;
@@ -120,6 +121,7 @@ export function ProfiloView({
     color: string;
     breakdown: Record<string, number>;
   };
+  scoreHistory?: { month: string; score: number }[];
 }) {
   const initials = (profile.name || email || "V")
     .split(" ")
@@ -417,6 +419,57 @@ export function ProfiloView({
                       })}
                     </div>
                   </div>
+
+                  {/* Score History Sparkline */}
+                  {scoreHistory && scoreHistory.length > 1 && (() => {
+                    const W = 100;
+                    const H = 80;
+                    const PAD = 8;
+                    const scores = scoreHistory.map((s) => s.score);
+                    const minS = Math.min(...scores);
+                    const maxS = Math.max(...scores);
+                    const rangeS = maxS - minS || 1;
+                    const pts = scores.map((s, i) => {
+                      const x = PAD + (i / (scores.length - 1)) * (W - PAD * 2);
+                      const y = PAD + (1 - (s - minS) / rangeS) * (H - PAD * 2);
+                      return { x, y, s, label: scoreHistory[i].month };
+                    });
+                    const pathD = pts.map((p, i) => `${i === 0 ? "M" : "L"} ${p.x} ${p.y}`).join(" ");
+                    const trend = scores[scores.length - 1] - scores[0];
+                    const lineColor = trend >= 0 ? "#10B981" : "#F87171";
+                    return (
+                      <div className="mt-4" style={{ borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: 16 }}>
+                        <p className="m-0 mb-3 text-[10px] uppercase tracking-[0.12em] text-ink-muted">Score nel tempo</p>
+                        <svg viewBox={`0 0 ${W} ${H}`} style={{ width: "100%", height: 80 }}>
+                          {/* Grid lines */}
+                          {[25, 50, 75].map((v) => {
+                            const y = PAD + (1 - (v - minS) / rangeS) * (H - PAD * 2);
+                            if (y < PAD || y > H - PAD) return null;
+                            return (
+                              <line key={v} x1={PAD} y1={y} x2={W - PAD} y2={y}
+                                stroke="rgba(255,255,255,0.04)" strokeWidth="0.5" />
+                            );
+                          })}
+                          {/* Line */}
+                          <path d={pathD} fill="none" stroke={lineColor} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                          {/* Dots + labels */}
+                          {pts.map((p, i) => (
+                            <g key={i}>
+                              <circle cx={p.x} cy={p.y} r="2.5" fill={lineColor} />
+                              <title>{p.label}: {p.s}</title>
+                            </g>
+                          ))}
+                        </svg>
+                        <div className="flex justify-between mt-1">
+                          {scoreHistory.map((h, i) => (
+                            <span key={i} className="text-[8px] text-ink-muted" style={{ fontVariantNumeric: "tabular-nums" }}>
+                              {new Date(h.month + "-01").toLocaleDateString("it-IT", { month: "short" })}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })()}
                 </div>
               )}
 

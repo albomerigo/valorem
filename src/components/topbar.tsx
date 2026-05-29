@@ -2,19 +2,22 @@
 
 import { Search } from "./search";
 import { BackButton } from "./back-button";
-import type { Transaction, Goal } from "@/lib/finance";
+import { NotificationBell } from "./notifications";
+import type { Transaction, Goal, DashboardStats } from "@/lib/finance";
 
 export function Topbar({
   userName,
   section = "Dashboard",
   transactions = [],
   goals = [],
+  stats,
   showBack = false,
 }: {
   userName: string;
   section?: string;
   transactions?: Transaction[];
   goals?: Goal[];
+  stats?: DashboardStats;
   showBack?: boolean;
 }) {
   return (
@@ -33,6 +36,7 @@ export function Topbar({
       </div>
 
       <div className="flex items-center gap-2 flex-shrink-0">
+        <NotificationBell transactions={transactions} stats={stats} />
         <div className="hidden md:block"><Search transactions={transactions} goals={goals} /></div>
       </div>
     </div>

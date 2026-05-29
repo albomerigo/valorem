@@ -128,6 +128,29 @@ export default async function ProfiloPage() {
     monthlySpending.push({ month: key, label, amount });
   }
 
+  // Score history — last 6 months
+  const scoreHistory: { month: string; score: number }[] = [];
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+    const mSpent = transactions
+      .filter((t) => t.type === "expense" && t.transaction_date.startsWith(key))
+      .reduce((s, t) => s + Number(t.amount), 0);
+    const mScore = calculateValoremScore({
+      savingsPercent: savingsPct,
+      trendVsLastMonth: 0,
+      impulsiResistiti: 0,
+      totalSpent: mSpent,
+      monthlyFree,
+      goalsOnTrack,
+      totalGoals: goals.length,
+      transactionCount: transactions.filter((t) => t.transaction_date.startsWith(key)).length,
+    });
+    if (mSpent > 0 || d.getMonth() === now.getMonth()) {
+      scoreHistory.push({ month: key, score: mScore.score });
+    }
+  }
+
   return (
     <ProfiloView
       profile={profile}
@@ -142,6 +165,7 @@ export default async function ProfiloPage() {
       monthlySpending={monthlySpending}
       topCategory={topCategory}
       valoremScore={valoremScore}
+      scoreHistory={scoreHistory.length > 1 ? scoreHistory : undefined}
     />
   );
 }

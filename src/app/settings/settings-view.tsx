@@ -69,6 +69,16 @@ export function SettingsView({
                 Guida
               </Link>
               {" · "}
+              <Link href="/novita" className="hover:text-ink-secondary transition-colors inline-flex items-center gap-1">
+                Novità
+                <span
+                  className="inline-block rounded-full px-1.5 py-0.5 text-[8px] font-semibold uppercase tracking-wide"
+                  style={{ background: "rgba(168,139,250,0.2)", color: "#C4B5FD", border: "1px solid rgba(168,139,250,0.3)" }}
+                >
+                  NEW
+                </span>
+              </Link>
+              {" · "}
               <Link href="/ricorrenti" className="hover:text-ink-secondary transition-colors">
                 Spese ricorrenti
               </Link>
