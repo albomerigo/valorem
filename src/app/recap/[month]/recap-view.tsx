@@ -68,13 +68,11 @@ function PresentationMode({
   const next = useCallback(() => goTo((slide + 1) % TOTAL_SLIDES), [slide, goTo]);
   const prev = useCallback(() => goTo((slide - 1 + TOTAL_SLIDES) % TOTAL_SLIDES), [slide, goTo]);
 
-  // Auto-advance
   useEffect(() => {
     const t = setInterval(next, AUTO_INTERVAL);
     return () => clearInterval(t);
   }, [next]);
 
-  // ESC to close
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -89,147 +87,207 @@ function PresentationMode({
   const topCat = recap.categoryBreakdown[0];
 
   const CAT_EMOJIS: Record<string, string> = {
-    Alimentari: "🛒",
-    Ristorazione: "🍽️",
-    Trasporti: "🚗",
-    Abbonamento: "📱",
-    Svago: "🎮",
-    Salute: "💪",
-    Casa: "🏠",
-    Shopping: "🛍️",
-    Investimenti: "📈",
-    Altro: "📦",
+    Alimentari: "🛒", Ristorazione: "🍽️", Trasporti: "🚗",
+    Abbonamento: "📱", Svago: "🎮", Salute: "💪",
+    Casa: "🏠", Shopping: "🛍️", Investimenti: "📈", Altro: "📦",
+  };
+
+  // Stile comune per ogni slide — position absolute, tutto lo spazio
+  const slideStyle: React.CSSProperties = {
+    position: "absolute",
+    inset: 0,
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: "48px 48px 32px",
+    textAlign: "center",
+    zIndex: 10,
   };
 
   const slides = [
     /* 0 — Titolo narrativo */
-    <div key="s0" className="flex flex-col items-center justify-center h-full text-center px-8">
-      <p className="eyebrow-accent mb-6 text-[11px] tracking-[0.2em]">{recap.monthYear}</p>
+    <div key="s0" style={slideStyle}>
+      <p style={{ margin: "0 0 24px", fontSize: 11, letterSpacing: "0.2em", textTransform: "uppercase", color: "#C4B5FD", fontWeight: 600 }}>
+        {recap.monthYear}
+      </p>
       <h1
-        className="m-0 font-serif italic leading-[1.1]"
         style={{
+          margin: 0,
+          fontFamily: "Georgia, serif",
+          fontStyle: "italic",
+          fontWeight: 400,
+          lineHeight: 1.1,
           fontSize: "clamp(48px, 10vw, 80px)",
           background: "linear-gradient(135deg, #F0EEFF 0%, #C4B5FD 50%, #E879F9 100%)",
           WebkitBackgroundClip: "text",
           WebkitTextFillColor: "transparent",
           backgroundClip: "text",
-          animation: "zoomIn 600ms ease both",
+          animation: "pmZoomIn 600ms ease both",
         }}
       >
         {recap.narrativeTitle}
       </h1>
-      <p className="mt-6 text-[16px] text-ink-secondary">Il tuo mese in Valorem</p>
+      <p style={{ marginTop: 24, fontSize: 16, color: "rgba(240,238,255,0.6)", lineHeight: 1.6 }}>
+        Il tuo mese in Valorem
+      </p>
     </div>,
 
-    /* 1 — Il numero principale */
-    <div key="s1" className="flex flex-col items-center justify-center h-full text-center px-8">
-      <p className="eyebrow mb-4 text-[11px]">Questo mese hai speso</p>
+    /* 1 — Spesa principale */
+    <div key="s1" style={slideStyle}>
+      <p style={{ margin: "0 0 16px", fontSize: 12, letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(240,238,255,0.45)" }}>
+        Questo mese hai speso
+      </p>
       <p
-        className="m-0 font-serif font-normal leading-none"
         style={{
+          margin: 0,
+          fontFamily: "Georgia, serif",
+          fontWeight: 400,
+          lineHeight: 1,
           fontSize: "clamp(72px, 14vw, 112px)",
           color: "#F87171",
           letterSpacing: "-0.04em",
-          animation: "zoomIn 600ms ease both",
+          animation: "pmZoomIn 600ms ease both",
         }}
       >
         €{spentSplit.int}
-        <span style={{ fontSize: "0.4em", opacity: 0.6 }}>,{spentSplit.dec}</span>
+        <span style={{ fontSize: "0.38em", opacity: 0.6 }}>,{spentSplit.dec}</span>
       </p>
-      {recap.prevMonthData && recap.trendVsPrevMonth !== null && (
-        <p className="mt-4 text-[16px] text-ink-secondary">
+      {recap.trendVsPrevMonth !== null && (
+        <p style={{ marginTop: 20, fontSize: 18, color: "rgba(240,238,255,0.55)" }}>
           {recap.trendVsPrevMonth > 0 ? "+" : ""}{recap.trendVsPrevMonth}% rispetto al mese precedente
         </p>
       )}
     </div>,
 
     /* 2 — Categoria principale */
-    <div key="s2" className="flex flex-col items-center justify-center h-full text-center px-8">
+    <div key="s2" style={slideStyle}>
       {topCat ? (
         <>
-          <span style={{ fontSize: 64, animation: "zoomIn 600ms ease both" }}>
+          <span style={{ fontSize: 64, lineHeight: 1, animation: "pmZoomIn 600ms ease both", display: "block" }}>
             {CAT_EMOJIS[topCat.name] ?? "📦"}
           </span>
-          <p className="mt-4 text-[14px] uppercase tracking-[0.2em] text-ink-muted">La tua categoria principale è</p>
+          <p style={{ marginTop: 20, marginBottom: 4, fontSize: 13, letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(240,238,255,0.4)" }}>
+            La tua categoria principale è
+          </p>
           <p
-            className="m-0 font-serif italic"
-            style={{ fontSize: "clamp(36px, 7vw, 56px)", color: "#C4B5FD" }}
+            style={{
+              margin: 0,
+              fontFamily: "Georgia, serif",
+              fontStyle: "italic",
+              fontWeight: 400,
+              fontSize: "clamp(36px, 7vw, 56px)",
+              color: "#C4B5FD",
+              animation: "pmZoomIn 600ms ease both",
+            }}
           >
             {topCat.name}
           </p>
-          <p className="mt-3 text-[20px] text-ink-secondary">
+          <p style={{ marginTop: 12, fontSize: 20, color: "rgba(240,238,255,0.55)" }}>
             {topCat.percent}% delle spese totali
           </p>
         </>
       ) : (
-        <p className="text-ink-muted">Nessuna categoria</p>
+        <p style={{ fontSize: 20, color: "rgba(240,238,255,0.4)" }}>Nessuna categoria registrata</p>
       )}
     </div>,
 
     /* 3 — Impulsi resistiti */
-    <div key="s3" className="flex flex-col items-center justify-center h-full text-center px-8">
+    <div key="s3" style={slideStyle}>
+      <p style={{ margin: "0 0 8px", fontSize: 12, letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(240,238,255,0.4)" }}>
+        Acquisti impulsivi evitati
+      </p>
       <p
-        className="m-0 font-serif font-normal leading-none"
         style={{
+          margin: 0,
+          fontFamily: "Georgia, serif",
+          fontWeight: 400,
+          lineHeight: 1,
           fontSize: "clamp(80px, 16vw, 128px)",
           color: "#10B981",
           letterSpacing: "-0.04em",
-          animation: "zoomIn 600ms ease both",
+          animation: "pmZoomIn 600ms ease both",
         }}
       >
         {recap.savedImpulsesCount}
       </p>
-      <p className="text-[20px] text-ink-secondary">acquisti impulsivi evitati</p>
       {recap.savedFromImpulses > 0 && (
-        <p className="mt-2 text-[16px]" style={{ color: "#6EE7B7" }}>
+        <p style={{ marginTop: 16, fontSize: 18, color: "#6EE7B7" }}>
           Hai salvato €{Math.round(recap.savedFromImpulses)}
         </p>
       )}
     </div>,
 
     /* 4 — Citazione Coach */
-    <div key="s4" className="flex flex-col items-center justify-center h-full text-center px-8 md:px-20">
-      <Sparkles className="mb-6 h-10 w-10 text-iri-pale" strokeWidth={1.4} />
+    <div key="s4" style={slideStyle}>
+      <Sparkles
+        style={{ width: 40, height: 40, color: "#A88BFA", marginBottom: 24, flexShrink: 0 }}
+        strokeWidth={1.4}
+      />
       {recap.coachQuote ? (
         <>
           <p
-            className="m-0 font-serif italic leading-[1.5]"
             style={{
-              fontSize: "clamp(20px, 4vw, 32px)",
+              margin: 0,
+              fontFamily: "Georgia, serif",
+              fontStyle: "italic",
+              fontWeight: 400,
+              lineHeight: 1.55,
+              fontSize: "clamp(18px, 3.5vw, 30px)",
               color: "#F0EEFF",
-              animation: "zoomIn 600ms ease both",
+              maxWidth: 640,
+              animation: "pmZoomIn 600ms ease both",
             }}
           >
-            “{recap.coachQuote}”
+            "{recap.coachQuote}"
           </p>
-          <p className="mt-6 text-[13px] uppercase tracking-[0.2em] text-iri-pale">
+          <p style={{ marginTop: 24, fontSize: 12, letterSpacing: "0.18em", textTransform: "uppercase", color: "#A88BFA" }}>
             — Valorem Coach
           </p>
         </>
       ) : (
-        <p className="font-serif italic text-[22px] text-ink-secondary">Il mese parla da solo.</p>
+        <p style={{ fontFamily: "Georgia, serif", fontStyle: "italic", fontSize: 22, color: "rgba(240,238,255,0.55)" }}>
+          Il mese parla da solo.
+        </p>
       )}
     </div>,
 
     /* 5 — Chiusura */
-    <div key="s5" className="flex flex-col items-center justify-center h-full text-center px-8">
+    <div key="s5" style={slideStyle}>
       <div
-        className="mb-6 flex h-24 w-24 items-center justify-center rounded-full"
         style={{
+          width: 96, height: 96, borderRadius: "50%",
+          display: "flex", alignItems: "center", justifyContent: "center",
           background: "linear-gradient(135deg, #A88BFA, #E879F9)",
           boxShadow: "0 0 60px rgba(168,139,250,0.5)",
-          animation: "zoomIn 600ms ease both",
+          marginBottom: 28,
+          animation: "pmZoomIn 600ms ease both",
+          flexShrink: 0,
         }}
       >
-        <Sparkles className="h-10 w-10 text-white" strokeWidth={1.4} />
+        <Sparkles style={{ width: 40, height: 40, color: "#fff" }} strokeWidth={1.4} />
       </div>
-      <p className="m-0 font-serif italic text-[32px] text-ink-primary">Fine del mese.</p>
-      <p className="mt-3 text-[15px] text-ink-secondary">Il prossimo è una nuova possibilità.</p>
+      <p style={{ margin: 0, fontFamily: "Georgia, serif", fontStyle: "italic", fontWeight: 400, fontSize: 32, color: "#F0EEFF" }}>
+        Fine del mese.
+      </p>
+      <p style={{ marginTop: 12, fontSize: 16, color: "rgba(240,238,255,0.55)" }}>
+        Il prossimo è una nuova possibilità.
+      </p>
       <button
         type="button"
         onClick={onClose}
-        className="mt-8 inline-flex items-center gap-2 rounded-[14px] px-8 py-3.5 text-[13px] font-semibold text-white transition-all hover:-translate-y-0.5"
-        style={{ background: "linear-gradient(135deg, #A88BFA, #E879F9)", boxShadow: "0 8px 32px -8px rgba(168,139,250,0.7)" }}
+        style={{
+          marginTop: 36,
+          display: "inline-flex", alignItems: "center", gap: 8,
+          borderRadius: 14, padding: "14px 32px",
+          fontSize: 13, fontWeight: 600, color: "#fff",
+          background: "linear-gradient(135deg, #A88BFA, #E879F9)",
+          boxShadow: "0 8px 32px -8px rgba(168,139,250,0.7)",
+          border: "none", cursor: "pointer",
+          transition: "transform 200ms ease, opacity 200ms ease",
+        }}
+        onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
+        onMouseLeave={(e) => (e.currentTarget.style.transform = "translateY(0)")}
       >
         Chiudi presentazione
       </button>
@@ -238,14 +296,24 @@ function PresentationMode({
 
   return (
     <div
-      className="fixed inset-0 z-[9999] flex flex-col"
-      style={{ background: "#0D0A1E" }}
+      style={{
+        position: "fixed",
+        inset: 0,
+        zIndex: 9999,
+        background: "#0D0A1E",
+        overflow: "hidden",
+        display: "flex",
+        flexDirection: "column",
+      }}
     >
-      {/* Background glow */}
+      {/* Background glow — behind content */}
       <div
-        className="pointer-events-none absolute inset-0"
         style={{
-          background: "radial-gradient(ellipse 80% 60% at 50% 30%, rgba(168,139,250,0.12), transparent 70%)",
+          position: "absolute",
+          inset: 0,
+          zIndex: 0,
+          pointerEvents: "none",
+          background: "radial-gradient(ellipse 80% 60% at 50% 30%, rgba(168,139,250,0.14), transparent 70%)",
         }}
       />
 
@@ -253,62 +321,91 @@ function PresentationMode({
       <button
         type="button"
         onClick={onClose}
-        className="absolute right-5 top-5 z-10 flex h-10 w-10 items-center justify-center rounded-full transition-colors hover:bg-white/[0.06]"
-        style={{ border: "1px solid rgba(255,255,255,0.1)" }}
+        style={{
+          position: "absolute", right: 20, top: 20, zIndex: 20,
+          display: "flex", alignItems: "center", justifyContent: "center",
+          width: 40, height: 40, borderRadius: "50%",
+          background: "rgba(255,255,255,0.04)",
+          border: "1px solid rgba(255,255,255,0.12)",
+          cursor: "pointer", transition: "background 200ms ease",
+        }}
+        onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.08)")}
+        onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.04)")}
       >
-        <XIcon className="h-5 w-5 text-ink-muted" strokeWidth={1.8} />
+        <XIcon style={{ width: 20, height: 20, color: "rgba(240,238,255,0.5)" }} strokeWidth={1.8} />
       </button>
 
-      {/* Slide content */}
+      {/* Slide area — position relative, flex-1 */}
       <div
-        className="flex-1 transition-opacity duration-300"
-        style={{ opacity: fading ? 0 : 1 }}
+        style={{
+          flex: 1,
+          position: "relative",
+          transition: "opacity 300ms ease",
+          opacity: fading ? 0 : 1,
+          minHeight: 0,
+        }}
       >
         {slides[slide]}
       </div>
 
       {/* Bottom controls */}
-      <div className="flex-shrink-0 flex items-center justify-between px-6 pb-8">
-        <button
-          type="button"
-          onClick={prev}
-          className="flex h-10 w-10 items-center justify-center rounded-full transition-colors hover:bg-white/[0.06]"
-          style={{ border: "1px solid rgba(255,255,255,0.1)" }}
-        >
-          <ChevronLeft className="h-5 w-5 text-ink-muted" strokeWidth={2} />
-        </button>
+      <div
+        style={{
+          flexShrink: 0,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "0 24px 32px",
+          position: "relative",
+          zIndex: 10,
+        }}
+      >
+        {[prev, next].map((fn, idx) => (
+          <button
+            key={idx}
+            type="button"
+            onClick={idx === 0 ? prev : next}
+            style={{
+              display: "flex", alignItems: "center", justifyContent: "center",
+              width: 40, height: 40, borderRadius: "50%",
+              background: "rgba(255,255,255,0.04)",
+              border: "1px solid rgba(255,255,255,0.12)",
+              cursor: "pointer",
+            }}
+          >
+            {idx === 0
+              ? <ChevronLeft style={{ width: 20, height: 20, color: "rgba(240,238,255,0.5)" }} strokeWidth={2} />
+              : <ChevronRight style={{ width: 20, height: 20, color: "rgba(240,238,255,0.5)" }} strokeWidth={2} />
+            }
+          </button>
+        ))}
 
-        {/* Dot indicators */}
-        <div className="flex items-center gap-2">
+        {/* Dot indicators — centrati tra i due pulsanti */}
+        <div style={{ position: "absolute", left: "50%", transform: "translateX(-50%)", display: "flex", alignItems: "center", gap: 8 }}>
           {Array.from({ length: TOTAL_SLIDES }).map((_, i) => (
             <button
               key={i}
               type="button"
               onClick={() => goTo(i)}
-              className="transition-all duration-300 rounded-full"
               style={{
                 width: i === slide ? 20 : 6,
                 height: 6,
+                borderRadius: 999,
                 background: i === slide ? "#A88BFA" : "rgba(255,255,255,0.2)",
+                border: "none",
+                cursor: "pointer",
+                padding: 0,
+                transition: "width 300ms ease, background 300ms ease",
               }}
             />
           ))}
         </div>
-
-        <button
-          type="button"
-          onClick={next}
-          className="flex h-10 w-10 items-center justify-center rounded-full transition-colors hover:bg-white/[0.06]"
-          style={{ border: "1px solid rgba(255,255,255,0.1)" }}
-        >
-          <ChevronRight className="h-5 w-5 text-ink-muted" strokeWidth={2} />
-        </button>
       </div>
 
       <style>{`
-        @keyframes zoomIn {
+        @keyframes pmZoomIn {
           from { opacity: 0; transform: scale(0.92); }
-          to { opacity: 1; transform: scale(1); }
+          to   { opacity: 1; transform: scale(1); }
         }
       `}</style>
     </div>
