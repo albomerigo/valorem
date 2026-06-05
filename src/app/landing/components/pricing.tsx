@@ -1,14 +1,78 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useInView } from "../hooks/use-in-view";
-import { Check, X, Sparkles, Zap, Star } from "lucide-react";
+import {
+  Check,
+  X,
+  Infinity as InfinityIcon,
+  History,
+  Download,
+  Upload,
+  Tag,
+  BookOpen,
+  Sparkles,
+  Star,
+  Bell,
+  Brain,
+  Flame,
+  Award
+} from "lucide-react";
 
 export function Pricing() {
   const { ref, inView } = useInView(0.1);
   const [billingPeriod, setBillingPeriod] = useState<"monthly" | "annual">("monthly");
+  const [remainingSeats, setRemainingSeats] = useState(77);
+  const [animatedRemaining, setAnimatedRemaining] = useState(100);
 
   const isAnnual = billingPeriod === "annual";
+
+  // Fetch Brevo waitlist subscriber count on mount
+  useEffect(() => {
+    let active = true;
+    async function fetchRemaining() {
+      try {
+        const res = await fetch("/api/waitlist-count");
+        if (res.ok && active) {
+          const data = await res.json();
+          // Remaining is 100 - count
+          setRemainingSeats(data.remaining !== undefined ? data.remaining : 77);
+        }
+      } catch (err) {
+        console.error("Error fetching waitlist count for pricing:", err);
+      }
+    }
+    fetchRemaining();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  // Animate count-down from 100 to remainingSeats in 1s
+  useEffect(() => {
+    let start = 100;
+    const end = remainingSeats;
+    
+    const duration = 1000; // 1s
+    const decrement = (100 - end) / (duration / 16); // ~60fps
+    
+    if (end === 100) {
+      setAnimatedRemaining(100);
+      return;
+    }
+
+    const timer = setInterval(() => {
+      start -= decrement;
+      if (start <= end) {
+        setAnimatedRemaining(end);
+        clearInterval(timer);
+      } else {
+        setAnimatedRemaining(Math.ceil(start));
+      }
+    }, 16);
+
+    return () => clearInterval(timer);
+  }, [remainingSeats]);
 
   const handleScrollToWaitlist = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
@@ -16,6 +80,27 @@ export function Pricing() {
     if (waitlistSec) {
       waitlistSec.scrollIntoView({ behavior: "smooth" });
     }
+  };
+
+  // Determine urgency color
+  const getUrgencyClass = () => {
+    if (animatedRemaining < 20) {
+      return "text-[#F87171] font-bold animate-pulse";
+    }
+    if (animatedRemaining < 50) {
+      return "text-[#FBBF24] font-semibold";
+    }
+    return "text-[#10B981] font-semibold";
+  };
+
+  const getUrgencyText = () => {
+    if (animatedRemaining < 20) {
+      return "Ultimi posti!";
+    }
+    if (animatedRemaining < 50) {
+      return "Affrettati!";
+    }
+    return "Disponibile";
   };
 
   return (
@@ -64,33 +149,52 @@ export function Pricing() {
           </span>
         </div>
 
-        {/* Launch Offer Banner */}
-        <div className="max-w-3xl mx-auto mb-12 p-0.5 rounded-2xl bg-gradient-to-r from-[#FBBF24]/30 via-[#FBBF24]/10 to-[#FBBF24]/30 relative overflow-hidden">
-          <div className="bg-[#1e1704]/90 backdrop-blur-md p-4 rounded-[14px] flex items-center justify-center gap-3 border border-[#FBBF24]/10">
-            <span className="text-xl">🎁</span>
-            <p className="text-xs md:text-sm text-[#FDE68A] text-left leading-relaxed">
-              <strong>Offerta lancio:</strong> I primi 100 utenti Premium ricevono il primo mese a <strong>€1,99</strong>. Nessun codice richiesto — applicato automaticamente in cassa.
-            </p>
+        {/* 1. BANNER OFFERTA in cima */}
+        <div className="max-w-3xl mx-auto mb-16 rounded-3xl p-[1px] bg-gradient-to-r from-[#FBBF24]/40 via-[#FBBF24]/10 to-[#FBBF24]/40 relative overflow-hidden shadow-lg">
+          <div className="bg-gradient-to-br from-[#1e1704]/95 to-[#0b0912]/98 backdrop-blur-md p-6 rounded-[23px] flex flex-col md:flex-row items-center justify-between gap-4 border border-[#FBBF24]/10">
+            <div className="flex items-center gap-3 text-left">
+              <span className="text-3xl">🎁</span>
+              <div>
+                <h3 className="text-sm md:text-base text-[#FDE68A] font-bold">
+                  Offerta Lancio — Solo per i primi 100 utenti
+                </h3>
+                <p className="text-xs text-[#8b8899] leading-relaxed mt-0.5">
+                  3 mesi Premium a €1,99/mese · poi €4,99 · Nessun codice necessario.
+                </p>
+              </div>
+            </div>
+            
+            {/* COUNTER POSTI */}
+            <div className="flex items-center gap-2 px-4 py-2 bg-white/[0.03] border border-white/[0.08] rounded-xl self-stretch md:self-auto justify-center">
+              <Flame className="w-4 h-4 text-[#F59E0B] fill-[#F59E0B]/20" />
+              <div className="text-xs text-left">
+                <span className="text-[#8b8899] block text-[9px] uppercase tracking-wider">Rimangono solo</span>
+                <span className={`${getUrgencyClass()} font-mono text-sm`}>
+                  {animatedRemaining} posti
+                </span>
+                <span className="text-[9px] text-[#8b8899] ml-1.5">({getUrgencyText()})</span>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Pricing Grid */}
+        {/* Pricing Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch max-w-6xl mx-auto text-left">
-          {/* Plan 1: Free */}
-          <div className="bg-[#0b0912] border border-white/[0.06] rounded-3xl p-8 flex flex-col justify-between hover:-translate-y-1 transition-all duration-300">
+          
+          {/* Plan 1: Free Card */}
+          <div className="bg-white/[0.01] border border-white/[0.08] rounded-3xl p-8 flex flex-col justify-between hover:-translate-y-1 transition-all duration-300 relative shadow-inner">
             <div>
-              <span className="text-[10px] uppercase tracking-wider text-[#8b8899] font-bold block mb-2">
+              <span className="text-[10px] uppercase tracking-widest text-[#8b8899] font-bold block mb-3">
                 Free
               </span>
-              <div className="text-4xl font-serif text-[#F0EEFF] font-medium mb-1">
+              <div className="text-4xl font-serif text-[#F0EEFF] font-medium mb-4">
                 0€<span className="text-sm text-[#8b8899] font-sans">/mese</span>
               </div>
-              <p className="text-xs text-[#8b8899] h-4 mb-4"></p>
-              <p className="text-xs text-[#8b8899] leading-relaxed mb-6">
-                Per tracciare l'essenziale e iniziare a familiarizzare con le tue spese.
+              <p className="text-xs text-[#8b8899] leading-relaxed mb-8 border-b border-white/[0.04] pb-6">
+                Per tracciare l'essenziale e iniziare a familiarizzare con le tue spese quotidiane.
               </p>
 
-              <ul className="flex flex-col gap-3.5 mb-8 border-t border-white/[0.04] pt-6">
+              <ul className="flex flex-col gap-4 mb-8">
                 <li className="flex items-start gap-2.5 text-xs text-[#e8e6f0]">
                   <Check className="w-4 h-4 text-[#10B981] flex-shrink-0" />
                   <span>15 transazioni/mese</span>
@@ -117,7 +221,7 @@ export function Pricing() {
                 </li>
                 <li className="flex items-start gap-2.5 text-xs text-white/20">
                   <X className="w-4 h-4 text-white/10 flex-shrink-0" />
-                  <span>Esportazione dati</span>
+                  <span>Esportazione CSV/Excel</span>
                 </li>
               </ul>
             </div>
@@ -130,77 +234,100 @@ export function Pricing() {
             </a>
           </div>
 
-          {/* Plan 2: Premium (Featured with animated border) */}
-          <div className="rounded-3xl p-[1.5px] bg-gradient-to-b from-[#a88bfa] via-[#e879f9] to-[#60a5fa] relative flex flex-col justify-between hover:-translate-y-1 transition-all duration-300 shadow-[0_20px_50px_rgba(168,139,250,0.15)] overflow-hidden">
-            {/* Animated border helper block */}
-            <div className="absolute inset-0 bg-gradient-to-r from-[#a88bfa] via-[#e879f9] to-[#60a5fa] opacity-20 blur-xl pointer-events-none" />
+          {/* Plan 2: Premium (FEATURED — stands out drastically) */}
+          <div className="rounded-3xl p-[1.5px] bg-gradient-to-b from-[#a88bfa] via-[#e879f9] to-[#60a5fa] relative flex flex-col justify-between hover:-translate-y-1.5 transition-all duration-300 md:scale-[1.04] shadow-[0_20px_60px_rgba(168,139,250,0.25)] overflow-hidden z-20">
+            {/* Animated border backdrop */}
+            <div className="absolute inset-0 bg-gradient-to-r from-[#a88bfa] via-[#e879f9] to-[#60a5fa] opacity-25 blur-xl pointer-events-none" />
 
-            <div className="bg-[#0c0a15] rounded-[22px] p-8 h-full flex flex-col justify-between relative z-10">
+            <div className="bg-[#0b0914] rounded-[22px] p-8 md:p-10 h-full flex flex-col justify-between relative z-10">
               <div>
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-[10px] uppercase tracking-wider text-[#a88bfa] font-bold">
+                <div className="flex justify-between items-center mb-3">
+                  <span className="text-[10px] uppercase tracking-widest text-[#a88bfa] font-bold">
                     Premium
                   </span>
-                  <span className="text-[9px] uppercase tracking-wider text-white font-extrabold bg-gradient-to-r from-[#a88bfa] to-[#e879f9] px-2.5 py-1 rounded-full shadow-sm">
-                    Più popolare
+                  <span className="text-[9px] uppercase tracking-wider text-white font-extrabold bg-gradient-to-r from-[#a88bfa] to-[#e879f9] px-2.5 py-1 rounded-full shadow-sm flex items-center gap-1">
+                    <Award className="w-3 h-3" />
+                    ✦ Più popolare
                   </span>
                 </div>
-                <div className="text-4xl font-serif text-[#F0EEFF] font-medium mb-1">
-                  {isAnnual ? "3,99€" : "4,99€"}
+                
+                <div className="text-4xl font-serif text-[#F0EEFF] font-medium flex items-baseline gap-2 mb-1">
+                  <span className="text-base text-[#8b8899] line-through font-sans">
+                    {isAnnual ? "5,99€" : "5,99€"}
+                  </span>
+                  <span>{isAnnual ? "3,99€" : "4,99€"}</span>
                   <span className="text-sm text-[#8b8899] font-sans">/mese</span>
                 </div>
-                <p className="text-xs text-[#10B981] h-4 mb-4 font-medium">
-                  {isAnnual ? "→ 47,88€/anno · risparmi 12€" : ""}
+                
+                <p className="text-[10px] text-[#10B981] font-semibold h-4 mb-4">
+                  {isAnnual ? "→ 47,88€/anno · risparmi 24€" : "Prima di €5,99 · Offerta lancio"}
                 </p>
-                <p className="text-xs text-[#8b8899] leading-relaxed mb-6">
+                
+                <p className="text-xs text-[#8b8899] leading-relaxed mb-6 border-b border-[#a88bfa]/10 pb-6">
                   Tutto illimitato. Per riprendere il controllo totale della tua vita finanziaria.
                 </p>
 
-                <ul className="flex flex-col gap-3.5 mb-8 border-t border-white/[0.04] pt-6">
+                {/* Detailed Features List with Custom Icons */}
+                <ul className="flex flex-col gap-3.5 mb-8">
                   <li className="flex items-start gap-2.5 text-xs text-[#e8e6f0]">
-                    <Check className="w-4 h-4 text-[#10B981] flex-shrink-0" />
+                    <InfinityIcon className="w-4 h-4 text-[#a88bfa] flex-shrink-0" />
                     <span>Transazioni illimitate</span>
                   </li>
                   <li className="flex items-start gap-2.5 text-xs text-[#e8e6f0]">
-                    <Check className="w-4 h-4 text-[#10B981] flex-shrink-0" />
-                    <span>Obiettivi illimitati</span>
-                  </li>
-                  <li className="flex items-start gap-2.5 text-xs text-[#e8e6f0]">
-                    <Check className="w-4 h-4 text-[#10B981] flex-shrink-0" />
+                    <History className="w-4 h-4 text-[#a88bfa] flex-shrink-0" />
                     <span>Storico completo a vita</span>
                   </li>
                   <li className="flex items-start gap-2.5 text-xs text-[#e8e6f0]">
-                    <Check className="w-4 h-4 text-[#10B981] flex-shrink-0" />
-                    <span>Esportazione CSV/Excel</span>
+                    <Download className="w-4 h-4 text-[#a88bfa] flex-shrink-0" />
+                    <span>Export CSV/Excel</span>
                   </li>
                   <li className="flex items-start gap-2.5 text-xs text-[#e8e6f0]">
-                    <Check className="w-4 h-4 text-[#10B981] flex-shrink-0" />
-                    <span>Importazione massiva</span>
+                    <Upload className="w-4 h-4 text-[#a88bfa] flex-shrink-0" />
+                    <span>Bulk import transazioni</span>
                   </li>
                   <li className="flex items-start gap-2.5 text-xs text-[#e8e6f0]">
-                    <Check className="w-4 h-4 text-[#10B981] flex-shrink-0" />
-                    <span>AI Coach di base</span>
+                    <Tag className="w-4 h-4 text-[#a88bfa] flex-shrink-0" />
+                    <span>Categorie personalizzate</span>
+                  </li>
+                  <li className="flex items-start gap-2.5 text-xs text-[#e8e6f0]">
+                    <BookOpen className="w-4 h-4 text-[#a88bfa] flex-shrink-0" />
+                    <span>Recap mensile narrativo</span>
+                  </li>
+                  <li className="flex items-start gap-2.5 text-xs text-[#e8e6f0]">
+                    <Sparkles className="w-4 h-4 text-[#a88bfa] flex-shrink-0" />
+                    <span>AI Coach base</span>
+                  </li>
+                  <li className="flex items-start gap-2.5 text-xs text-[#e8e6f0]">
+                    <Star className="w-4 h-4 text-[#a88bfa] flex-shrink-0" />
+                    <span>Valorem Score</span>
+                  </li>
+                  <li className="flex items-start gap-2.5 text-xs text-[#e8e6f0]">
+                    <Bell className="w-4 h-4 text-[#a88bfa] flex-shrink-0" />
+                    <span>Notifiche proattive</span>
                   </li>
                 </ul>
               </div>
 
               <a
                 href="https://valorem-albomerigo-2081s-projects.vercel.app/pricing"
-                className="w-full text-center py-3 text-xs font-semibold rounded-xl bg-gradient-to-r from-[#a88bfa] to-[#e879f9] text-white shadow-md hover:shadow-lg hover:brightness-110 transition-all"
+                className="w-full text-center py-3.5 text-xs font-bold rounded-xl bg-gradient-to-r from-[#a88bfa] to-[#e879f9] text-white shadow-md hover:shadow-[0_0_20px_rgba(168,139,250,0.4)] hover:brightness-110 transition-all duration-300"
               >
-                Inizia Premium →
+                Inizia Premium ora →
               </a>
             </div>
           </div>
 
-          {/* Plan 3: Pro */}
-          <div className="bg-[#0b0912] border border-[#60a5fa]/25 rounded-3xl p-8 flex flex-col justify-between hover:-translate-y-1 transition-all duration-300 relative">
+          {/* Plan 3: Pro Card */}
+          <div className="bg-white/[0.01] border border-[#60a5fa]/25 rounded-3xl p-8 flex flex-col justify-between hover:-translate-y-1 transition-all duration-300 relative shadow-inner">
+            {/* Animated blue border glow backdrop */}
+            <div className="absolute inset-0 bg-[#60a5fa]/5 rounded-3xl pointer-events-none" />
+
             <div>
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-[10px] uppercase tracking-wider text-[#60a5fa] font-bold">
+              <div className="flex justify-between items-center mb-3">
+                <span className="text-[10px] uppercase tracking-widest text-[#60a5fa] font-bold">
                   Pro
                 </span>
-                <span className="text-[9px] uppercase tracking-wider text-[#060508] font-bold bg-[#60a5fa] px-2.5 py-1 rounded-full">
+                <span className="text-[9px] uppercase tracking-wider text-[#060508] font-bold bg-[#60a5fa] px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm">
                   🚀 Prossimamente
                 </span>
               </div>
@@ -208,12 +335,12 @@ export function Pricing() {
                 {isAnnual ? "7,99€" : "8,99€"}
                 <span className="text-sm text-[#8b8899] font-sans">/mese</span>
               </div>
-              <p className="text-xs text-[#10B981] h-4 mb-4 font-medium">
+              <p className="text-[10px] text-[#8b8899] h-4 mb-4">
                 {isAnnual ? "→ 95,88€/anno · risparmi 24€" : ""}
               </p>
               
-              <div className="bg-[#60a5fa]/5 border border-[#60a5fa]/10 rounded-xl p-3 mb-6 text-xs text-[#93c5fd] leading-relaxed">
-                🎁 <strong>Early adopter:</strong> I primi 100 iscritti in lista ricevono 2 mesi gratuiti + sconto del 30% permanente.
+              <div className="bg-[#60a5fa]/5 border border-[#60a5fa]/15 rounded-xl p-3 mb-6 text-[10px] text-[#93c5fd] leading-relaxed">
+                🎁 <strong>Early Adopter Offer:</strong> I primi 100 iscritti in lista ricevono 2 mesi gratis + 40% sconto permanente.
               </div>
 
               <ul className="flex flex-col gap-3.5 mb-8 border-t border-white/[0.04] pt-6">
@@ -222,20 +349,36 @@ export function Pricing() {
                   <span>Tutto di Premium</span>
                 </li>
                 <li className="flex items-start gap-2.5 text-xs text-[#e8e6f0]">
-                  <Check className="w-4 h-4 text-[#10B981] flex-shrink-0" />
-                  <span>AI Coach avanzato (Claude API)</span>
+                  <Brain className="w-4 h-4 text-[#60a5fa] flex-shrink-0" />
+                  <span>AI Coach avanzato con Claude</span>
                 </li>
                 <li className="flex items-start gap-2.5 text-xs text-[#e8e6f0]">
                   <Check className="w-4 h-4 text-[#10B981] flex-shrink-0" />
-                  <span>Modalità Coppia 💑</span>
+                  <span>Analisi conversazionale illimitata</span>
                 </li>
                 <li className="flex items-start gap-2.5 text-xs text-[#e8e6f0]">
                   <Check className="w-4 h-4 text-[#10B981] flex-shrink-0" />
-                  <span>Report mensili automatici</span>
+                  <span>DNA Finanziario avanzato</span>
                 </li>
                 <li className="flex items-start gap-2.5 text-xs text-[#e8e6f0]">
                   <Check className="w-4 h-4 text-[#10B981] flex-shrink-0" />
-                  <span>Sync bancario automatico</span>
+                  <span>Modalità coppia 💑</span>
+                </li>
+                <li className="flex items-start gap-2.5 text-xs text-[#e8e6f0]">
+                  <Check className="w-4 h-4 text-[#10B981] flex-shrink-0" />
+                  <span>Report mensile via email</span>
+                </li>
+                <li className="flex items-start gap-2.5 text-xs text-[#e8e6f0]">
+                  <Check className="w-4 h-4 text-[#10B981] flex-shrink-0" />
+                  <span>Confronto con coetanei</span>
+                </li>
+                <li className="flex items-start gap-2.5 text-xs text-[#e8e6f0]">
+                  <Check className="w-4 h-4 text-[#10B981] flex-shrink-0" />
+                  <span>Sync bancario (roadmap)</span>
+                </li>
+                <li className="flex items-start gap-2.5 text-xs text-[#e8e6f0]">
+                  <Check className="w-4 h-4 text-[#10B981] flex-shrink-0" />
+                  <span>Supporto prioritario</span>
                 </li>
               </ul>
             </div>
@@ -245,9 +388,10 @@ export function Pricing() {
               onClick={handleScrollToWaitlist}
               className="w-full text-center py-3 text-xs font-semibold rounded-xl border border-[#60a5fa]/30 hover:border-[#60a5fa]/50 text-[#60a5fa] hover:text-[#93c5fd] bg-white/[0.01] hover:bg-[#60a5fa]/5 transition-all"
             >
-              Entra in lista →
+              Entra in lista anticipata →
             </a>
           </div>
+
         </div>
       </div>
     </section>
