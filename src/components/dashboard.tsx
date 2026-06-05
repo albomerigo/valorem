@@ -5,7 +5,6 @@ import Link from "next/link";
 import { AlertCircle, Calendar, ChevronRight, X } from "lucide-react";
 import type { DashboardData, Goal, FixedCost } from "@/lib/finance";
 import { splitCurrency } from "@/lib/utils";
-import { calculateValoremScore } from "@/lib/score";
 import { Sidebar } from "./sidebar";
 import { BottomBar } from "./bottom-bar";
 import { FabButton } from "./fab-button";
@@ -355,11 +354,13 @@ export function Dashboard({
   dailyData,
   goalsCount = 0,
   goals = [],
+  valoremScore,
 }: {
   data: DashboardData;
   dailyData: DailyPoint[];
   goalsCount?: number;
   goals?: Goal[];
+  valoremScore?: { score: number; label: string; color: string };
 }) {
   const plan = data.profile?.plan ?? "free";
   const [isAddingTransaction, setIsAddingTransaction] = useState(false);
@@ -396,30 +397,6 @@ export function Dashboard({
     return { budget, spent, invested };
   })();
 
-  // Valorem Score
-  const now = new Date();
-  const currentMonth = now.getMonth();
-  const currentYear = now.getFullYear();
-  const monthlyExpenses = data.transactions
-    .filter((tx) => {
-      if (tx.type !== "expense") return false;
-      const d = new Date(tx.transaction_date);
-      return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
-    })
-    .reduce((sum, tx) => sum + Math.abs(Number(tx.amount)), 0);
-  const goalsOnTrack = goals.filter(
-    (g) => Number(g.current_amount) >= Number(g.target_amount)
-  ).length;
-  const valoremScore = calculateValoremScore({
-    savingsPercent: data.stats.savingsPercent,
-    trendVsLastMonth: data.stats.trendVsLastMonth,
-    impulsiResistiti: 0,
-    totalSpent: monthlyExpenses,
-    monthlyFree: data.stats.monthlyFree,
-    goalsOnTrack,
-    totalGoals: goals.length,
-    transactionCount: data.transactions.length,
-  });
   const [customCategories, setCustomCategories] = useState<CustomCategory[]>([]);
 
   useEffect(() => {

@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { fetchUserProfile, getMonthlyFreeBudget } from "@/lib/finance";
-import { calculateValoremScore } from "@/lib/score";
+import { fetchUserProfile } from "@/lib/finance";
+import { fetchValoremScore } from "@/lib/score-server";
 import { ProfiloView } from "./profilo-view";
 
 export default async function ProfiloPage() {
@@ -21,7 +21,8 @@ export default async function ProfiloPage() {
   threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
   const threeMonthsAgoStr = threeMonthsAgo.toISOString().split("T")[0];
 
-  const [txResult, declinedResult, catTxResult, fixedCostsResult, goalsResult] = await Promise.all([
+  const [valoremScore, txResult, declinedResult, catTxResult, fixedCostsResult, goalsResult] = await Promise.all([
+    fetchValoremScore(supabase, user.id),
     supabase
       .from("transactions")
       .select("id, transaction_date, amount, type"),
@@ -80,35 +81,6 @@ export default async function ProfiloPage() {
   const activeMonths = monthSet.size;
   const totalImpulsiResistiti = declinedResult.count ?? 0;
 
-  // Valorem Score
-  const scoreNow = new Date();
-  const monthlyFree = getMonthlyFreeBudget(
-    profile,
-    fixedCosts.map((fc) => ({ ...fc, user_id: profile.id ?? "" }))
-  );
-  const currentMonthKey = `${scoreNow.getFullYear()}-${String(scoreNow.getMonth() + 1).padStart(2, "0")}`;
-  const currentMonthExpenses = transactions
-    .filter((t) => t.type === "expense" && t.transaction_date.startsWith(currentMonthKey))
-    .reduce((s, t) => s + Number(t.amount), 0);
-  const savingsGoal = Number(profile.savings_goal ?? 0);
-  const savingsPct =
-    monthlyFree > 0 && savingsGoal > 0
-      ? Math.min(100, Math.round((savingsGoal / monthlyFree) * 100))
-      : 0;
-  const goalsOnTrack = goals.filter(
-    (g) => Number(g.current_amount) >= Number(g.target_amount)
-  ).length;
-  const valoremScore = calculateValoremScore({
-    savingsPercent: savingsPct,
-    trendVsLastMonth: 0,
-    impulsiResistiti: totalImpulsiResistiti,
-    totalSpent: currentMonthExpenses,
-    monthlyFree,
-    goalsOnTrack,
-    totalGoals: goals.length,
-    transactionCount: totalTransactions,
-  });
-
   // Sparkline: last 6 months of expense spending
   const now = new Date();
   const monthlySpending: { month: string; label: string; amount: number }[] = [];
@@ -128,29 +100,6 @@ export default async function ProfiloPage() {
     monthlySpending.push({ month: key, label, amount });
   }
 
-  // Score history — last 6 months
-  const scoreHistory: { month: string; score: number }[] = [];
-  for (let i = 5; i >= 0; i--) {
-    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-    const mSpent = transactions
-      .filter((t) => t.type === "expense" && t.transaction_date.startsWith(key))
-      .reduce((s, t) => s + Number(t.amount), 0);
-    const mScore = calculateValoremScore({
-      savingsPercent: savingsPct,
-      trendVsLastMonth: 0,
-      impulsiResistiti: 0,
-      totalSpent: mSpent,
-      monthlyFree,
-      goalsOnTrack,
-      totalGoals: goals.length,
-      transactionCount: transactions.filter((t) => t.transaction_date.startsWith(key)).length,
-    });
-    if (mSpent > 0 || d.getMonth() === now.getMonth()) {
-      scoreHistory.push({ month: key, score: mScore.score });
-    }
-  }
-
   return (
     <ProfiloView
       profile={profile}
@@ -165,7 +114,6 @@ export default async function ProfiloPage() {
       monthlySpending={monthlySpending}
       topCategory={topCategory}
       valoremScore={valoremScore}
-      scoreHistory={scoreHistory.length > 1 ? scoreHistory : undefined}
     />
   );
 }

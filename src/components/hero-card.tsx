@@ -69,7 +69,7 @@ export function HeroCard({
     <div
       ref={cardRef}
       onMouseMove={handleMouseMove}
-      className="glass-panel-strong group relative overflow-hidden rounded-[20px] p-5 md:p-9 transition-all duration-500 hover:-translate-y-0.5 animate-slide-up [animation-delay:0.1s]"
+      className="glass-panel-strong group relative overflow-hidden rounded-[20px] p-4 md:p-9 transition-all duration-500 hover:-translate-y-0.5 animate-slide-up [animation-delay:0.1s]"
       style={{
         animationFillMode: "both",
         boxShadow: `0 32px 64px -20px ${safeColor.glow}`,
@@ -173,7 +173,7 @@ export function HeroCard({
           </p>
         </div>
 
-        <div className="relative mx-auto h-[120px] w-[120px] md:h-[200px] md:w-[200px] flex-shrink-0">
+        <div className="relative mx-auto hidden md:flex h-[200px] w-[200px] flex-shrink-0">
           <svg viewBox="0 0 200 200" className="absolute inset-0 w-full h-full">
             <defs>
               <linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">

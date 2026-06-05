@@ -6,6 +6,7 @@ import {
   aggregateDailySpending,
   fetchGoals,
 } from "@/lib/finance";
+import { fetchValoremScore } from "@/lib/score-server";
 import { Dashboard } from "@/components/dashboard";
 
 export default async function Home() {
@@ -25,10 +26,10 @@ export default async function Home() {
     redirect("/onboarding");
   }
 
-  // Carichiamo anche le transazioni delle ultime 4 settimane per il chart
-  const [recentTransactions, goals] = await Promise.all([
+  const [recentTransactions, goals, valoremScore] = await Promise.all([
     fetchRecentTransactions(supabase, 28),
     fetchGoals(supabase),
+    fetchValoremScore(supabase, user.id),
   ]);
   const dailyData = aggregateDailySpending(recentTransactions, 28);
 
@@ -38,6 +39,7 @@ export default async function Home() {
       dailyData={dailyData}
       goalsCount={goals.length}
       goals={goals}
+      valoremScore={valoremScore}
     />
   );
 }

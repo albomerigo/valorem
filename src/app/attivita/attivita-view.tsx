@@ -357,7 +357,7 @@ export function AttivitaView({
           </header>
 
           {/* KPI COMPATTI SOPRA I FILTRI */}
-          <div className="mb-4 grid grid-cols-3 gap-3">
+          <div className="mb-4 grid grid-cols-1 md:grid-cols-3 gap-3">
             <div className="glass-panel rounded-[12px] px-4 py-3">
               <p className="eyebrow text-[9px]">Spese</p>
               <p className="m-0 mt-1 font-mono-tabular font-medium">
@@ -390,7 +390,9 @@ export function AttivitaView({
             </div>
           </div>
 
-          <CategoryDonut filtered={filtered} />
+          <div className="hidden md:block">
+            <CategoryDonut filtered={filtered} />
+          </div>
 
           {/* FILTERS BAR */}
           <div className="glass-panel mb-5 rounded-[16px] p-5">
@@ -416,7 +418,7 @@ export function AttivitaView({
                 )}
               </div>
 
-              <div className="flex flex-wrap gap-1.5">
+              <div className="flex gap-1.5 overflow-x-auto pb-1 flex-nowrap">
                 {(Object.keys(PERIOD_LABELS) as Period[]).map((p) => (
                   <button
                     key={p}

@@ -24,7 +24,7 @@ const monthlyFreeSplit = splitCurrency(remainingBudget);
 
   return (
     <div
-      className="grid grid-cols-3 gap-4 animate-slide-up [animation-delay:0.2s]"
+      className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4 animate-slide-up [animation-delay:0.2s]"
       style={{ animationFillMode: "both" }}
     >
       <div className="relative">
