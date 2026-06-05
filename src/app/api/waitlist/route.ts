@@ -8,11 +8,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Email non valida" }, { status: 400 });
     }
 
+    const apiKey = process.env.BREVO_API_KEY;
+    console.log("API Key presente:", !!apiKey);
+    console.log("API Key primi 10 chars:", apiKey?.slice(0, 10));
+
     const response = await fetch("https://api.brevo.com/v3/contacts", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "api-key": process.env.BREVO_API_KEY || "",
+        "api-key": apiKey || "",
       },
       body: JSON.stringify({
         email,
@@ -21,17 +25,23 @@ export async function POST(req: NextRequest) {
       }),
     });
 
-  if (response.status !== 200 && response.status !== 201 && response.status !== 204) {
-      const error = await response.json().catch(() => ({}));
-      if (error.code === "duplicate_parameter") {
-        return NextResponse.json({ success: true, message: "Sei già in lista!" });
-      }
-      return NextResponse.json({ error: "Errore Brevo" }, { status: 500 });
+    const responseText = await response.text();
+    console.log("Brevo status:", response.status);
+    console.log("Brevo response:", responseText);
+
+    if (response.status === 200 || response.status === 201 || response.status === 204) {
+      return NextResponse.json({ success: true });
     }
 
-    return NextResponse.json({ success: true });
+    const error = JSON.parse(responseText || "{}");
+    if (error.code === "duplicate_parameter") {
+      return NextResponse.json({ success: true, message: "Sei già in lista!" });
+    }
+
+    return NextResponse.json({ error: "Errore Brevo: " + responseText }, { status: 500 });
+
   } catch (err) {
     console.error("API Waitlist Error:", err);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json({ error: String(err) }, { status: 500 });
   }
 }
