@@ -320,9 +320,9 @@ export function AttivitaView({
                   </p>
                   <span
                     className={`shrink-0 rounded-full border px-2.5 py-0.5 font-mono-tabular text-[11px] font-medium ${
-                      (profile.plan || "free") === "free" && monthlyCount > 12
+                      (profile.plan || "free") === "free" && monthlyCount > 22
                         ? "border-red-400/30 bg-red-500/[0.08] text-red-300"
-                        : (profile.plan || "free") === "free" && monthlyCount > 10
+                        : (profile.plan || "free") === "free" && monthlyCount > 18
                         ? "border-amber-400/30 bg-amber-500/[0.08] text-amber-300"
                         : "border-emerald-400/30 bg-emerald-500/[0.08] text-emerald-300"
                     }`}
@@ -513,21 +513,21 @@ export function AttivitaView({
           </div>
 
           {/* PIANO FREE — BANNER LIMITE */}
-          {(profile.plan || "free") === "free" && monthlyCount >= 10 && (
+          {(profile.plan || "free") === "free" && monthlyCount >= 18 && (
             <div
               className={`mb-5 flex items-center justify-between gap-3 rounded-[14px] border px-4 py-3 ${
-                monthlyCount >= 12
+                monthlyCount >= 22
                   ? "border-red-400/30 bg-red-500/[0.06]"
                   : "border-amber-400/30 bg-amber-500/[0.06]"
               }`}
             >
-              <p className={`text-[13px] ${monthlyCount >= 12 ? "text-red-300" : "text-amber-300"}`}>
+              <p className={`text-[13px] ${monthlyCount >= 22 ? "text-red-300" : "text-amber-300"}`}>
                 Sei a{" "}
                 <span className="font-mono-tabular font-medium">
-                  {monthlyCount}/15
+                  {monthlyCount}/25
                 </span>{" "}
                 transazioni del piano gratuito.{" "}
-                {monthlyCount >= 12
+                {monthlyCount >= 22
                   ? "Stai per raggiungere il limite mensile."
                   : "Passa a Premium per transazioni illimitate."}
               </p>

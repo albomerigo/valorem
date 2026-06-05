@@ -16,12 +16,13 @@ import { Waitlist } from "./components/waitlist";
 import { Footer } from "./components/footer";
 
 // Reusable wrapper to trigger fade-up scroll animations on each section
-function SectionWrapper({ children }: { children: React.ReactNode }) {
-  const { ref, inView } = useInView(0.15);
+function SectionWrapper({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
+  const { ref, inView } = useInView(0.1);
   return (
     <div
       ref={ref}
       className={`fade-up ${inView ? "in-view" : ""}`}
+      style={{ transitionDelay: `${delay}ms` }}
     >
       {children}
     </div>

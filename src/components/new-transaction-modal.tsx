@@ -362,7 +362,7 @@ style={{ background: "#0D0A1E", border: "1px solid rgba(168,139,250,0.2)", boxSh
           {limitReached && (
             <div className="rounded-xl border border-amber-400/25 bg-amber-500/[0.08] p-4">
               <p className="mb-3 text-[13px] text-amber-200">
-                Hai raggiunto il limite di 15 transazioni del piano gratuito.
+                Hai raggiunto il limite di 25 transazioni del piano gratuito.
               </p>
               <Link
                 href="/pricing"

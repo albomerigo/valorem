@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useInView } from "../hooks/use-in-view";
-import { BookOpen, Clock, Loader2, CheckCircle2, AlertCircle, Sparkles } from "lucide-react";
+import { BookOpen, Clock, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
 
 export function Academy() {
   const { ref, inView } = useInView(0.1);
@@ -70,21 +70,34 @@ export function Academy() {
   ];
 
   return (
-    <section id="academy" ref={ref} className="py-20 md:py-28 px-6 relative z-10 max-w-7xl mx-auto">
+    <section id="academy" ref={ref} className="py-24 md:py-32 px-6 relative z-10 max-w-7xl mx-auto">
       <div className={`transition-all duration-700 ${inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
         
         {/* Header */}
-        <div className="text-center mb-16 max-w-2xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#a88bfa]/[0.03] border border-[#a88bfa]/15 backdrop-blur-md shadow-inner text-[11px] uppercase tracking-wider text-[#a88bfa] mb-4">
+        <div className="text-center mb-16 max-w-3xl mx-auto">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#a88bfa]/[0.03] border border-[#a88bfa]/15 backdrop-blur-md shadow-inner text-[11px] uppercase tracking-wider text-[#a88bfa] mb-6">
             <BookOpen className="w-3.5 h-3.5 text-[#e879f9]" />
             <span>Valorem Academy · In arrivo</span>
           </div>
-          <h2 className="font-serif italic text-3xl md:text-5xl text-[#F0EEFF] leading-tight mb-4">
+          <h2 className="font-serif italic text-[48px] md:text-[56px] text-[#F0EEFF] leading-tight mb-6">
             Impara a gestire i soldi <span className="bg-gradient-to-r from-[#a88bfa] to-[#e879f9] bg-clip-text text-transparent font-medium">davvero</span>.
           </h2>
-          <p className="text-sm text-[#8b8899] leading-relaxed">
-            Guide pratiche, psicologia del denaro e strategie concrete. Non teoria astratta — strumenti reali per decisioni migliori ogni giorno.
+          <p className="text-sm md:text-base text-[#8b8899] leading-relaxed max-w-2xl mx-auto">
+            La Valorem Academy è la nostra biblioteca di conoscenza finanziaria. Guide scritte con il tono del Coach — empatiche, pratiche, basate su comportamenti reali. Non teoria: strumenti che puoi usare domani.
           </p>
+        </div>
+
+        {/* 3 pills explaining academy categories */}
+        <div className="flex flex-wrap items-center justify-center gap-3 mb-12">
+          <span className="px-4 py-1.5 rounded-full bg-white/[0.02] border border-white/[0.06] text-xs text-[#8b8899] font-medium backdrop-blur-sm shadow-sm">
+            📖 Guide pratiche
+          </span>
+          <span className="px-4 py-1.5 rounded-full bg-white/[0.02] border border-white/[0.06] text-xs text-[#8b8899] font-medium backdrop-blur-sm shadow-sm">
+            🧠 Psicologia del denaro
+          </span>
+          <span className="px-4 py-1.5 rounded-full bg-white/[0.02] border border-white/[0.06] text-xs text-[#8b8899] font-medium backdrop-blur-sm shadow-sm">
+            🎯 Strategie concrete
+          </span>
         </div>
 
         {/* 3 article preview cards */}
@@ -92,34 +105,31 @@ export function Academy() {
           {articles.map((art, idx) => (
             <div
               key={idx}
-              className="bg-[#0b0912] border border-white/[0.06] rounded-3xl p-6 md:p-8 flex flex-col justify-between relative overflow-hidden group shadow-md min-h-[200px]"
-              style={{ transitionDelay: `${idx * 100}ms` }}
+              className={`bg-[#0b0912] border border-white/[0.06] hover:border-[#a88bfa]/30 rounded-3xl p-8 md:p-10 flex flex-col justify-between relative overflow-hidden group shadow-md min-h-[220px] hover:translate-y-[-4px] transition-all duration-300 fade-up ${inView ? "in-view" : ""}`}
+              style={{ transitionDelay: `${idx * 120}ms` }}
             >
               {/* Blur background dot */}
               <div className="absolute -right-10 -bottom-10 w-24 h-24 rounded-full bg-[#a88bfa]/5 blur-xl group-hover:bg-[#a88bfa]/10 transition-colors" />
 
               {/* Course tag badge */}
               <div className="flex justify-between items-start mb-4 relative z-10">
-                <span className={`text-[9px] uppercase tracking-wider font-bold px-2 py-0.5 border rounded-full ${art.catColor}`}>
+                <span className={`text-[9px] uppercase tracking-wider font-bold px-2.5 py-0.5 border rounded-full ${art.catColor}`}>
                   {art.category}
                 </span>
-                <span className="text-[10px] text-[#8b8899] flex items-center gap-1">
-                  <Clock className="w-3.5 h-3.5" />
-                  {art.readTime}
+                <span className="text-[9px] uppercase tracking-wider font-bold px-2.5 py-0.5 border border-[#a88bfa]/20 bg-[#a88bfa]/5 text-[#a88bfa] rounded-full">
+                  In arrivo
                 </span>
               </div>
 
               {/* Title */}
-              <h3 className="font-serif text-lg text-[#F0EEFF] font-medium leading-snug mb-8 relative z-10 group-hover:text-[#a88bfa] transition-colors">
+              <h3 className="font-serif text-lg md:text-xl text-[#F0EEFF] font-medium leading-snug mb-8 relative z-10 group-hover:text-[#a88bfa] transition-colors">
                 {art.title}
               </h3>
 
-              {/* Overlay "In arrivo" */}
-              <div className="absolute inset-0 bg-[#060508]/85 backdrop-blur-[2px] flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-                <div className="px-4 py-2 bg-[#a88bfa]/10 border border-[#a88bfa]/20 rounded-xl flex items-center gap-1.5 shadow-sm transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
-                  <Sparkles className="w-3.5 h-3.5 text-[#e879f9]" />
-                  <span className="text-xs text-[#a88bfa] font-bold uppercase tracking-wider">In arrivo prossimamente</span>
-                </div>
+              {/* Read Time Info */}
+              <div className="text-[10px] text-[#8b8899] flex items-center gap-1 relative z-10">
+                <Clock className="w-3.5 h-3.5" />
+                Tempo di lettura: {art.readTime}
               </div>
             </div>
           ))}
@@ -133,7 +143,7 @@ export function Academy() {
 
           {status === "success" ? (
             <div className="max-w-md mx-auto p-3 rounded-xl bg-[#10B981]/[0.08] border border-[#10B981]/25 text-[#10B981] flex items-center justify-center gap-2 text-xs font-semibold animate-fade-in">
-              <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
+              <span className="w-4 h-4 flex-shrink-0">✓</span>
               <span>Ti avviseremo non appena pubblicheremo i primi contenuti!</span>
             </div>
           ) : (

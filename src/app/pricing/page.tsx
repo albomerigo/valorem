@@ -16,7 +16,7 @@ const plans = [
     annualPrice: 0,
     tagline: "Per iniziare il tuo percorso",
     features: [
-      "Fino a 15 transazioni/mese",
+      "Fino a 25 transazioni/mese",
       "1 obiettivo attivo",
       "Solo mese corrente nello storico",
       "Dashboard con Safe-to-Spend",

@@ -91,7 +91,7 @@ export async function createTransaction(formData: FormData) {
       .eq("user_id", user.id)
       .gte("transaction_date", monthStart);
 
-    if ((count ?? 0) >= 15) {
+    if ((count ?? 0) >= 25) {
       return { success: false, error: "LIMIT_REACHED" };
     }
   }

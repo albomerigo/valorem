@@ -30,7 +30,7 @@ export function UpgradeBanner({ plan }: { plan: string }) {
           — transazioni illimitate, storico completo, export dati.
         </p>
         <p style={{ margin: "4px 0 0", fontSize: "11px", color: "#6B7280" }}>
-          Piano gratuito: 15 transazioni/mese
+          Piano gratuito: 25 transazioni/mese
         </p>
       </div>
       <Link

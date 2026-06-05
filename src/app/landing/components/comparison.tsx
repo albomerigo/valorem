@@ -8,42 +8,7 @@ export function Comparison() {
 
   const rows = [
     {
-      feature: "Traduzione spese in ore di lavoro",
-      valorem: <Check className="w-5 h-5 text-[#10B981] mx-auto" />,
-      mint: <X className="w-5 h-5 text-white/10 mx-auto" />,
-      ynab: <X className="w-5 h-5 text-white/10 mx-auto" />,
-      excel: <X className="w-5 h-5 text-white/10 mx-auto" />
-    },
-    {
-      feature: "Recap narrativo mensile",
-      valorem: <Check className="w-5 h-5 text-[#10B981] mx-auto" />,
-      mint: <X className="w-5 h-5 text-white/10 mx-auto" />,
-      ynab: <X className="w-5 h-5 text-white/10 mx-auto" />,
-      excel: <X className="w-5 h-5 text-white/10 mx-auto" />
-    },
-    {
-      feature: "AI Coach personalizzato",
-      valorem: <Check className="w-5 h-5 text-[#10B981] mx-auto" />,
-      mint: <X className="w-5 h-5 text-white/10 mx-auto" />,
-      ynab: <X className="w-5 h-5 text-white/10 mx-auto" />,
-      excel: <X className="w-5 h-5 text-white/10 mx-auto" />
-    },
-    {
-      feature: "Valorem Score (salute finanziaria)",
-      valorem: <Check className="w-5 h-5 text-[#10B981] mx-auto" />,
-      mint: <X className="w-5 h-5 text-white/10 mx-auto" />,
-      ynab: <X className="w-5 h-5 text-white/10 mx-auto" />,
-      excel: <X className="w-5 h-5 text-white/10 mx-auto" />
-    },
-    {
-      feature: "DNA Finanziario",
-      valorem: <Check className="w-5 h-5 text-[#10B981] mx-auto" />,
-      mint: <X className="w-5 h-5 text-white/10 mx-auto" />,
-      ynab: <X className="w-5 h-5 text-white/10 mx-auto" />,
-      excel: <X className="w-5 h-5 text-white/10 mx-auto" />
-    },
-    {
-      feature: "Notifiche comportamentali",
+      feature: "Traduzione € in tempo",
       valorem: <Check className="w-5 h-5 text-[#10B981] mx-auto" />,
       mint: <X className="w-5 h-5 text-white/10 mx-auto" />,
       ynab: <X className="w-5 h-5 text-white/10 mx-auto" />,
@@ -53,25 +18,25 @@ export function Comparison() {
       feature: "Safe-to-Spend dinamico",
       valorem: <Check className="w-5 h-5 text-[#10B981] mx-auto" />,
       mint: <X className="w-5 h-5 text-white/10 mx-auto" />,
-      ynab: <span className="text-xs text-[#a88bfa] font-medium mx-auto">Parziale</span>,
+      ynab: <span className="text-xs text-[#a88bfa] font-medium mx-auto">Parz.</span>,
       excel: <X className="w-5 h-5 text-white/10 mx-auto" />
     },
     {
-      feature: "Cimitero degli Impulsi",
+      feature: "Coach narrativo mensile",
       valorem: <Check className="w-5 h-5 text-[#10B981] mx-auto" />,
       mint: <X className="w-5 h-5 text-white/10 mx-auto" />,
       ynab: <X className="w-5 h-5 text-white/10 mx-auto" />,
       excel: <X className="w-5 h-5 text-white/10 mx-auto" />
     },
     {
-      feature: "Investimenti separati dal budget",
+      feature: "Cimitero degli impulsi",
       valorem: <Check className="w-5 h-5 text-[#10B981] mx-auto" />,
       mint: <X className="w-5 h-5 text-white/10 mx-auto" />,
-      ynab: <span className="text-xs text-[#a88bfa] font-medium mx-auto">Parziale</span>,
-      excel: <span className="text-xs text-white/40 font-medium mx-auto">Manuale</span>
+      ynab: <X className="w-5 h-5 text-white/10 mx-auto" />,
+      excel: <X className="w-5 h-5 text-white/10 mx-auto" />
     },
     {
-      feature: "In italiano, pensato per l'Italia",
+      feature: "In italiano",
       valorem: <Check className="w-5 h-5 text-[#10B981] mx-auto" />,
       mint: <X className="w-5 h-5 text-white/10 mx-auto" />,
       ynab: <X className="w-5 h-5 text-white/10 mx-auto" />,
@@ -83,6 +48,13 @@ export function Comparison() {
       mint: <Check className="w-5 h-5 text-[#10B981] mx-auto" />,
       ynab: <X className="w-5 h-5 text-white/10 mx-auto" />,
       excel: <Check className="w-5 h-5 text-[#10B981] mx-auto" />
+    },
+    {
+      feature: "AI Coach personale",
+      valorem: <Check className="w-5 h-5 text-[#10B981] mx-auto" />,
+      mint: <X className="w-5 h-5 text-white/10 mx-auto" />,
+      ynab: <X className="w-5 h-5 text-white/10 mx-auto" />,
+      excel: <X className="w-5 h-5 text-white/10 mx-auto" />
     }
   ];
 
@@ -90,7 +62,7 @@ export function Comparison() {
     <section id="confronto" ref={ref} className="py-20 md:py-28 px-6 relative z-10 max-w-7xl mx-auto">
       <div className={`transition-all duration-700 ${inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
         {/* Header */}
-        <div className="mb-14">
+        <div className="mb-14 text-center">
           <span className="text-xs font-semibold uppercase tracking-wider text-[#a88bfa] block mb-3">
             Confronto
           </span>
@@ -109,10 +81,7 @@ export function Comparison() {
               </div>
               
               {/* Highlighted Valorem Header Column */}
-              <div className="p-5 text-xs font-bold uppercase tracking-wider text-[#a88bfa] text-center bg-[#a88bfa]/10 border-x-2 border-t-2 border-[#a88bfa] rounded-t-2xl flex flex-col justify-center items-center gap-1.5 relative">
-                <span className="text-[8px] bg-gradient-to-r from-[#a88bfa] to-[#e879f9] text-white px-2 py-0.5 rounded-full font-extrabold tracking-widest shadow-sm">
-                  ✦ MIGLIORE SCELTA
-                </span>
+              <div className="p-5 text-xs font-bold uppercase tracking-wider text-[#a88bfa] text-center bg-[#a88bfa]/[0.05] border-x border-t border-[#a88bfa]/25 rounded-t-2xl flex flex-col justify-center items-center gap-1.5 relative">
                 <span>Valorem</span>
               </div>
               
@@ -141,8 +110,8 @@ export function Comparison() {
                     </div>
                     
                     {/* Highlighted Valorem Data Column Cell */}
-                    <div className={`p-5 text-center bg-[#a88bfa]/[0.05] border-x-2 border-[#a88bfa] font-semibold flex items-center justify-center ${
-                      isLast ? "border-b-2 rounded-b-2xl" : ""
+                    <div className={`p-5 text-center bg-[#a88bfa]/[0.02] border-x border-[#a88bfa]/25 font-semibold flex items-center justify-center ${
+                      isLast ? "border-b rounded-b-2xl" : ""
                     }`}>
                       {row.valorem}
                     </div>
