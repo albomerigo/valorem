@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
       }),
     });
 
-    if (!response.ok && response.status !== 204) {
+  if (response.status !== 200 && response.status !== 201 && response.status !== 204) {
       const error = await response.json().catch(() => ({}));
       if (error.code === "duplicate_parameter") {
         return NextResponse.json({ success: true, message: "Sei già in lista!" });
