@@ -65,11 +65,35 @@ export function Nav() {
               <span className="absolute bottom-0 left-0 w-0 h-[1.5px] bg-gradient-to-r from-[#a88bfa] to-[#e879f9] transition-all group-hover:w-full" />
             </a>
             <a
+              href="#confronto"
+              onClick={(e) => handleLinkClick(e, "comparison")}
+              className="text-sm text-[#8b8899] hover:text-[#e8e6f0] transition-colors relative group py-1"
+            >
+              Confronto
+              <span className="absolute bottom-0 left-0 w-0 h-[1.5px] bg-gradient-to-r from-[#a88bfa] to-[#e879f9] transition-all group-hover:w-full" />
+            </a>
+            <a
               href="#pricing"
               onClick={(e) => handleLinkClick(e, "pricing")}
               className="text-sm text-[#8b8899] hover:text-[#e8e6f0] transition-colors relative group py-1"
             >
               Prezzi
+              <span className="absolute bottom-0 left-0 w-0 h-[1.5px] bg-gradient-to-r from-[#a88bfa] to-[#e879f9] transition-all group-hover:w-full" />
+            </a>
+            <a
+              href="#academy"
+              onClick={(e) => handleLinkClick(e, "academy")}
+              className="text-sm text-[#8b8899] hover:text-[#e8e6f0] transition-colors relative group py-1"
+            >
+              Academy
+              <span className="absolute bottom-0 left-0 w-0 h-[1.5px] bg-gradient-to-r from-[#a88bfa] to-[#e879f9] transition-all group-hover:w-full" />
+            </a>
+            <a
+              href="#testimonials"
+              onClick={(e) => handleLinkClick(e, "testimonials")}
+              className="text-sm text-[#8b8899] hover:text-[#e8e6f0] transition-colors relative group py-1"
+            >
+              Testimonianze
               <span className="absolute bottom-0 left-0 w-0 h-[1.5px] bg-gradient-to-r from-[#a88bfa] to-[#e879f9] transition-all group-hover:w-full" />
             </a>
             <a
@@ -154,11 +178,32 @@ export function Nav() {
               Funzionalità
             </a>
             <a
+              href="#confronto"
+              onClick={(e) => handleLinkClick(e, "comparison")}
+              className="text-lg text-[#8b8899] hover:text-[#e8e6f0] transition-colors py-2"
+            >
+              Confronto
+            </a>
+            <a
               href="#pricing"
               onClick={(e) => handleLinkClick(e, "pricing")}
               className="text-lg text-[#8b8899] hover:text-[#e8e6f0] transition-colors py-2"
             >
               Prezzi
+            </a>
+            <a
+              href="#academy"
+              onClick={(e) => handleLinkClick(e, "academy")}
+              className="text-lg text-[#8b8899] hover:text-[#e8e6f0] transition-colors py-2"
+            >
+              Academy
+            </a>
+            <a
+              href="#testimonials"
+              onClick={(e) => handleLinkClick(e, "testimonials")}
+              className="text-lg text-[#8b8899] hover:text-[#e8e6f0] transition-colors py-2"
+            >
+              Testimonianze
             </a>
             <a
               href="#faq"

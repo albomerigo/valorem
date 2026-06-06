@@ -152,15 +152,15 @@ export function Testimonials() {
   });
 
   return (
-    <section id="recensioni" ref={ref} className="py-20 md:py-28 px-6 relative z-10 max-w-7xl mx-auto">
+    <section id="testimonials" ref={ref} className="py-20 md:py-28 px-6 relative z-10 max-w-7xl mx-auto">
       <div className={`transition-all duration-700 ${inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
         {/* Header */}
         <div className="mb-16 text-center">
           <span className="text-xs font-semibold uppercase tracking-wider text-[#a88bfa] block mb-3">
-            Recensioni
+            Testimonianze
           </span>
           <h2 className="font-serif italic text-3xl md:text-5xl text-[#F0EEFF] leading-tight">
-            Chi l'ha provato, <span className="bg-gradient-to-r from-[#a88bfa] to-[#e879f9] bg-clip-text text-transparent font-medium">non torna indietro</span>.
+            Cosa dicono di <span className="bg-gradient-to-r from-[#a88bfa] to-[#e879f9] bg-clip-text text-transparent font-medium">Valorem</span>
           </h2>
         </div>
 
@@ -221,16 +221,16 @@ export function Testimonials() {
         {/* Action buttons */}
         <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link
-            href="/recensioni"
+            href="/testimonianze"
             className="px-6 py-3 rounded-full border border-[#a88bfa]/30 hover:border-[#a88bfa]/60 text-xs font-semibold text-[#a88bfa] hover:text-[#e879f9] bg-[#a88bfa]/[0.02] transition-all flex items-center gap-2"
           >
-            Vedi tutte le recensioni →
+            Vedi tutte le testimonianze →
           </Link>
           <button
             onClick={() => setIsModalOpen(true)}
             className="px-6 py-3 rounded-full bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.08] text-xs font-semibold text-[#e8e6f0] hover:text-white transition-all flex items-center gap-2"
           >
-            Lascia una recensione
+            Lascia la tua testimonianza →
           </button>
         </div>
       </div>
@@ -250,7 +250,7 @@ export function Testimonials() {
             </button>
             
             <h3 className="font-serif italic text-2xl text-[#F0EEFF] mb-6 text-left">
-              Lascia la tua recensione
+              Condividi la tua esperienza
             </h3>
             
             {submitStatus === "success" ? (
@@ -258,9 +258,9 @@ export function Testimonials() {
                 <div className="w-12 h-12 rounded-full bg-[#10B981]/15 border border-[#10B981]/30 flex items-center justify-center mx-auto mb-4 text-[#10B981] text-lg font-bold">
                   ✓
                 </div>
-                <h4 className="text-sm font-semibold text-[#F0EEFF] mb-2">Grazie per il tuo feedback!</h4>
+                <h4 className="text-sm font-semibold text-[#F0EEFF] mb-2">Grazie per la tua testimonianza!</h4>
                 <p className="text-xs text-[#8b8899] leading-relaxed">
-                  La tua recensione è stata inviata e sarà visibile non appena approvata dal team.
+                  La tua testimonianza è stata inviata e sarà visibile non appena approvata dal team.
                 </p>
               </div>
             ) : (
@@ -316,7 +316,7 @@ export function Testimonials() {
 
                 <div>
                   <label className="block text-[10px] uppercase tracking-wider text-[#8b8899] mb-1.5 font-bold">
-                    La tua recensione *
+                    La tua testimonianza *
                   </label>
                   <textarea
                     required
@@ -340,7 +340,7 @@ export function Testimonials() {
                   {submitStatus === "submitting" ? (
                     <Loader2 className="w-3.5 h-3.5 animate-spin" />
                   ) : (
-                    "Invia recensione"
+                    "Invia testimonianza"
                   )}
                 </button>
               </form>

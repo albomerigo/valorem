@@ -65,7 +65,7 @@ export function Footer() {
               <li>
                 <a
                   href="#confronto"
-                  onClick={(e) => handleScrollToSection(e, "confronto")}
+                  onClick={(e) => handleScrollToSection(e, "comparison")}
                   className="text-[#8b8899] hover:text-[#F0EEFF] transition-colors"
                 >
                   Confronto

@@ -16,9 +16,12 @@ import {
   Star,
   Bell,
   Brain,
-  Flame,
   Award,
-  Search
+  Search,
+  Mail,
+  Users,
+  Shield,
+  Zap
 } from "lucide-react";
 
 export function Pricing() {
@@ -157,7 +160,7 @@ export function Pricing() {
                 </li>
                 <li className="flex items-start gap-2.5 text-xs text-[#e8e6f0]">
                   <Check className="w-4 h-4 text-[#10B981] flex-shrink-0" />
-                  <span>Dashboard e KPI</span>
+                  <span>Dashboard e Safe-to-Spend</span>
                 </li>
                 <li className="flex items-start gap-2.5 text-xs text-[#e8e6f0]">
                   <Check className="w-4 h-4 text-[#10B981] flex-shrink-0" />
@@ -237,15 +240,11 @@ export function Pricing() {
                   </li>
                   <li className="flex items-start gap-2.5 text-xs text-[#e8e6f0]">
                     <Tag className="w-4 h-4 text-[#a88bfa] flex-shrink-0" />
-                    <span>Categorie personalizzate (max 10)</span>
+                    <span>Categorie personalizzate (max 5)</span>
                   </li>
                   <li className="flex items-start gap-2.5 text-xs text-[#e8e6f0]">
                     <BookOpen className="w-4 h-4 text-[#a88bfa] flex-shrink-0" />
                     <span>Recap mensile narrativo</span>
-                  </li>
-                  <li className="flex items-start gap-2.5 text-xs text-[#e8e6f0]">
-                    <Star className="w-4 h-4 text-[#a88bfa] flex-shrink-0" />
-                    <span>Valorem Score</span>
                   </li>
                   <li className="flex items-start gap-2.5 text-xs text-[#e8e6f0]">
                     <Bell className="w-4 h-4 text-[#a88bfa] flex-shrink-0" />
@@ -254,6 +253,10 @@ export function Pricing() {
                   <li className="flex items-start gap-2.5 text-xs text-[#e8e6f0]">
                     <Search className="w-4 h-4 text-[#a88bfa] flex-shrink-0" />
                     <span>Ricerca globale avanzata</span>
+                  </li>
+                  <li className="flex items-start gap-2.5 text-xs text-[#e8e6f0]">
+                    <Star className="w-4 h-4 text-[#a88bfa] flex-shrink-0" />
+                    <span>Valorem Score base</span>
                   </li>
                 </ul>
               </div>
@@ -293,44 +296,63 @@ export function Pricing() {
                 </p>
                 
                 <div className="bg-[#60a5fa]/10 border border-[#60a5fa]/20 rounded-xl p-3 mb-6 text-[10px] text-[#93c5fd] leading-relaxed">
-                  🎁 <strong>Early Adopter Offer:</strong> 2 mesi gratis + 40% sconto permanente
+                  🎁 <strong>Early Adopter Offer:</strong> 2 mesi gratis + 25% sconto permanente per i primi 100
                 </div>
 
                 <ul className="flex flex-col gap-3.5 mb-8 border-t border-white/[0.04] pt-6">
-                  <li className="flex items-start gap-2.5 text-xs text-[#e8e6f0]">
-                    <Check className="w-4 h-4 text-[#10B981] flex-shrink-0" />
-                    <span>Tutto di Premium</span>
+                  <li className="text-xs font-semibold text-[#8b8899] mb-1.5">
+                    Tutto di Premium, più:
                   </li>
-                  <li className="flex items-start gap-2.5 text-xs text-[#e8e6f0]">
+                  <li className="flex items-center gap-2.5 text-xs text-[#e8e6f0]">
                     <Brain className="w-4 h-4 text-[#60a5fa] flex-shrink-0" />
-                    <span>AI Coach con Claude (esclusivo)</span>
+                    <span className="flex items-center flex-wrap gap-1.5">
+                      <span>AI Coach con Claude (esclusivo Pro)</span>
+                      <span className="px-1.5 py-0.5 text-[8px] font-bold tracking-wide text-[#60a5fa] bg-[#60a5fa]/10 border border-[#60a5fa]/20 rounded-full uppercase shrink-0">✦ Esclusivo Pro</span>
+                    </span>
                   </li>
-                  <li className="flex items-start gap-2.5 text-xs text-[#e8e6f0]">
-                    <Check className="w-4 h-4 text-[#10B981] flex-shrink-0" />
+                  <li className="flex items-center gap-2.5 text-xs text-[#e8e6f0]">
+                    <Sparkles className="w-4 h-4 text-[#60a5fa] flex-shrink-0" />
+                    <span>Analisi conversazionale illimitata</span>
+                  </li>
+                  <li className="flex items-center gap-2.5 text-xs text-[#e8e6f0]">
+                    <Award className="w-4 h-4 text-[#60a5fa] flex-shrink-0" />
                     <span>DNA Finanziario avanzato</span>
                   </li>
-                  <li className="flex items-start gap-2.5 text-xs text-[#e8e6f0]">
-                    <Check className="w-4 h-4 text-[#10B981] flex-shrink-0" />
-                    <span>Valorem Academy accesso anticipato</span>
+                  <li className="flex items-center gap-2.5 text-xs text-[#e8e6f0]">
+                    <BookOpen className="w-4 h-4 text-[#60a5fa] flex-shrink-0" />
+                    <span className="flex items-center flex-wrap gap-1.5">
+                      <span>Valorem Academy accesso anticipato</span>
+                      <span className="px-1.5 py-0.5 text-[8px] font-bold tracking-wide text-[#60a5fa] bg-[#60a5fa]/10 border border-[#60a5fa]/20 rounded-full uppercase shrink-0">✦ Esclusivo Pro</span>
+                    </span>
                   </li>
-                  <li className="flex items-start gap-2.5 text-xs text-[#e8e6f0]">
-                    <Check className="w-4 h-4 text-[#10B981] flex-shrink-0" />
-                    <span>Modalità coppia 💑</span>
+                  <li className="flex items-center gap-2.5 text-xs text-[#e8e6f0]">
+                    <Tag className="w-4 h-4 text-[#60a5fa] flex-shrink-0" />
+                    <span>Categorie personalizzate illimitate</span>
                   </li>
-                  <li className="flex items-start gap-2.5 text-xs text-[#e8e6f0]">
-                    <Check className="w-4 h-4 text-[#10B981] flex-shrink-0" />
-                    <span>Report mensile via email</span>
+                  <li className="flex items-center gap-2.5 text-xs text-[#e8e6f0]">
+                    <Download className="w-4 h-4 text-[#60a5fa] flex-shrink-0" />
+                    <span className="flex items-center flex-wrap gap-1.5">
+                      <span>Export avanzato PDF + Excel + JSON</span>
+                      <span className="px-1.5 py-0.5 text-[8px] font-bold tracking-wide text-[#60a5fa] bg-[#60a5fa]/10 border border-[#60a5fa]/20 rounded-full uppercase shrink-0">✦ Esclusivo Pro</span>
+                    </span>
                   </li>
-                  <li className="flex items-start gap-2.5 text-xs text-[#e8e6f0]">
-                    <Check className="w-4 h-4 text-[#10B981] flex-shrink-0" />
-                    <span>Confronto con coetanei</span>
+                  <li className="flex items-center gap-2.5 text-xs text-[#e8e6f0]">
+                    <Mail className="w-4 h-4 text-[#60a5fa] flex-shrink-0" />
+                    <span className="flex items-center flex-wrap gap-1.5">
+                      <span>Report mensile via email automatico</span>
+                      <span className="px-1.5 py-0.5 text-[8px] font-bold tracking-wide text-[#60a5fa] bg-[#60a5fa]/10 border border-[#60a5fa]/20 rounded-full uppercase shrink-0">✦ Esclusivo Pro</span>
+                    </span>
                   </li>
-                  <li className="flex items-start gap-2.5 text-xs text-[#e8e6f0]">
-                    <Check className="w-4 h-4 text-[#10B981] flex-shrink-0" />
+                  <li className="flex items-center gap-2.5 text-xs text-[#e8e6f0]">
+                    <Users className="w-4 h-4 text-[#60a5fa] flex-shrink-0" />
+                    <span>Modalità coppia (in arrivo)</span>
+                  </li>
+                  <li className="flex items-center gap-2.5 text-xs text-[#e8e6f0]">
+                    <Shield className="w-4 h-4 text-[#60a5fa] flex-shrink-0" />
                     <span>Supporto prioritario</span>
                   </li>
-                  <li className="flex items-start gap-2.5 text-xs text-[#e8e6f0]">
-                    <Check className="w-4 h-4 text-[#10B981] flex-shrink-0" />
+                  <li className="flex items-center gap-2.5 text-xs text-[#e8e6f0]">
+                    <Zap className="w-4 h-4 text-[#60a5fa] flex-shrink-0" />
                     <span>Accesso beta feature</span>
                   </li>
                 </ul>

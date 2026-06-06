@@ -571,7 +571,7 @@ function PricingContent() {
                         color: "#93C5FD",
                       }}
                     >
-                      🎁 <span style={{ fontWeight: 600 }}>Early adopter:</span> i primi 100 iscritti ricevono 2 mesi gratis + 30% di sconto permanente
+                      🎁 <span style={{ fontWeight: 600 }}>Early adopter:</span> i primi 100 iscritti ricevono 2 mesi gratis + 25% di sconto permanente
                     </div>
                   )}
 
@@ -714,7 +714,7 @@ function PricingContent() {
 
           <p className="mt-4 text-[14px] leading-relaxed" style={{ color: "rgba(255,255,255,0.5)" }}>
             L&apos;AI Coach personalizzato, la modalità coppia e i report mensili automatici sono in sviluppo.
-            Iscriviti adesso e ricevi <span style={{ color: "#93C5FD", fontWeight: 500 }}>2 mesi gratis + 30% di sconto permanente</span> quando uscirà.
+            Iscriviti adesso e ricevi <span style={{ color: "#93C5FD", fontWeight: 500 }}>2 mesi gratis + 25% di sconto permanente</span> quando uscirà.
           </p>
 
           {/* Contatore */}

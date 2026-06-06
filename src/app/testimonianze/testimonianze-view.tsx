@@ -13,7 +13,7 @@ type Review = {
   created_at: string;
 };
 
-export function RecensioniView() {
+export function TestimonianzeView() {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -57,20 +57,20 @@ export function RecensioniView() {
       <main className="flex-1 max-w-[900px] w-full mx-auto px-6 py-16 relative z-10">
         {/* Title */}
         <h1 className="font-serif italic text-4xl md:text-5xl text-[#F0EEFF] leading-tight mb-4 text-center">
-          Cosa dicono di Valorem
+          Testimonianze
         </h1>
         <p className="text-sm text-[#8b8899] text-center max-w-lg mx-auto mb-12">
-          Le recensioni scritte dai nostri utenti su come Valorem ha cambiato il loro rapporto con il denaro.
+          Cosa pensano le persone che usano Valorem ogni giorno.
         </p>
 
         {loading ? (
           <div className="text-center py-12 text-[#8b8899] text-sm font-medium">
-            Caricamento recensioni...
+            Caricamento testimonianze...
           </div>
         ) : reviews.length === 0 ? (
           <div className="text-center py-16 border border-white/[0.06] bg-[#0b0912]/50 backdrop-blur-sm rounded-3xl">
             <p className="text-sm text-[#8b8899] font-medium">
-              Le prime recensioni arriveranno presto.
+              Le prime testimonianze arriveranno presto.
             </p>
           </div>
         ) : (

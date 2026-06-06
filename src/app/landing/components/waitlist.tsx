@@ -115,7 +115,7 @@ export function Waitlist() {
 
         {/* Subtitle */}
         <p className="text-sm md:text-base text-[#8b8899] max-w-xl mx-auto leading-relaxed mb-8">
-          L&apos;AI Coach, la modalità coppia e i report mensili automatici arrivano presto. Iscriviti adesso e ricevi 2 mesi gratis + 40% di sconto permanente quando uscirà.
+          L&apos;AI Coach, la modalità coppia e i report mensili automatici arrivano presto. Iscriviti adesso e ricevi 2 mesi gratis + 25% di sconto permanente quando uscirà.
         </p>
 
         {/* Real-time subscriber count badge */}
@@ -133,7 +133,7 @@ export function Waitlist() {
           </div>
           <div className="flex items-center gap-2 px-4 py-3 bg-[#a88bfa]/[0.03] border border-[#a88bfa]/10 rounded-2xl">
             <span className="text-[#e879f9] font-bold">✦</span>
-            <span className="text-xs text-[#e8e6f0] font-medium">40% sconto permanente</span>
+            <span className="text-xs text-[#e8e6f0] font-medium">25% sconto permanente</span>
           </div>
           <div className="flex items-center gap-2 px-4 py-3 bg-[#a88bfa]/[0.03] border border-[#a88bfa]/10 rounded-2xl">
             <span className="text-[#60a5fa] font-bold">✦</span>

@@ -59,7 +59,7 @@ export function Comparison() {
   ];
 
   return (
-    <section id="confronto" ref={ref} className="py-20 md:py-28 px-6 relative z-10 max-w-7xl mx-auto">
+    <section id="comparison" ref={ref} className="py-20 md:py-28 px-6 relative z-10 max-w-7xl mx-auto">
       <div className={`transition-all duration-700 ${inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
         {/* Header */}
         <div className="mb-14 text-center">
