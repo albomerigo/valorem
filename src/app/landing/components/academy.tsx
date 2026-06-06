@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useInView } from "../hooks/use-in-view";
 import { BookOpen, Clock, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
+import { AnimatedSection } from "../landing-view";
 
 export function Academy() {
   const { ref, inView } = useInView(0.1);
@@ -103,35 +104,39 @@ export function Academy() {
         {/* 3 article preview cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
           {articles.map((art, idx) => (
-            <div
+            <AnimatedSection
               key={idx}
-              className={`bg-[#0b0912] border border-white/[0.06] hover:border-[#a88bfa]/30 rounded-3xl p-8 md:p-10 flex flex-col justify-between relative overflow-hidden group shadow-md min-h-[220px] hover:translate-y-[-4px] transition-all duration-300 fade-up ${inView ? "in-view" : ""}`}
-              style={{ transitionDelay: `${idx * 120}ms` }}
+              animation="animate-slide-in-right"
+              delay={idx * 120}
             >
-              {/* Blur background dot */}
-              <div className="absolute -right-10 -bottom-10 w-24 h-24 rounded-full bg-[#a88bfa]/5 blur-xl group-hover:bg-[#a88bfa]/10 transition-colors" />
+              <div
+                className="bg-[#0b0912] border border-white/[0.06] hover:border-[#a88bfa]/30 rounded-3xl p-8 md:p-10 flex flex-col justify-between relative overflow-hidden group shadow-md min-h-[220px] hover:translate-y-[-4px] transition-all duration-300 h-full"
+              >
+                {/* Blur background dot */}
+                <div className="absolute -right-10 -bottom-10 w-24 h-24 rounded-full bg-[#a88bfa]/5 blur-xl group-hover:bg-[#a88bfa]/10 transition-colors" />
 
-              {/* Course tag badge */}
-              <div className="flex justify-between items-start mb-4 relative z-10">
-                <span className={`text-[9px] uppercase tracking-wider font-bold px-2.5 py-0.5 border rounded-full ${art.catColor}`}>
-                  {art.category}
-                </span>
-                <span className="text-[9px] uppercase tracking-wider font-bold px-2.5 py-0.5 border border-[#a88bfa]/20 bg-[#a88bfa]/5 text-[#a88bfa] rounded-full">
-                  In arrivo
-                </span>
+                {/* Course tag badge */}
+                <div className="flex justify-between items-start mb-4 relative z-10">
+                  <span className={`text-[9px] uppercase tracking-wider font-bold px-2.5 py-0.5 border rounded-full ${art.catColor}`}>
+                    {art.category}
+                  </span>
+                  <span className="text-[9px] uppercase tracking-wider font-bold px-2.5 py-0.5 border border-[#a88bfa]/20 bg-[#a88bfa]/5 text-[#a88bfa] rounded-full">
+                    In arrivo
+                  </span>
+                </div>
+
+                {/* Title */}
+                <h3 className="font-serif text-lg md:text-xl text-[#F0EEFF] font-medium leading-snug mb-8 relative z-10 group-hover:text-[#a88bfa] transition-colors">
+                  {art.title}
+                </h3>
+
+                {/* Read Time Info */}
+                <div className="text-[10px] text-[#8b8899] flex items-center gap-1 relative z-10">
+                  <Clock className="w-3.5 h-3.5" />
+                  Tempo di lettura: {art.readTime}
+                </div>
               </div>
-
-              {/* Title */}
-              <h3 className="font-serif text-lg md:text-xl text-[#F0EEFF] font-medium leading-snug mb-8 relative z-10 group-hover:text-[#a88bfa] transition-colors">
-                {art.title}
-              </h3>
-
-              {/* Read Time Info */}
-              <div className="text-[10px] text-[#8b8899] flex items-center gap-1 relative z-10">
-                <Clock className="w-3.5 h-3.5" />
-                Tempo di lettura: {art.readTime}
-              </div>
-            </div>
+            </AnimatedSection>
           ))}
         </div>
 

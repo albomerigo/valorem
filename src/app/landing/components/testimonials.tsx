@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useInView } from "../hooks/use-in-view";
 import { Star, X, Loader2 } from "lucide-react";
 import Link from "next/link";
+import { AnimatedSection } from "../landing-view";
 
 type Review = {
   id: string;
@@ -166,50 +167,54 @@ export function Testimonials() {
         {/* Grid Cards with stagger scroll delay */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {finalReviews.map((item, idx) => (
-            <div
+            <AnimatedSection
               key={idx}
-              className={`bg-[#0b0912] border border-white/[0.06] rounded-3xl p-6 md:p-8 flex flex-col justify-between hover:-translate-y-1 transition-all duration-300 relative overflow-hidden shadow-md group fade-up ${inView ? "in-view" : ""}`}
-              style={{ transitionDelay: `${idx * 120}ms` }}
+              animation="animate-swing-in"
+              delay={idx * 150}
             >
-              {/* Top quotes decorative element */}
-              <div className="absolute top-4 right-6 font-serif text-8xl text-[#a88bfa]/5 pointer-events-none select-none">
-                “
-              </div>
-
-              <div>
-                {/* Stars */}
-                <div className="flex gap-1 mb-5">
-                  {[...Array(item.stars)].map((_, sIdx) => (
-                    <Star key={sIdx} className="w-4 h-4 fill-[#FBBF24] text-[#FBBF24]" />
-                  ))}
-                  {[...Array(5 - item.stars)].map((_, sIdx) => (
-                    <Star key={sIdx} className="w-4 h-4 text-white/10" />
-                  ))}
+              <div
+                className="bg-[#0b0912] border border-white/[0.06] rounded-3xl p-6 md:p-8 flex flex-col justify-between hover:-translate-y-1 transition-all duration-300 relative overflow-hidden shadow-md group h-full"
+              >
+                {/* Top quotes decorative element */}
+                <div className="absolute top-4 right-6 font-serif text-8xl text-[#a88bfa]/5 pointer-events-none select-none">
+                  “
                 </div>
 
-                {/* Quote Text */}
-                <p className="text-sm font-serif italic text-[#e8e6f0] leading-relaxed mb-8 relative z-10">
-                  "{item.quote}"
-                </p>
-              </div>
+                <div>
+                  {/* Stars */}
+                  <div className="flex gap-1 mb-5">
+                    {[...Array(item.stars)].map((_, sIdx) => (
+                      <Star key={sIdx} className="w-4 h-4 fill-[#FBBF24] text-[#FBBF24]" />
+                    ))}
+                    {[...Array(5 - item.stars)].map((_, sIdx) => (
+                      <Star key={sIdx} className="w-4 h-4 text-white/10" />
+                    ))}
+                  </div>
 
-              {/* Author footer */}
-              <div className="flex items-center gap-3.5 mt-auto">
-                <div
-                  className={`w-10 h-10 rounded-full bg-gradient-to-br ${item.avatarGrad} flex items-center justify-center text-white font-bold text-xs shadow-md`}
-                >
-                  {item.initials}
+                  {/* Quote Text */}
+                  <p className="text-sm font-serif italic text-[#e8e6f0] leading-relaxed mb-8 relative z-10">
+                    "{item.quote}"
+                  </p>
                 </div>
-                <div className="flex flex-col text-left">
-                  <span className="text-xs font-semibold text-[#F0EEFF]">
-                    {item.fullName}
-                  </span>
-                  <span className="text-[10px] text-[#8b8899]">
-                    {item.subtitle}
-                  </span>
+
+                {/* Author footer */}
+                <div className="flex items-center gap-3.5 mt-auto">
+                  <div
+                    className={`w-10 h-10 rounded-full bg-gradient-to-br ${item.avatarGrad} flex items-center justify-center text-white font-bold text-xs shadow-md`}
+                  >
+                    {item.initials}
+                  </div>
+                  <div className="flex flex-col text-left">
+                    <span className="text-xs font-semibold text-[#F0EEFF]">
+                      {item.fullName}
+                    </span>
+                    <span className="text-[10px] text-[#8b8899]">
+                      {item.subtitle}
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
+            </AnimatedSection>
           ))}
         </div>
 

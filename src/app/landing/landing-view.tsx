@@ -15,14 +15,26 @@ import { FAQ } from "./components/faq";
 import { Waitlist } from "./components/waitlist";
 import { Footer } from "./components/footer";
 
-// Reusable wrapper to trigger fade-up scroll animations on each section
-function SectionWrapper({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
+// Reusable wrapper to trigger scroll animations on each section/component
+export function AnimatedSection({ 
+  children, 
+  animation = "animate-zoom-in",
+  delay = 0 
+}: { 
+  children: React.ReactNode; 
+  animation?: string;
+  delay?: number;
+}) {
   const { ref, inView } = useInView(0.1);
   return (
     <div
       ref={ref}
-      className={`fade-up ${inView ? "in-view" : ""}`}
-      style={{ transitionDelay: `${delay}ms` }}
+      className={inView ? animation : "opacity-0"}
+      style={{ 
+        transitionDelay: `${delay}ms`,
+        animationDelay: `${delay}ms`,
+        animationFillMode: "both"
+      }}
     >
       {children}
     </div>
@@ -67,45 +79,39 @@ export function LandingView() {
         {/* Hero handles its own staggered entrance animations */}
         <Hero />
         
-        <SectionWrapper>
-          <Problem />
-        </SectionWrapper>
+        {/* Problem cards animate individually inside */}
+        <Problem />
 
-        <SectionWrapper>
-          <HowItWorks />
-        </SectionWrapper>
+        {/* HowItWorks steps animate individually inside */}
+        <HowItWorks />
 
-        <SectionWrapper>
-          <Features />
-        </SectionWrapper>
+        {/* Features rows animate individually inside */}
+        <Features />
 
-        <SectionWrapper>
+        <AnimatedSection animation="animate-zoom-in">
           <Comparison />
-        </SectionWrapper>
+        </AnimatedSection>
 
-        <SectionWrapper>
+        <AnimatedSection animation="animate-flip-in">
           <Demo />
-        </SectionWrapper>
+        </AnimatedSection>
 
-        <SectionWrapper>
-          <Pricing />
-        </SectionWrapper>
+        {/* Pricing cards animate individually inside */}
+        <Pricing />
 
-        <SectionWrapper>
-          <Testimonials />
-        </SectionWrapper>
+        {/* Testimonials cards animate individually inside */}
+        <Testimonials />
 
-        <SectionWrapper>
-          <Academy />
-        </SectionWrapper>
+        {/* Academy cards animate individually inside */}
+        <Academy />
 
-        <SectionWrapper>
+        <AnimatedSection animation="animate-zoom-in">
           <FAQ />
-        </SectionWrapper>
+        </AnimatedSection>
 
-        <SectionWrapper>
+        <AnimatedSection animation="animate-zoom-in">
           <Waitlist />
-        </SectionWrapper>
+        </AnimatedSection>
       </main>
 
       {/* Footer */}

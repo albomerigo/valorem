@@ -2,6 +2,7 @@
 
 import { useInView } from "../hooks/use-in-view";
 import { BarChart2, Frown, ShoppingCart, Globe } from "lucide-react";
+import { AnimatedSection } from "../landing-view";
 
 export function Problem() {
   const { ref, inView } = useInView(0.1);
@@ -53,21 +54,25 @@ export function Problem() {
         {/* 2x2 Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {cards.map((card, idx) => (
-            <div
+            <AnimatedSection
               key={idx}
-              className={`group p-6 md:p-8 rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:-translate-y-1 transition-all duration-300 ${card.borderGlow} ${card.bgGlow}`}
-              style={{ transitionDelay: `${idx * 100}ms` }}
+              animation={idx % 2 === 0 ? "animate-slide-in-left" : "animate-slide-in-right"}
+              delay={idx * 120}
             >
-              <div className="w-12 h-12 rounded-xl bg-white/[0.03] border border-white/[0.08] flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300">
-                {card.icon}
+              <div
+                className={`group p-6 md:p-8 rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:-translate-y-1 transition-all duration-300 h-full ${card.borderGlow} ${card.bgGlow}`}
+              >
+                <div className="w-12 h-12 rounded-xl bg-white/[0.03] border border-white/[0.08] flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300">
+                  {card.icon}
+                </div>
+                <h3 className="font-serif text-xl text-[#F0EEFF] font-medium mb-3">
+                  {card.title}
+                </h3>
+                <p className="text-sm text-[#8b8899] leading-relaxed">
+                  {card.desc}
+                </p>
               </div>
-              <h3 className="font-serif text-xl text-[#F0EEFF] font-medium mb-3">
-                {card.title}
-              </h3>
-              <p className="text-sm text-[#8b8899] leading-relaxed">
-                {card.desc}
-              </p>
-            </div>
+            </AnimatedSection>
           ))}
         </div>
       </div>

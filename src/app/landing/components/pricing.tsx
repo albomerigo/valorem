@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useInView } from "../hooks/use-in-view";
+import { AnimatedSection } from "../landing-view";
 import {
   Check,
   X,
@@ -128,7 +129,8 @@ export function Pricing() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch max-w-6xl mx-auto text-left">
           
           {/* Plan 1: Free Card */}
-          <div className="bg-white/[0.01] border border-white/[0.08] rounded-3xl p-8 flex flex-col justify-between hover:-translate-y-1 transition-all duration-300 relative shadow-inner">
+          <AnimatedSection animation="animate-bounce-in" delay={0}>
+            <div className="bg-white/[0.01] border border-white/[0.08] rounded-3xl p-8 flex flex-col justify-between hover:-translate-y-1 transition-all duration-300 relative shadow-inner h-full">
             <div>
               <span className="text-[10px] uppercase tracking-widest text-[#8b8899] font-bold block mb-3">
                 Free
@@ -178,10 +180,12 @@ export function Pricing() {
             >
               Inizia gratis
             </a>
-          </div>
+            </div>
+          </AnimatedSection>
 
           {/* Plan 2: Premium */}
-          <div className="rounded-3xl p-[1.5px] bg-gradient-to-b from-[#a88bfa] via-[#e879f9] to-[#60a5fa] relative flex flex-col justify-between hover:-translate-y-1.5 transition-all duration-300 md:scale-[1.04] shadow-[0_20px_60px_rgba(168,139,250,0.25)] overflow-hidden z-20">
+          <AnimatedSection animation="animate-bounce-in" delay={150}>
+            <div className="rounded-3xl p-[1.5px] bg-gradient-to-b from-[#a88bfa] via-[#e879f9] to-[#60a5fa] relative flex flex-col justify-between hover:-translate-y-1.5 transition-all duration-300 md:scale-[1.04] shadow-[0_20px_60px_rgba(168,139,250,0.25)] overflow-hidden z-20 animate-glow-pulse h-full">
             {/* Animated border backdrop */}
             <div className="absolute inset-0 bg-gradient-to-r from-[#a88bfa] via-[#e879f9] to-[#60a5fa] opacity-25 blur-xl pointer-events-none" />
 
@@ -261,10 +265,12 @@ export function Pricing() {
                 Inizia Premium ora →
               </a>
             </div>
-          </div>
+            </div>
+          </AnimatedSection>
 
           {/* Plan 3: Pro Card (Enhanced visuals) */}
-          <div className="rounded-3xl p-[1.5px] bg-gradient-to-r from-[#60a5fa] via-[#67e8f9] to-[#60a5fa] animate-border-flow relative flex flex-col justify-between hover:-translate-y-1.5 transition-all duration-300 shadow-[0_20px_60px_rgba(96,165,250,0.15)] overflow-hidden z-20">
+          <AnimatedSection animation="animate-bounce-in" delay={300}>
+            <div className="rounded-3xl p-[1.5px] bg-gradient-to-r from-[#60a5fa] via-[#67e8f9] to-[#60a5fa] animate-border-flow relative flex flex-col justify-between hover:-translate-y-1.5 transition-all duration-300 shadow-[0_20px_60px_rgba(96,165,250,0.15)] overflow-hidden z-20 h-full">
             {/* Animated blue border glow backdrop */}
             <div className="absolute inset-0 bg-gradient-to-r from-[#60a5fa] via-[#67e8f9] to-[#60a5fa] opacity-25 blur-xl pointer-events-none" />
 
@@ -338,7 +344,8 @@ export function Pricing() {
                 Entra in lista anticipata →
               </a>
             </div>
-          </div>
+            </div>
+          </AnimatedSection>
 
         </div>
       </div>

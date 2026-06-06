@@ -1,17 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { useInView } from "../hooks/use-in-view";
-import { Sparkles, Clock, Music, Trash2, Smartphone, DollarSign, TrendingUp } from "lucide-react";
+import { Sparkles, Clock, Music, Trash2, Smartphone } from "lucide-react";
+import { AnimatedSection } from "../landing-view";
 
 export function Features() {
-  const { ref: headerRef, inView: headerInView } = useInView(0.1);
-  const { ref: f1Ref, inView: f1InView } = useInView(0.15);
-  const { ref: f2Ref, inView: f2InView } = useInView(0.15);
-  const { ref: f3Ref, inView: f3InView } = useInView(0.15);
-  const { ref: f4Ref, inView: f4InView } = useInView(0.15);
-  const { ref: f5Ref, inView: f5InView } = useInView(0.15);
-
   // Feature 1: Interactive Slider States
   const [stipendio, setStipendio] = useState(1800);
   const [costiFissi, setCostiFissi] = useState(850);
@@ -24,28 +17,21 @@ export function Features() {
   return (
     <section id="features" className="py-20 md:py-28 px-6 relative z-10 max-w-7xl mx-auto overflow-hidden">
       {/* Section Header */}
-      <div
-        ref={headerRef}
-        className={`mb-20 transition-all duration-700 ${
-          headerInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-        }`}
-      >
-        <span className="text-xs font-semibold uppercase tracking-wider text-[#a88bfa] block mb-3">
-          Funzionalità
-        </span>
-        <h2 className="font-serif italic text-3xl md:text-5xl text-[#F0EEFF] leading-tight">
-          Tutto quello che ti serve, <span className="bg-gradient-to-r from-[#a88bfa] to-[#e879f9] bg-clip-text text-transparent font-medium">niente di troppo</span>.
-        </h2>
-      </div>
+      <AnimatedSection animation="animate-zoom-in">
+        <div className="mb-20">
+          <span className="text-xs font-semibold uppercase tracking-wider text-[#a88bfa] block mb-3">
+            Funzionalità
+          </span>
+          <h2 className="font-serif italic text-3xl md:text-5xl text-[#F0EEFF] leading-tight">
+            Tutto quello che ti serve, <span className="bg-gradient-to-r from-[#a88bfa] to-[#e879f9] bg-clip-text text-transparent font-medium">niente di troppo</span>.
+          </h2>
+        </div>
+      </AnimatedSection>
 
       <div className="flex flex-col gap-24 md:gap-36">
         {/* Feature 1: Safe-to-Spend Slider */}
-        <div
-          ref={f1Ref}
-          className={`grid grid-cols-1 md:grid-cols-2 gap-12 items-center transition-all duration-700 ${
-            f1InView ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-8"
-          }`}
-        >
+        <AnimatedSection animation="animate-slide-in-left">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <div className="flex flex-col">
             <div className="w-12 h-12 rounded-xl bg-[#a88bfa]/10 border border-[#a88bfa]/20 flex items-center justify-center mb-6">
               <Sparkles className="w-6 h-6 text-[#a88bfa]" />
@@ -123,14 +109,11 @@ export function Features() {
             </div>
           </div>
         </div>
+        </AnimatedSection>
 
         {/* Feature 2: Time Translator */}
-        <div
-          ref={f2Ref}
-          className={`grid grid-cols-1 md:grid-cols-2 gap-12 items-center transition-all duration-700 ${
-            f2InView ? "opacity-100 translate-x-0" : "opacity-0 translate-x-8"
-          }`}
-        >
+        <AnimatedSection animation="animate-slide-in-right">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <div className="md:order-2 flex flex-col">
             <div className="w-12 h-12 rounded-xl bg-[#60a5fa]/10 border border-[#60a5fa]/20 flex items-center justify-center mb-6">
               <Clock className="w-6 h-6 text-[#60a5fa]" />
@@ -169,14 +152,11 @@ export function Features() {
             </div>
           </div>
         </div>
+        </AnimatedSection>
 
         {/* Feature 3: Spotify Wrapped-style Recap */}
-        <div
-          ref={f3Ref}
-          className={`grid grid-cols-1 md:grid-cols-2 gap-12 items-center transition-all duration-700 ${
-            f3InView ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-8"
-          }`}
-        >
+        <AnimatedSection animation="animate-slide-in-left">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <div className="flex flex-col">
             <div className="w-12 h-12 rounded-xl bg-[#e879f9]/10 border border-[#e879f9]/20 flex items-center justify-center mb-6">
               <Music className="w-6 h-6 text-[#e879f9]" />
@@ -213,14 +193,11 @@ export function Features() {
             </div>
           </div>
         </div>
+        </AnimatedSection>
 
         {/* Feature 4: Cimitero degli Impulsi */}
-        <div
-          ref={f4Ref}
-          className={`grid grid-cols-1 md:grid-cols-2 gap-12 items-center transition-all duration-700 ${
-            f4InView ? "opacity-100 translate-x-0" : "opacity-0 translate-x-8"
-          }`}
-        >
+        <AnimatedSection animation="animate-slide-in-right">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <div className="md:order-2 flex flex-col">
             <div className="w-12 h-12 rounded-xl bg-[#a88bfa]/10 border border-[#a88bfa]/20 flex items-center justify-center mb-6">
               <Trash2 className="w-6 h-6 text-[#a88bfa]" />
@@ -262,14 +239,11 @@ export function Features() {
             </div>
           </div>
         </div>
+        </AnimatedSection>
 
         {/* Feature 5: PWA Mobile */}
-        <div
-          ref={f5Ref}
-          className={`grid grid-cols-1 md:grid-cols-2 gap-12 items-center transition-all duration-700 ${
-            f5InView ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-8"
-          }`}
-        >
+        <AnimatedSection animation="animate-slide-in-left">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <div className="flex flex-col">
             <div className="w-12 h-12 rounded-xl bg-[#60a5fa]/10 border border-[#60a5fa]/20 flex items-center justify-center mb-6">
               <Smartphone className="w-6 h-6 text-[#60a5fa]" />
@@ -330,22 +304,32 @@ export function Features() {
 
                 <div className="flex flex-col gap-1.5">
                   <div className="flex justify-between items-center text-[8px] p-2 bg-white/[0.01] border border-white/[0.03] rounded-md">
-                    <span className="text-[#F0EEFF]">☕ Caffè Centrale</span>
+                    <div className="flex flex-col">
+                      <span className="text-[#F0EEFF] font-medium">☕ Caffè Centrale</span>
+                      <span className="text-[6px] text-[#8b8899]">Ristorazione</span>
+                    </div>
                     <span className="text-[#e879f9] font-serif font-semibold">−2,50€</span>
                   </div>
                   <div className="flex justify-between items-center text-[8px] p-2 bg-white/[0.01] border border-white/[0.03] rounded-md">
-                    <span className="text-[#F0EEFF]">🛒 Esselunga</span>
+                    <div className="flex flex-col">
+                      <span className="text-[#F0EEFF] font-medium">🛒 Esselunga</span>
+                      <span className="text-[6px] text-[#8b8899]">Alimentari</span>
+                    </div>
                     <span className="text-[#e879f9] font-serif font-semibold">−34,20€</span>
                   </div>
                   <div className="flex justify-between items-center text-[8px] p-2 bg-[#10B981]/[0.03] border border-[#10B981]/[0.1] rounded-md">
-                    <span className="text-[#F0EEFF]">📈 PAC Fineco</span>
-                    <span className="text-[#10B981] font-semibold">investito</span>
+                    <div className="flex flex-col">
+                      <span className="text-[#F0EEFF] font-medium">📈 PAC mensile</span>
+                      <span className="text-[6px] text-[#10B981]/80">Investimenti</span>
+                    </div>
+                    <span className="text-[#10B981] font-semibold">+200,00€</span>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
+        </AnimatedSection>
       </div>
     </section>
   );

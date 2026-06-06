@@ -107,82 +107,56 @@ export function Waitlist() {
 
         {/* Title */}
         <h2 className="font-serif italic text-4xl md:text-6xl text-[#F0EEFF] leading-tight mb-4">
-          Inizia oggi.{" "}
+          Entra in lista per{" "}
           <span className="bg-gradient-to-r from-[#a88bfa] via-[#e879f9] to-[#60a5fa] bg-clip-text text-transparent font-medium animate-text-shimmer">
-            Gratis
-          </span>.
+            Valorem Pro
+          </span>
         </h2>
 
         {/* Subtitle */}
         <p className="text-sm md:text-base text-[#8b8899] max-w-xl mx-auto leading-relaxed mb-8">
-          Unisciti a chi ha scelto di vedere chiaramente le proprie finanze. Nessuna carta di credito. Nessuna sorpresa. Cancelli quando vuoi.
+          L&apos;AI Coach, la modalità coppia e i report mensili automatici arrivano presto. Iscriviti adesso e ricevi 2 mesi gratis + 40% di sconto permanente quando uscirà.
         </p>
 
         {/* Real-time subscriber count badge */}
         {totalSubscribers > 0 && (
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.03] border border-white/[0.08] text-xs text-[#a88bfa] font-semibold mb-12 shadow-sm">
-            <Sparkles className="w-3.5 h-3.5 text-[#e879f9] animate-pulse" />
-            <span>{totalSubscribers} persone già iscritte</span>
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-[#a88bfa]/5 to-[#60a5fa]/5 border border-[#a88bfa]/15 text-xs text-[#a88bfa] font-semibold mb-12 shadow-sm">
+            <span>{totalSubscribers} persone già in lista anticipata</span>
           </div>
         )}
 
         {/* Benefit pills */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-2xl mx-auto mb-10 text-left">
           <div className="flex items-center gap-2 px-4 py-3 bg-[#a88bfa]/[0.03] border border-[#a88bfa]/10 rounded-2xl">
-            <Check className="w-4 h-4 text-[#10B981] flex-shrink-0" />
-            <span className="text-xs text-[#e8e6f0] font-medium">Gratis per sempre nel piano base</span>
+            <span className="text-[#a88bfa] font-bold">✦</span>
+            <span className="text-xs text-[#e8e6f0] font-medium">2 mesi gratis al lancio</span>
           </div>
           <div className="flex items-center gap-2 px-4 py-3 bg-[#a88bfa]/[0.03] border border-[#a88bfa]/10 rounded-2xl">
-            <Zap className="w-4 h-4 text-[#e879f9] flex-shrink-0" />
-            <span className="text-xs text-[#e8e6f0] font-medium">Setup completo in 2 minuti</span>
+            <span className="text-[#e879f9] font-bold">✦</span>
+            <span className="text-xs text-[#e8e6f0] font-medium">40% sconto permanente</span>
           </div>
           <div className="flex items-center gap-2 px-4 py-3 bg-[#a88bfa]/[0.03] border border-[#a88bfa]/10 rounded-2xl">
-            <ShieldCheck className="w-4 h-4 text-[#60a5fa] flex-shrink-0" />
-            <span className="text-xs text-[#e8e6f0] font-medium">Dati sicuri e GDPR compliant</span>
+            <span className="text-[#60a5fa] font-bold">✦</span>
+            <span className="text-xs text-[#e8e6f0] font-medium">Accesso anticipato</span>
           </div>
         </div>
 
         {status === "success" ? (
-          /* SUCCESS STATE — WITH CONFETTI SYSTEM */
-          <div className="max-w-lg mx-auto relative py-6">
-            
-            {/* Confetti Explosion (20 CSS particles) */}
-            <div className="absolute inset-0 overflow-visible pointer-events-none z-0">
-              {Array.from({ length: 20 }).map((_, i) => {
-                const left = Math.random() * 100;
-                const delay = Math.random() * 1.5;
-                const duration = 2.5 + Math.random() * 1.5;
-                const colors = ["#a88bfa", "#e879f9", "#60a5fa", "#67e8f9", "#10B981", "#FBBF24"];
-                const color = colors[i % colors.length];
-                
-                return (
-                  <div
-                    key={i}
-                    className="absolute top-0 w-2 h-4 rounded-sm animate-fall"
-                    style={{
-                      left: `${left}%`,
-                      backgroundColor: color,
-                      animationDelay: `${delay}s`,
-                      animationDuration: `${duration}s`,
-                    }}
-                  />
-                );
-              })}
-            </div>
-
+          /* SUCCESS STATE */
+          <div className="max-w-lg mx-auto py-6">
             <div className="p-6 rounded-2xl bg-[#10B981]/[0.08] border border-[#10B981]/25 text-[#10B981] flex flex-col items-center gap-4 relative z-10 shadow-lg">
-              <CheckCircle2 className="w-8 h-8 animate-bounce" />
+              <Check className="w-8 h-8 text-[#10B981]" />
               <div className="flex flex-col text-center">
-                <span className="text-base font-bold">🎉 Benvenuto in Valorem!</span>
-                <span className="text-xs text-[#10B981]/90 mt-1">
-                  Abbiamo registrato la tua email. Controlla la tua inbox per completare l'accesso.
+                <span className="text-base font-bold">✓ Sei in lista!</span>
+                <span className="text-xs text-[#10B981]/90 mt-1 font-medium">
+                  Ti avvisiamo per primi quando Pro sarà disponibile.
                 </span>
               </div>
               <a
-                href="https://valorem-albomerigo-2081s-projects.vercel.app/signin"
-                className="mt-2 inline-flex items-center gap-2 px-6 py-3 bg-[#10B981] hover:bg-[#10B981]/90 text-black font-bold text-xs rounded-xl shadow-md transition-colors"
+                href="/pricing"
+                className="mt-2 inline-flex items-center gap-2 px-6 py-3 border border-[#10B981]/30 hover:border-[#10B981]/60 text-xs font-semibold text-[#10B981] bg-[#10B981]/[0.02] rounded-xl transition-all"
               >
-                Apri l'app ora →
+                Inizia con Premium intanto →
               </a>
             </div>
           </div>
@@ -198,13 +172,13 @@ export function Waitlist() {
                   setEmail(e.target.value);
                   if (status === "error") setStatus("idle");
                 }}
-                placeholder="Inserisci la tua email migliore..."
+                placeholder="La tua email per l'accesso anticipato..."
                 className="flex-1 h-14 bg-white/[0.04] border border-white/[0.08] focus:border-[#a88bfa] focus:ring-1 focus:ring-[#a88bfa] outline-none rounded-2xl px-5 text-sm text-[#F0EEFF] transition-all disabled:opacity-50 font-medium"
               />
               <button
                 type="submit"
                 disabled={status === "loading"}
-                className="h-14 px-8 rounded-2xl bg-gradient-to-r from-[#a88bfa] to-[#e879f9] text-white text-sm font-bold hover:shadow-[0_0_20px_rgba(168,139,250,0.3)] transition-all flex items-center justify-center gap-2 disabled:opacity-75 disabled:cursor-not-allowed shadow-md"
+                className="h-14 px-8 rounded-2xl bg-gradient-to-r from-[#a88bfa] to-[#60a5fa] text-white text-sm font-bold hover:shadow-[0_0_20px_rgba(168,139,250,0.3)] transition-all flex items-center justify-center gap-2 disabled:opacity-75 disabled:cursor-not-allowed shadow-md"
               >
                 {status === "loading" ? (
                   <>
@@ -212,20 +186,11 @@ export function Waitlist() {
                     Registrazione...
                   </>
                 ) : (
-                  "Inizia gratis ora →"
+                  "Voglio l'accesso anticipato →"
                 )}
               </button>
             </form>
-
-            <div className="flex items-center justify-center gap-3 text-xs text-[#8b8899] mt-3">
-              <span>Oppure</span>
-              <button
-                onClick={(e) => handleScrollToSection(e, "pricing")}
-                className="text-xs font-semibold text-[#a88bfa] hover:text-[#e879f9] transition-colors border border-[#a88bfa]/20 hover:border-[#a88bfa]/40 rounded-xl px-4 py-2 bg-[#a88bfa]/[0.02]"
-              >
-                Inizia con Premium (offerta lancio)
-              </button>
-            </div>
+            <p className="text-xs text-[#8b8899] mt-2">Zero spam. Solo una email quando Pro è disponibile.</p>
           </div>
         )}
 

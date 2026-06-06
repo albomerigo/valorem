@@ -9,7 +9,7 @@ export function Hero() {
 
   // Typing state for dashboard Coach comment
   const [coachText, setCoachText] = useState("");
-  const coachTargetText = "Il tuo ritmo di spesa è sotto controllo. Stai gestendo bene — continua così, Alberto.";
+  const coachTargetText = "Il tuo ritmo di spesa è sotto controllo. Stai gestendo bene — continua così.";
 
   // 3D Card Tilt state
   const cardRef = useRef<HTMLDivElement>(null);
@@ -124,6 +124,14 @@ export function Hero() {
 
       {/* Iridescent top LED strip */}
       <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#a88bfa] via-[#e879f9] to-[#60a5fa] animate-border-flow opacity-70 blur-[0.5px]" />
+
+      {/* Floating Cards (Desktop only) */}
+      <div className="absolute left-4 top-1/3 hidden md:flex items-center gap-2 px-4 py-2 rounded-full border border-white/[0.08] bg-white/[0.03] backdrop-blur-md text-xs text-[#a88bfa] font-medium shadow-lg animate-float-card delay-200 z-20">
+        <span>€ 2,50 = 10 min</span>
+      </div>
+      <div className="absolute right-4 top-1/2 hidden md:flex items-center gap-2 px-4 py-2 rounded-full border border-white/[0.08] bg-white/[0.03] backdrop-blur-md text-xs text-[#e879f9] font-medium shadow-lg animate-float-card delay-500 z-20">
+        <span>💜 3 impulsi evitati</span>
+      </div>
 
       <div className="max-w-4xl mx-auto flex flex-col items-center relative z-10">
         {/* BADGE animato */}

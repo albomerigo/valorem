@@ -3,6 +3,9 @@ import { createClient as createServerClient } from "@/lib/supabase/server";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 
 /*
+-- Per approvare una recensione esegui su Supabase SQL Editor:
+-- UPDATE landing_reviews SET approved = true WHERE id = 'ID_QUI';
+
 -- Esegui questa query SQL in Supabase per creare la tabella:
 
 CREATE TABLE landing_reviews (
@@ -77,6 +80,25 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true, review: data });
   } catch (err: any) {
     console.error("Reviews submit error:", err);
+    return NextResponse.json({ error: "Qualcosa è andato storto." }, { status: 500 });
+  }
+}
+
+export async function PATCH(req: NextRequest) {
+  try {
+    const { id, approved } = await req.json();
+    const supabase = await createServerClient();
+    const { error } = await supabase
+      .from("landing_reviews")
+      .update({ approved })
+      .eq("id", id);
+    if (error) {
+      console.error("Reviews PATCH error:", error);
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+    return NextResponse.json({ success: true });
+  } catch (err: any) {
+    console.error("Reviews PATCH error:", err);
     return NextResponse.json({ error: "Qualcosa è andato storto." }, { status: 500 });
   }
 }
