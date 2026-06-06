@@ -200,7 +200,7 @@ export function Waitlist() {
                 </span>
               </div>
               <a
-                href="https://valorem-albomerigo-2081s-projects.vercel.app"
+                href="https://valorem-albomerigo-2081s-projects.vercel.app/signin"
                 className="mt-2 inline-flex items-center gap-2 px-6 py-3 bg-[#10B981] hover:bg-[#10B981]/90 text-black font-bold text-xs rounded-xl shadow-md transition-colors"
               >
                 Apri l'app ora →
