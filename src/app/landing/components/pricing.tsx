@@ -115,9 +115,13 @@ export function Pricing() {
         {/* 1. BANNER OFFERTA redesign elegante */}
         <div className="inline-flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-3.5 rounded-2xl bg-[#a88bfa]/[0.08] border border-[#a88bfa]/20 shadow-md text-xs md:text-sm font-medium text-[#F0EEFF] mb-12 max-w-3xl mx-auto w-full">
           <span>✦ Offerta lancio · Primi 100 utenti: 3 mesi a €1,99 poi €4,99</span>
-          <span className="flex items-center gap-1.5 shrink-0">
-            <span className={`${getUrgencyClass()} font-mono`}>🔥 {remainingSeats} posti rimasti</span>
-          </span>
+          {remainingSeats < 100 && (
+            <span className="shrink-0">
+              <span className={getUrgencyClass()}>
+                • {remainingSeats} posti disponibili su 100
+              </span>
+            </span>
+          )}
         </div>
 
         {/* Pricing Cards Grid */}

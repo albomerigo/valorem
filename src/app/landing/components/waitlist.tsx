@@ -11,8 +11,7 @@ export function Waitlist() {
   const [errorMessage, setErrorMessage] = useState("");
   
   // Real-time counter states
-  const [totalSubscribers, setTotalSubscribers] = useState(23);
-  const [animatedSubscribers, setAnimatedSubscribers] = useState(0);
+  const [totalSubscribers, setTotalSubscribers] = useState(0);
 
   // Fetch subscriber count
   useEffect(() => {
@@ -22,7 +21,7 @@ export function Waitlist() {
         const res = await fetch("/api/waitlist-count");
         if (res.ok && active) {
           const data = await res.json();
-          setTotalSubscribers(data.count || 23);
+          setTotalSubscribers(data.count || 0);
         }
       } catch (err) {
         console.error("Error fetching waitlist count for waitlist component:", err);
@@ -33,28 +32,6 @@ export function Waitlist() {
       active = false;
     };
   }, []);
-
-  // Count-up animation
-  useEffect(() => {
-    let start = 0;
-    const end = totalSubscribers;
-    if (end === 0) return;
-
-    const duration = 1500; // 1.5s
-    const increment = end / (duration / 16);
-
-    const timer = setInterval(() => {
-      start += increment;
-      if (start >= end) {
-        setAnimatedSubscribers(end);
-        clearInterval(timer);
-      } else {
-        setAnimatedSubscribers(Math.floor(start));
-      }
-    }, 16);
-
-    return () => clearInterval(timer);
-  }, [totalSubscribers]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -142,10 +119,12 @@ export function Waitlist() {
         </p>
 
         {/* Real-time subscriber count badge */}
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.03] border border-white/[0.08] text-xs text-[#a88bfa] font-semibold mb-12 shadow-sm">
-          <Sparkles className="w-3.5 h-3.5 text-[#e879f9] animate-pulse" />
-          <span>🔥 {animatedSubscribers} persone già iscritte in lista</span>
-        </div>
+        {totalSubscribers > 0 && (
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.03] border border-white/[0.08] text-xs text-[#a88bfa] font-semibold mb-12 shadow-sm">
+            <Sparkles className="w-3.5 h-3.5 text-[#e879f9] animate-pulse" />
+            <span>{totalSubscribers} persone già iscritte</span>
+          </div>
+        )}
 
         {/* Benefit pills */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-2xl mx-auto mb-10 text-left">

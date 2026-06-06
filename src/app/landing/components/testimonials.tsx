@@ -3,10 +3,20 @@
 import { useState, useEffect } from "react";
 import { useInView } from "../hooks/use-in-view";
 import { Star, X, Loader2 } from "lucide-react";
+import Link from "next/link";
+
+type Review = {
+  id: string;
+  name: string;
+  role?: string;
+  text: string;
+  stars: number;
+  created_at: string;
+};
 
 export function Testimonials() {
   const { ref, inView } = useInView(0.1);
-  const [dbReviews, setDbReviews] = useState<any[]>([]);
+  const [reviews, setReviews] = useState<Review[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Form states
@@ -52,18 +62,12 @@ export function Testimonials() {
 
   // Fetch approved reviews from Supabase
   useEffect(() => {
-    async function fetchReviews() {
-      try {
-        const res = await fetch("/api/reviews");
-        if (res.ok) {
-          const data = await res.json();
-          setDbReviews(data.reviews || []);
-        }
-      } catch (err) {
-        console.error("Error fetching reviews:", err);
-      }
-    }
-    fetchReviews();
+    fetch("/api/reviews")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.reviews) setReviews(data.reviews);
+      })
+      .catch((err) => console.error("Error fetching reviews:", err));
   }, []);
 
   const handleSubmitReview = async (e: React.FormEvent) => {
@@ -102,40 +106,49 @@ export function Testimonials() {
     }
   };
 
-  const combinedReviews = [
-    ...placeholderReviews.map(r => ({
-      stars: r.stars,
-      quote: r.quote,
-      initials: r.author,
-      fullName: r.fullName,
-      subtitle: `${r.role}, ${r.age} anni · ${r.location}`,
-      avatarGrad: r.avatarGrad
-    })),
-    ...dbReviews.map((r, idx) => {
-      const initials = r.name
-        .split(" ")
-        .map((n: string) => n[0])
-        .join("")
-        .toUpperCase()
-        .slice(0, 2);
-      
-      const grads = [
-        "from-[#a88bfa] to-[#60a5fa]",
-        "from-[#60a5fa] to-[#e879f9]",
-        "from-[#e879f9] to-[#a88bfa]"
-      ];
-      const avatarGrad = grads[idx % grads.length];
+  // Build the list of exactly 3 reviews to show (first 3 real ones if count >= 3, else fill with placeholders)
+  const displayReviews = [...reviews];
+  if (displayReviews.length < 3) {
+    const placeholdersNeeded = 3 - displayReviews.length;
+    for (let i = 0; i < placeholdersNeeded; i++) {
+      const pIdx = displayReviews.length;
+      const p = placeholderReviews[pIdx];
+      displayReviews.push({
+        id: `placeholder-${pIdx}`,
+        name: p.fullName,
+        role: `${p.role}, ${p.age} anni · ${p.location}`,
+        text: p.quote,
+        stars: p.stars,
+        created_at: new Date().toISOString()
+      });
+    }
+  }
 
-      return {
-        stars: r.stars,
-        quote: r.text,
-        initials,
-        fullName: r.name,
-        subtitle: r.role || "Utente Valorem",
-        avatarGrad
-      };
-    })
-  ];
+  const finalReviews = displayReviews.slice(0, 3).map((r, idx) => {
+    const initials = r.name
+      .split(" ")
+      .map((n: string) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+    
+    // Choose gradient
+    const grads = [
+      "from-[#a88bfa] to-[#60a5fa]",
+      "from-[#60a5fa] to-[#e879f9]",
+      "from-[#e879f9] to-[#a88bfa]"
+    ];
+    const avatarGrad = grads[idx % grads.length];
+
+    return {
+      stars: r.stars,
+      quote: r.text,
+      initials,
+      fullName: r.name,
+      subtitle: r.role || "Utente Valorem",
+      avatarGrad
+    };
+  });
 
   return (
     <section id="recensioni" ref={ref} className="py-20 md:py-28 px-6 relative z-10 max-w-7xl mx-auto">
@@ -152,7 +165,7 @@ export function Testimonials() {
 
         {/* Grid Cards with stagger scroll delay */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {combinedReviews.map((item, idx) => (
+          {finalReviews.map((item, idx) => (
             <div
               key={idx}
               className={`bg-[#0b0912] border border-white/[0.06] rounded-3xl p-6 md:p-8 flex flex-col justify-between hover:-translate-y-1 transition-all duration-300 relative overflow-hidden shadow-md group fade-up ${inView ? "in-view" : ""}`}
@@ -164,10 +177,13 @@ export function Testimonials() {
               </div>
 
               <div>
-                {/* Gold Stars */}
+                {/* Stars */}
                 <div className="flex gap-1 mb-5">
                   {[...Array(item.stars)].map((_, sIdx) => (
                     <Star key={sIdx} className="w-4 h-4 fill-[#FBBF24] text-[#FBBF24]" />
+                  ))}
+                  {[...Array(5 - item.stars)].map((_, sIdx) => (
+                    <Star key={sIdx} className="w-4 h-4 text-white/10" />
                   ))}
                 </div>
 
@@ -197,13 +213,19 @@ export function Testimonials() {
           ))}
         </div>
 
-        {/* Lascia una recensione Button */}
-        <div className="mt-12 flex justify-center">
+        {/* Action buttons */}
+        <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
+          <Link
+            href="/recensioni"
+            className="px-6 py-3 rounded-full border border-[#a88bfa]/30 hover:border-[#a88bfa]/60 text-xs font-semibold text-[#a88bfa] hover:text-[#e879f9] bg-[#a88bfa]/[0.02] transition-all flex items-center gap-2"
+          >
+            Vedi tutte le recensioni →
+          </Link>
           <button
             onClick={() => setIsModalOpen(true)}
-            className="px-6 py-3 rounded-full bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.08] text-xs font-semibold text-[#a88bfa] hover:text-white transition-all flex items-center gap-2"
+            className="px-6 py-3 rounded-full bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.08] text-xs font-semibold text-[#e8e6f0] hover:text-white transition-all flex items-center gap-2"
           >
-            Lascia una recensione →
+            Lascia una recensione
           </button>
         </div>
       </div>

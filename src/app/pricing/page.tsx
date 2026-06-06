@@ -85,6 +85,20 @@ function PricingContent() {
   const waitlistRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animRef = useRef<number>(0);
+  const [waitlistCount, setWaitlistCount] = useState(0);
+
+  useEffect(() => {
+    let active = true;
+    fetch("/api/waitlist-count")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.count !== undefined && active) setWaitlistCount(data.count);
+      })
+      .catch((err) => console.error("Error fetching waitlist count:", err));
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const searchParams = useSearchParams();
   const successParam = searchParams.get("success");
@@ -704,16 +718,18 @@ function PricingContent() {
           </p>
 
           {/* Contatore */}
-          <div
-            className="mt-5 inline-flex items-center gap-2 rounded-full px-4 py-2 text-[13px] font-medium"
-            style={{
-              background: "rgba(96,165,250,0.07)",
-              border: "1px solid rgba(96,165,250,0.18)",
-              color: "#93C5FD",
-            }}
-          >
-            🔥 23 persone già in lista
-          </div>
+          {waitlistCount > 0 && (
+            <div
+              className="mt-5 inline-flex items-center gap-2 rounded-full px-4 py-2 text-[13px] font-medium"
+              style={{
+                background: "rgba(96,165,250,0.07)",
+                border: "1px solid rgba(96,165,250,0.18)",
+                color: "#93C5FD",
+              }}
+            >
+              • {waitlistCount} persone già in lista
+            </div>
+          )}
 
           {/* Form */}
           <div className="mt-7">

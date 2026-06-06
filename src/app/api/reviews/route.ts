@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { createClient as createServerClient } from "@/lib/supabase/server";
+import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 
 /*
 -- Esegui questa query SQL in Supabase per creare la tabella:
@@ -17,26 +18,18 @@ CREATE TABLE landing_reviews (
 
 export async function GET() {
   try {
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
-    );
-
+    const supabase = await createServerClient();
     const { data, error } = await supabase
       .from("landing_reviews")
       .select("*")
       .eq("approved", true)
       .order("created_at", { ascending: false });
-
-    if (error) {
-      console.error("Error fetching reviews:", error);
-      return NextResponse.json({ error: error.message }, { status: 500 });
-    }
-
+    
+    if (error) return NextResponse.json({ reviews: [] });
     return NextResponse.json({ reviews: data || [] });
-  } catch (err: any) {
+  } catch (err) {
     console.error("Reviews GET error:", err);
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    return NextResponse.json({ reviews: [] });
   }
 }
 
@@ -59,7 +52,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const supabase = createClient(
+    const supabase = createSupabaseClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!
     );
