@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
       custom_data?: { user_id?: string };
     };
     data?: {
-      attributes?: { status?: string };
+      attributes?: { status?: string; variant_id?: any };
     };
   };
 
@@ -36,7 +36,9 @@ export async function POST(req: NextRequest) {
     eventName === "subscription_updated"
   ) {
     const status = payload.data?.attributes?.status;
-    const plan = status === "active" ? "premium" : "free";
+    const variantId = payload.data?.attributes?.variant_id?.toString();
+    const proVariants = ["1761854", "1761846"];
+    const plan = status === "active" ? (proVariants.includes(variantId || "") ? "pro" : "premium") : "free";
 
     await supabase
       .from("users_profiles")

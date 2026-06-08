@@ -26,6 +26,7 @@ const plans = [
     border: "rgba(255,255,255,0.08)",
     accent: "#6B7280",
     glow: "transparent",
+    popular: false,
   },
   {
     key: "premium",
@@ -57,7 +58,7 @@ const plans = [
     icon: Crown,
     monthlyPrice: 8.99,
     annualPrice: 6.99,
-    tagline: "Con intelligenza artificiale · In arrivo",
+    tagline: "Il coach finanziario personale con AI",
     features: [
       "Tutto di Premium",
       "AI Coach con Claude API",
@@ -71,7 +72,7 @@ const plans = [
     border: "rgba(96,165,250,0.35)",
     accent: "#60A5FA",
     glow: "rgba(96,165,250,0.2)",
-    comingSoon: true,
+    popular: false,
   },
 ];
 
@@ -196,7 +197,7 @@ function PricingContent() {
     return () => cancelAnimationFrame(animRef.current);
   }, []);
 
-  async function openCheckout(planKey: "premium") {
+  async function openCheckout(planKey: "premium" | "pro") {
     setCheckoutLoading(true);
     try {
       const variantId = annual
@@ -413,7 +414,7 @@ function PricingContent() {
             const price = annual ? plan.annualPrice : plan.monthlyPrice;
             const isCurrent = currentPlan === plan.key;
             const isHovered = hoveredPlan === plan.key;
-            const isComingSoon = "comingSoon" in plan && plan.comingSoon;
+
 
             return (
               <div
@@ -431,7 +432,7 @@ function PricingContent() {
                     ? `0 16px 40px -8px ${plan.glow}`
                     : "none",
                   transform: isHovered ? "translateY(-6px) scale(1.01)" : "none",
-                  padding: plan.popular || isComingSoon ? "2px" : "0",
+                  padding: plan.popular || plan.key === "pro" ? "2px" : "0",
                 }}
               >
                 {/* Animated border for premium */}
@@ -447,8 +448,8 @@ function PricingContent() {
                   />
                 )}
 
-                {/* Animated border for Pro (coming soon) */}
-                {isComingSoon && (
+                {/* Animated border for Pro */}
+                {plan.key === "pro" && (
                   <div
                     className="absolute inset-0 rounded-2xl"
                     style={{
@@ -465,7 +466,7 @@ function PricingContent() {
                   style={{
                     background: plan.popular
                       ? "linear-gradient(135deg, rgba(26,20,40,0.95), rgba(36,27,58,0.95))"
-                      : isComingSoon
+                      : plan.key === "pro"
                       ? "linear-gradient(135deg, rgba(13,20,40,0.97), rgba(10,20,36,0.97))"
                       : "transparent",
                   }}
@@ -484,19 +485,7 @@ function PricingContent() {
                     </div>
                   )}
 
-                  {/* Badge prossimamente */}
-                  {isComingSoon && (
-                    <div
-                      className="absolute -top-3.5 left-1/2 -translate-x-1/2 rounded-full px-4 py-1 text-[11px] font-bold uppercase tracking-[0.08em]"
-                      style={{
-                        background: "linear-gradient(135deg, #60A5FA, #67E8F9)",
-                        color: "#0D0A1E",
-                        boxShadow: "0 4px 16px rgba(96,165,250,0.4)",
-                      }}
-                    >
-                      🚀 Prossimamente
-                    </div>
-                  )}
+
 
                   {/* Piano header */}
                   <div className="mb-6 flex items-start gap-3">
@@ -539,7 +528,7 @@ function PricingContent() {
                             style={{
                               color: plan.accent,
                               textShadow: isHovered ? `0 0 30px ${plan.accent}60` : "none",
-                              opacity: isComingSoon ? 0.6 : 1,
+                              opacity: 1,
                             }}
                           >
                             €{price.toFixed(2).replace(".", ",")}
@@ -562,7 +551,7 @@ function PricingContent() {
                   </div>
 
                   {/* Early adopter banner — Pro only */}
-                  {isComingSoon && (
+                  {plan.key === "pro" && (
                     <div
                       className="mb-5 rounded-xl px-3.5 py-3 text-[12px] leading-relaxed"
                       style={{
@@ -631,22 +620,9 @@ function PricingContent() {
                     >
                       Continua gratis
                     </Link>
-                  ) : isComingSoon ? (
-                    <button
-                      onClick={scrollToWaitlist}
-                      className="relative w-full overflow-hidden rounded-xl py-3.5 text-[13px] font-semibold transition-all duration-300 hover:-translate-y-0.5"
-                      style={{
-                        background: "linear-gradient(135deg, rgba(96,165,250,0.2), rgba(103,232,249,0.12))",
-                        border: "1px solid rgba(96,165,250,0.4)",
-                        color: "#93C5FD",
-                        boxShadow: isHovered ? "0 8px 24px -4px rgba(96,165,250,0.4)" : "none",
-                      }}
-                    >
-                      Entra in lista →
-                    </button>
                   ) : (
                     <button
-                      onClick={() => openCheckout("premium")}
+                      onClick={() => openCheckout(plan.key as "premium" | "pro")}
                       disabled={checkoutLoading}
                       className="relative w-full overflow-hidden rounded-xl py-3.5 text-[13px] font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0"
                       style={
@@ -673,7 +649,7 @@ function PricingContent() {
                           animation: isHovered && !checkoutLoading ? "shimmer 0.6s ease" : "none",
                         }}
                       />
-                      {checkoutLoading ? "Caricamento..." : plan.key === "premium" ? "Inizia con Premium →" : "Inizia con Pro →"}
+                      {checkoutLoading ? "Caricamento..." : plan.key === "premium" ? "Inizia con Premium →" : "Inizia Pro ora →"}
                     </button>
                   )}
                 </div>

@@ -12,4 +12,8 @@ export const VARIANT_IDS = {
     monthly: process.env.NEXT_PUBLIC_LS_VARIANT_MONTHLY || "1688665",
     annual: process.env.NEXT_PUBLIC_LS_VARIANT_ANNUAL || "1688645",
   },
+  pro: {
+    monthly: process.env.NEXT_PUBLIC_LS_VARIANT_PRO_MONTHLY || "1761854",
+    annual: process.env.NEXT_PUBLIC_LS_VARIANT_PRO_ANNUAL || "1761846",
+  },
 };
